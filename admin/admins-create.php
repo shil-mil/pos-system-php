@@ -8,7 +8,7 @@
             </h4>
         </div>
         <div class="card-body">
-            <?php alertMessage(); ?>
+            
             <form action="admins-code.php" method="POST">
                 <div class="row">
                     <div class="col-md-12 mb-3">
