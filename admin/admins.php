@@ -1,7 +1,7 @@
 <?php include('includes/header.php'); ?>
 
 <div class="container-fluid px-4">
-    <div class="card">
+    <div class="card mt-4 shadow-small">
         <div class="card-header">
             <h4 class="mb-0">Admins/Staff
                 <a href="admins-create.php" class = "btn btn-primary float-end">Admin</a> 
