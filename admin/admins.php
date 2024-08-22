@@ -8,8 +8,8 @@
             </h4>
         </div>
         <div class="card-body">
-            <div class="table-responsive">.table
-                <div class="table table-striped table-bordered">
+            <div class="table-responsive">
+                <table class="table table-striped table-bordered">
                     <thead>
                         <tr>
                             <th>ID</th>
@@ -23,7 +23,7 @@
                             <td></td>
                         </tr>
                     </tbody>
-                </div>
+                </table>
             </div>
         </div>
     </div>
