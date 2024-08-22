@@ -8,7 +8,7 @@
             </h4>
         </div>
         <div class="card-body">
-        <form action="code.php" method="POST">
+        <form action="products-code.php" method="POST">
                 <div class="row">
                     <div class="col-md-12 mb-3">
                         <label for="">Name *</label>
@@ -18,16 +18,16 @@
                         <label for="">Price *</label>
                         <input type="number" name="price" required class="form-control" />
                     </div>
-                    <!-- <div class="col-md-6 mb-3">
-                        <label for="">Password *</label>
-                        <input type="password" name="password" required class="form-control" />
-                    </div> FOR PIC NA NI SUNOD -->
+                    <div class="col-md-6 mb-3">
+                        <label for="">Category *</label>
+                        <input type="category" name="category" required class="form-control" />
+                    </div>
                     <!-- <div class="col-md-6 mb-3">
                         <label for="">Phone Number *</label>
                         <input type="number" name="phone" required class="form-control" />
-                    </div> FOR CATEGORY??? GOTTA ASK FIRST!!   -->
+                    </div> FOR PIC???-->
                     <div class="col-md-12 mb-3 text-end">
-                        <button type="submit" name="saveAdmin" class="btn btn-primary">Save</button>
+                        <button type="submit" name="saveProduct" class="btn btn-primary">Save</button>
                     </div>
                 </div>
             </form>
