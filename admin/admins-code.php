@@ -26,7 +26,7 @@ if(isset($_POST['saveAdmin'])){
             'lastname' => $lastname,
             'username' => $username,
             'password' => $password,
-            'position' => $position
+            'position' => $position,
             'is_banned' => $is_banned
         ];
         $result = insert('admins', $data);
