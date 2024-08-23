@@ -205,4 +205,54 @@ if(isset($_POST['updateProduct'])){
         redirect('products-edit.php','Please fill required fields.');
     }
 }
+
+if(isset($_POST['saveCategory'])){
+    $name = validate($_POST['name']);
+    $description = validate($_POST['description']);
+    $status = isset($_POST['status']) == true ? 1 : 0;
+
+    $data = [
+        'name' => $name,
+        'description' => $description,
+        'status' => $status
+    ];
+    $result = insert('categories',$data);
+
+    if($result){
+        redirect('categories.php','Category created successfully!');
+    } else {
+        redirect('categories-create.php','Someting went wrong.');
+    }
+}
+
+if(isset($_POST['updateCategory'])){
+    $categoryId = validate($_POST['categoryId']);
+
+    $categoryData = getById('categories', $categoryId);
+
+    if($categoryData['status'] != 200) {
+        redirect('categories-edit.php?id='.$categoryId, 'Category not found.');
+    }
+
+    $name = validate($_POST['name']);
+    $description = validate($_POST['description']);
+    $status = isset($_POST['status']) == true ? 1 : 0;
+    
+    if($name != '' && $description != '') {
+        $data = [
+            'name' => $name,
+            'description' => $description,
+            'status' => $status
+        ];
+        $result = update('categories', $categoryId, $data);
+
+        if($result){
+            redirect('categories.php','Category updated successfully!');
+        } else {
+            redirect('categories.php','Someting went wrong.');
+        }
+    } else {
+        redirect('categories-edit.php','Please fill required fields.');
+    }
+}
 ?>
