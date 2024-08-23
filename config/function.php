@@ -1,14 +1,14 @@
 <?php
 session_start();
 
-require'dbcon.php';
+require 'dbcon.php';
 
 
 // Input field validation
 function validate(){
 
     global $conn;
-    $validatedData = mysqli_real_escape_string($conn, $inputDate);
+    $validatedData = mysqli_real_escape_string($conn, $inputData);
     return trim($validatedData);
 }
 
