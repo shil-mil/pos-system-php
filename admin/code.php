@@ -96,4 +96,48 @@ if(isset($_POST['saveSupplier'])){
         redirect('suppliers-create.php','Please fill required fields.');
     }
 }
+
+if(isset($_POST['updateAdmin'])){
+    $adminId = validate($_POST['adminId']);
+
+    $adminData = getById('admins',$adminId);
+
+    if($adminData['status'] != 200) {
+        redirect('admins-edit.php?id='.$adminId, 'Admin not found.');
+    }
+
+    $firstname = validate($_POST['firstname']);
+    $lastname = validate($_POST['lastname']);
+    $username = validate($_POST['username']);
+    $password = validate($_POST['password']);
+    $position = validate($_POST['position']);
+    $is_banned = isset($_POST['is_banned']) == true ? 1 : 0;
+
+    if($password != ''){
+        $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
+    } else {
+        $hashedPassword = $adminData['data']['password'];
+    }
+
+    if($firstname != '' && $lastname != '' && $username != '' && $position != ''){
+        $data = [
+            'firstname' => $firstname,
+            'lastname' => $lastname,
+            'username' => $username,
+            'password' => $hashedPassword,
+            'position' => $position,
+            'is_banned' => $is_banned
+        ];
+
+        $result = update('admins', $adminId, $data);
+        if($result){
+            redirect('admins.php', 'Admin updated successfully!');
+        } else {
+            redirect('admins-edit.phpid='.$adminId, 'Something went wrong.');
+        }
+
+    } else {
+        redirect('admins-edit.php','Please fill required fields.');
+    }
+}
 ?>
