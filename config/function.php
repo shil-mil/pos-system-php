@@ -101,13 +101,13 @@ function getById($tableName, $id){
             $response = [
                 'status' => 404,
                 'data' => $row,
-                'message' => 'Record found'
+                'message' => 'Record found!'
             ];
             return $response;
         } else {
             $response = [
                 'status' => 404,
-                'message' => 'No data found'
+                'message' => 'No data found.'
             ];
             return $response;
         }
