@@ -8,19 +8,44 @@
             </h4>
         </div>
         <div class="card-body">
-        <form action="code.php" method="POST">
+            <?php alertMessage();?>
+            <form action="code.php" method="POST" enctype="multipart/form-data">
                 <div class="row">
+                <div class="col-md-12 mb-3">
+                        <label for="">Select Category</label>
+                        <select name="category_id" class="form-select">
+                            <option value="">Select Category</option>
+                            <?php
+                            $categories = getAll('categories');
+                            if($categories) {
+                                if(mysqli_num_rows($categories)) {
+                                    foreach($categories as $cItem) {
+                                        echo '<option value="'.$cItem['id'].'">'.$cItem['name'].'</option>';
+                                    }
+                                } else {
+                                    echo '<option value="">No categories found!</option>';
+                                }
+                            } else {
+                                echo '<option value="">Something went wrong.</option>';
+                            }
+                            ?>
+                        </select>
+                    </div>
                     <div class="col-md-12 mb-3">
                         <label for="">Menu Product Name *</label>
                         <input type="text" name="productname" required class="form-control" />
                     </div>
-                    <div class="col-md-6 mb-3">
+                    <div class="col-md-12 mb-3">
+                        <label>Description</label>
+                        <textarea name="description" class="form-control" rows="3"></textarea>
+                    </div>
+                    <div class="col-md-4 mb-3">
                         <label for="">Price *</label>
                         <input type="number" name="price" required class="form-control" />
                     </div>
-                    <div class="col-md-6 mb-3">
-                        <label for="">Category *</label>
-                        <input type="category" name="category" required class="form-control" />
+                    <div class="col-md-4 mb-3">
+                        <label for="">Image *</label>
+                        <input type="file" name="image" class="form-control" />
                     </div>
                     <!-- <div class="col-md-6 mb-3">
                         <label for="">Phone Number *</label>
