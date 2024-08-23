@@ -36,7 +36,7 @@
                             <td><?= $productItem['price'] ?></td>
                             <td><?= $productItem['category'] ?></td>
                             <td>
-                                <a href="products-edit.php" class="btn btn-success btn-sm">Edit</a>
+                                <a href="products-edit.php?id=<?= $productItem['id'];?>" class="btn btn-success btn-sm">Edit</a>
                                 <a href="products-delete.php" class="btn btn-danger btn-sm">Delete</a>
                             </td>
                         </tr>
