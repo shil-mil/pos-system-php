@@ -70,4 +70,30 @@ if(isset($_POST['saveProduct'])){
     }
 }
 
+if(isset($_POST['saveSupplier'])){
+    $firstname = validate($_POST['firstname']);
+    $lastname = validate($_POST['lastname']);
+    $phonenumber = validate($_POST['phonenumber']);
+    $address = validate($_POST['address']);
+
+    if($firstname != '' && $lastname != '' && $phonenumber != '' && $address != ''){
+
+        $data = [
+            'firstname' => $firstname,
+            'lastname' => $lastname,
+            'phonenumber' => $phonenumber,
+            'address' => $address
+        ];
+        
+        $result = insert('suppliers', $data);
+        if($result){
+            redirect('suppliers.php', 'Supplier added successfully!');
+        } else {
+            redirect('suppliers-create.php', 'Something went wrong.');
+        }
+
+    } else {
+        redirect('suppliers-create.php','Please fill required fields.');
+    }
+}
 ?>
