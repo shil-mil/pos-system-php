@@ -8,9 +8,9 @@ if(isset($_POST['saveAdmin'])){
     $username = validate($_POST['username']);
     $password = validate($_POST['password']);
     $position = validate($_POST['position']);
-    $is_banned = validate($_POST['is_banned']) == true ?1:0;
+    $is_banned = isset($_POST['is_banned']) == true ? 1 : 0;
 
-    if($name != '' && $email != '' && $password != '' && username != ''){
+    if($firstname != '' && $lastname != '' && $username != '' && $position != '' && $password != ''){
 
         $usernameCheck = mysqli_query($conn, "SELECT * FROM  admins WHERE username='$username'");
         if($usernameCheck){
@@ -29,6 +29,7 @@ if(isset($_POST['saveAdmin'])){
             'position' => $position,
             'is_banned' => $is_banned
         ];
+        
         $result = insert('admins', $data);
         if($result){
             redirect('admins.php', 'Admin created successfully!');
@@ -37,7 +38,7 @@ if(isset($_POST['saveAdmin'])){
         }
 
     } else {
-        redirect('admin-create.php','Please fill required fields.');
+        redirect('admins-create.php','Please fill required fields.');
     }
 }
 
