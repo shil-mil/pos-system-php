@@ -10,7 +10,7 @@ if(isset($_POST['saveAdmin'])){
     $position = validate($_POST['position']);
     $is_banned = isset($_POST['is_banned']) == true ? 1 : 0;
 
-    if($firstname !== '' && $lastname != '' && $username != '' && $password != '' && $position != ''){
+    if($firstname != '' && $lastname != '' && $username != '' && $password != '' && $position != ''){
 
         $usernameCheck = mysqli_query($conn, "SELECT * FROM  admins WHERE username='$username'");
         if ($usernameCheck && mysqli_num_rows($usernameCheck) > 0) {
@@ -37,6 +37,36 @@ if(isset($_POST['saveAdmin'])){
 
     } else {
         redirect('admins-create.php','Please fill required fields.');
+    }
+}
+
+if(isset($_POST['saveProduct'])){
+    $productname = validate($_POST['productname']);
+    $price = validate($_POST['price']);
+    $category = validate($_POST['category']);
+
+    if($productname != '' && $price != '' && $category!= ''){
+
+        $productNameCheck = mysqli_query($conn, "SELECT * FROM  products WHERE productName='$productName'");
+        if ($productNameCheck && mysqli_num_rows($productNameCheck) > 0) {
+            redirect('products-create.php', 'Menu product already made.');
+        }
+
+        $data = [
+            'productname' => $productname,
+            'price' => $price,
+            'category' => $category
+        ];
+        
+        $result = insert('products', $data);
+        if($result){
+            redirect('products.php', 'Menu product created successfully!');
+        } else {
+            redirect('products-create.php', 'Something went wrong.');
+        }
+
+    } else {
+        redirect('products-create.php','Please fill required fields.');
     }
 }
 
