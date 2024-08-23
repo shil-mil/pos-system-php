@@ -5,7 +5,7 @@ require 'dbcon.php';
 
 
 // Input field validation
-function validate(){
+function validate($inputData){
 
     global $conn;
     $validatedData = mysqli_real_escape_string($conn, $inputData);
@@ -17,7 +17,7 @@ function validate(){
 function redirect($url, $status){
 
     $_SESSION['status'] = $status;
-    header('Location: '.$url);
+    header('Location: ' . $url);
     exit(0);
 }
 
@@ -27,7 +27,7 @@ function alertMessage(){
 
     if(isset($_SESSION['status'])){
         echo '<div class="alert alert-warning alert-dismissible fade show" role="alert">
-            <h3>'.$_SESSION['status'].'</h3>
+            <h6>'.$_SESSION['status'].'</h6>
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>';
         unset($_SESSION['status']);
