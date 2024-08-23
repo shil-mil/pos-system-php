@@ -4,12 +4,13 @@
             <div class="row justify-content-center">
                 <div class="col-md-6">
                     <div class="card shadow rounded-4">
+                        <?php alertMessage(); ?>
                         <div class="p-5">
                             <h4 class="text-dark mb-3">Sign into Kapitan Sisig System</h4>
                             <form action="login-code.php" method="POST">
                                 <div class="mb-3">
                                     <label >Enter username</label>
-                                    <input type="text" name="text" class="form-control" required />
+                                    <input type="text" name="username" class="form-control" required />
                                 </div>
                                 <div class="mb-3">
                                 <label for="">Enter password</label>
