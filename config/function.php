@@ -144,4 +144,9 @@ function checkParamId($type){
         return '<h5>No ID Given.</h5>';
     }
 }
+
+function logoutSession() {
+    unset($_SESSION['loggedIn']);
+    unset($_SESSION['loggedInUser']);
+}
 ?>
