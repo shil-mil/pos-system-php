@@ -22,9 +22,9 @@
                     <thead>
                         <tr>
                             <th>ID</th>
+                            <th>Image</th>
                             <th>Menu Product Name</th>
                             <th>Price</th>
-                            <th>Category</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -32,9 +32,9 @@
                         <?php foreach($products as $productItem) : ?>
                         <tr>
                             <td><?= $productItem['id'] ?></td>
+                            <td><img src="../<?=$productItem['image']; ?>" style="width:70px;height:70px;" alt="product image" /></td>
                             <td><?= $productItem['productname'] ?></td>
                             <td><?= $productItem['price'] ?></td>
-                            <td><?= $productItem['category'] ?></td>
                             <td>
                                 <a href="products-edit.php?id=<?= $productItem['id'];?>" class="btn btn-success btn-sm">Edit</a>
                                 <a href="products-delete.php?id=<?= $productItem['id'];?>" class="btn btn-danger btn-sm">Delete</a>
