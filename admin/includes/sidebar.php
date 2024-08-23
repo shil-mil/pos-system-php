@@ -58,8 +58,8 @@
                 </a>
                 <div class="collapse" id="collapseAdmins" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                     <nav class="sb-sidenav-menu-nested nav">
-                        <a class="nav-link" href="admins-create.php">Add Admin</a>
                         <a class="nav-link" href="admins.php">View Admins</a>
+                        <a class="nav-link" href="admins-create.php">Add Admin</a>
                     </nav>
                 </div>
 
@@ -71,8 +71,21 @@
                 </a>
                 <div class="collapse" id="collapseProducts" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                     <nav class="sb-sidenav-menu-nested nav">
-                        <a class="nav-link" href="products-create.php">Add Menu Product</a>
                         <a class="nav-link" href="products.php">View Menu Products</a>
+                        <a class="nav-link" href="products-create.php">Add Menu Product</a>
+                    </nav>
+                </div>
+
+                <div class="sb-sidenav-menu-heading">Manage Suppliers</div>
+                <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseSuppliers" aria-expanded="false" aria-controls="collapseProducts">
+                    <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
+                    Suppliers
+                    <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                </a>
+                <div class="collapse" id="collapseSuppliers" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+                    <nav class="sb-sidenav-menu-nested nav">
+                        <a class="nav-link" href="suppliers.php">View Suppliers</a>
+                        <a class="nav-link" href="suppliers-create.php">Add Supplier</a>
                     </nav>
                 </div>
 
