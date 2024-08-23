@@ -31,7 +31,7 @@ if(isset($_POST['loginBtn'])){
                     'position' => $row['position']
                 ];
 
-                redirect('admin/index.php', 'Logged in successfully!');
+                redirect('index.php', 'Logged in successfully!');
 
             } else {
                 redirect('login.php', 'Invalid username.');
