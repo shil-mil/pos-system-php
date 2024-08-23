@@ -8,11 +8,11 @@
             </h4>
         </div>
         <div class="card-body">
-        <form action="products-code.php" method="POST">
+        <form action="code.php" method="POST">
                 <div class="row">
                     <div class="col-md-12 mb-3">
-                        <label for="">Name *</label>
-                        <input type="text" name="name" required class="form-control" />
+                        <label for="">Menu Product Name *</label>
+                        <input type="text" name="productname" required class="form-control" />
                     </div>
                     <div class="col-md-6 mb-3">
                         <label for="">Price *</label>
