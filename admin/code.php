@@ -111,6 +111,39 @@ if(isset($_POST['saveSupplier'])){
     }
 }
 
+if(isset($_POST['updateSupplier'])){
+    $supplierId = validate($_POST['supplierId']);
+
+    $supplierData = getById('suppliers',$supplierId);
+
+    if($supplierData['status'] != 200) {
+        redirect('suppliers-edit.php?id='.$supplierId, 'Supplier not found.');
+    }
+
+    $firstname = validate($_POST['firstname']);
+    $lastname = validate($_POST['lastname']);
+    $phonenumber = validate($_POST['phonenumber']);
+    $address = validate($_POST['address']);
+
+    if($firstname != '' && $lastname != '' && $phonenumber != '' && $address != ''){
+        $data = [
+            'firstname' => $firstname,
+            'lastname' => $lastname,
+            'phonenumber' => $phonenumber,
+            'address' => $address
+        ];
+
+        $result = update('suppliers', $supplierId, $data);
+        if($result){
+            redirect('suppliers.php', 'Supplier updated successfully!');
+        } else {
+            redirect('suppliers-edit.phpid='.$supplierId, 'Something went wrong.');
+        }
+    } else {
+        redirect('suppliers-edit.php','Please fill required fields.');
+    }
+}
+
 if(isset($_POST['saveProduct'])){
     $productname = validate($_POST['productname']);
     $price = validate($_POST['price']);
