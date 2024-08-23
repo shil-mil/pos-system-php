@@ -17,7 +17,7 @@ function validate(){
 function redirect($url, $status){
 
     $_SESSION['status'] = $status;
-    eader('Location: '.$url);
+    header('Location: '.$url);
     exit(0);
 }
 
