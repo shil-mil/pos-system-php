@@ -27,10 +27,6 @@
                         <label for="">Password *</label>
                         <input type="password" name="password" required class="form-control" />
                     </div>
-                    <!-- <div class="col-md-6 mb-3">
-                        <label for="">Phone Number *</label>
-                        <input type="number" name="phone" required class="form-control" />
-                    </div>    -->
                     <div class="col-md-6 mb-3">
                         <label for="">Position *</label>
                         <input type="text" name="position" required class="form-control" />
