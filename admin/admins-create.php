@@ -8,8 +8,8 @@
             </h4>
         </div>
         <div class="card-body">
-            
-            <form action="admins-code.php" method="POST">
+        <?php alertMessage();?>
+            <form action="code.php" method="POST">
                 <div class="row">
                     <div class="col-md-12 mb-3">
                         <label for="">First Name *</label>
