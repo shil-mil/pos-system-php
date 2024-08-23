@@ -39,7 +39,7 @@
                             <td><?= $supplierItem['phonenumber'] ?></td>
                             <td><?= $supplierItem['address'] ?></td>
                             <td>
-                                <a href="suppliers-edit.php" class="btn btn-success btn-sm">Edit</a>
+                                <a href="suppliers-edit.php?id=<?= $supplierItem['id'];?>" class="btn btn-success btn-sm">Edit</a>
                                 <a href="suppliers-delete.php" class="btn btn-danger btn-sm">Delete</a>
                             </td>
                         </tr>
