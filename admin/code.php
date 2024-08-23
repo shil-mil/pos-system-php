@@ -40,63 +40,6 @@ if(isset($_POST['saveAdmin'])){
     }
 }
 
-if(isset($_POST['saveProduct'])){
-    $productname = validate($_POST['productname']);
-    $price = validate($_POST['price']);
-    $category = validate($_POST['category']);
-
-    if($productname != '' && $price != '' && $category!= ''){
-
-        $productNameCheck = mysqli_query($conn, "SELECT * FROM  products WHERE productName='$productName'");
-        if ($productNameCheck && mysqli_num_rows($productNameCheck) > 0) {
-            redirect('products-create.php', 'Menu product already made.');
-        }
-
-        $data = [
-            'productname' => $productname,
-            'price' => $price,
-            'category' => $category
-        ];
-        
-        $result = insert('products', $data);
-        if($result){
-            redirect('products.php', 'Menu product created successfully!');
-        } else {
-            redirect('products-create.php', 'Something went wrong.');
-        }
-
-    } else {
-        redirect('products-create.php','Please fill required fields.');
-    }
-}
-
-if(isset($_POST['saveSupplier'])){
-    $firstname = validate($_POST['firstname']);
-    $lastname = validate($_POST['lastname']);
-    $phonenumber = validate($_POST['phonenumber']);
-    $address = validate($_POST['address']);
-
-    if($firstname != '' && $lastname != '' && $phonenumber != '' && $address != ''){
-
-        $data = [
-            'firstname' => $firstname,
-            'lastname' => $lastname,
-            'phonenumber' => $phonenumber,
-            'address' => $address
-        ];
-        
-        $result = insert('suppliers', $data);
-        if($result){
-            redirect('suppliers.php', 'Supplier added successfully!');
-        } else {
-            redirect('suppliers-create.php', 'Something went wrong.');
-        }
-
-    } else {
-        redirect('suppliers-create.php','Please fill required fields.');
-    }
-}
-
 if(isset($_POST['updateAdmin'])){
     $adminId = validate($_POST['adminId']);
 
@@ -138,6 +81,95 @@ if(isset($_POST['updateAdmin'])){
 
     } else {
         redirect('admins-edit.php','Please fill required fields.');
+    }
+}
+
+if(isset($_POST['saveSupplier'])){
+    $firstname = validate($_POST['firstname']);
+    $lastname = validate($_POST['lastname']);
+    $phonenumber = validate($_POST['phonenumber']);
+    $address = validate($_POST['address']);
+
+    if($firstname != '' && $lastname != '' && $phonenumber != '' && $address != ''){
+
+        $data = [
+            'firstname' => $firstname,
+            'lastname' => $lastname,
+            'phonenumber' => $phonenumber,
+            'address' => $address
+        ];
+        
+        $result = insert('suppliers', $data);
+        if($result){
+            redirect('suppliers.php', 'Supplier added successfully!');
+        } else {
+            redirect('suppliers-create.php', 'Something went wrong.');
+        }
+
+    } else {
+        redirect('suppliers-create.php','Please fill required fields.');
+    }
+}
+
+if(isset($_POST['saveProduct'])){
+    $productname = validate($_POST['productname']);
+    $price = validate($_POST['price']);
+    $category = validate($_POST['category']);
+
+    if($productname != '' && $price != '' && $category!= ''){
+
+        $productNameCheck = mysqli_query($conn, "SELECT * FROM  products WHERE productName='$productName'");
+        if ($productNameCheck && mysqli_num_rows($productNameCheck) > 0) {
+            redirect('products-create.php', 'Menu product already made.');
+        }
+
+        $data = [
+            'productname' => $productname,
+            'price' => $price,
+            'category' => $category
+        ];
+        
+        $result = insert('products', $data);
+        if($result){
+            redirect('products.php', 'Menu product created successfully!');
+        } else {
+            redirect('products-create.php', 'Something went wrong.');
+        }
+
+    } else {
+        redirect('products-create.php','Please fill required fields.');
+    }
+}
+
+if(isset($_POST['updateProduct'])){
+    $productId = validate($_POST['productId']);
+
+    $productData = getById('products',$productId);
+
+    if($productData['status'] != 200) {
+        redirect('products-edit.php?id='.$productId, 'Product not found.');
+    }
+
+    $productname = validate($_POST['productname']);
+    $price = validate($_POST['price']);
+    $category = validate($_POST['category']);
+
+    if($productname != '' && $price != '' && $category!= ''){
+        $data = [
+            'productname' => $productname,
+            'price' => $price,
+            'category' => $category
+        ];
+
+        $result = update('products', $productId, $data);
+        if($result){
+            redirect('products.php', 'Menu product updated successfully!');
+        } else {
+            redirect('products-edit.phpid='.$productId, 'Something went wrong.');
+        }
+
+    } else {
+        redirect('products-edit.php','Please fill required fields.');
     }
 }
 ?>
