@@ -8,23 +8,49 @@
             </h4>
         </div>
         <div class="card-body">
+        <?php  alertMessage(); ?>
+        <?php 
+            $products = getAll('products'); 
+            if(!$products) {
+                 echo '<h4>Something went wrong.</h4>';
+                 return false;
+            }
+            if(mysqli_num_rows($products)>0) {
+        ?>
             <div class="table-responsive">
                 <table class="table table-striped table-bordered">
                     <thead>
                         <tr>
                             <th>ID</th>
-                            <th>Name</th>
+                            <th>Menu Product Name</th>
                             <th>Price</th>
+                            <th>Category</th>
                             <th>Action</th>
                         </tr>
                     </thead>
                     <tbody>
+                        <?php foreach($products as $productItem) : ?>
                         <tr>
-                            <td></td>
+                            <td><?= $productItem['id'] ?></td>
+                            <td><?= $productItem['productname'] ?></td>
+                            <td><?= $productItem['price'] ?></td>
+                            <td><?= $productItem['category'] ?></td>
+                            <td>
+                                <a href="products-edit.php" class="btn btn-success btn-sm">Edit</a>
+                                <a href="products-delete.php" class="btn btn-danger btn-sm">Delete</a>
+                            </td>
                         </tr>
+                        <?php endforeach; ?>
                     </tbody>
                 </table>
             </div>
+            <?php 
+                } else {
+                    ?>
+                        <h4 class="mb-0">No record found.</h4>
+                    <?php
+                } 
+                ?>
         </div>
     </div>
 </div>
