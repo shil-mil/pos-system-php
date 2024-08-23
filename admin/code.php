@@ -145,32 +145,36 @@ if(isset($_POST['updateSupplier'])){
 }
 
 if(isset($_POST['saveProduct'])){
+    $category_id = validate($_POST['category_id']);
     $productname = validate($_POST['productname']);
+    $description = validate($_POST['description']);
     $price = validate($_POST['price']);
-    $category = validate($_POST['category']);
 
-    if($productname != '' && $price != '' && $category!= ''){
+    if($_FILES['image']['size'] > 0) {
+        $path = "../assets/uploads/products/";
+        $image_ext = pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION);
 
-        $productNameCheck = mysqli_query($conn, "SELECT * FROM  products WHERE productName='$productName'");
-        if ($productNameCheck && mysqli_num_rows($productNameCheck) > 0) {
-            redirect('products-create.php', 'Menu product already made.');
-        }
+        $filename = time().'.'.$image_ext;
 
-        $data = [
-            'productname' => $productname,
-            'price' => $price,
-            'category' => $category
-        ];
-        
-        $result = insert('products', $data);
-        if($result){
-            redirect('products.php', 'Menu product created successfully!');
-        } else {
-            redirect('products-create.php', 'Something went wrong.');
-        }
-
+        move_uploaded_file($_FILES['image']['tmp_name'], $path."/".$filename);
+        $finalImage = "assets/uploads/products/".$filename;
     } else {
-        redirect('products-create.php','Please fill required fields.');
+        $finalImage = '';
+    }
+
+    $data = [
+        'category_id' => $category_id,
+        'productname' => $productname,
+        'description' => $description,
+        'price' => $price,
+        'image' => $finalImage
+    ];
+    
+    $result = insert('products', $data);
+    if($result){
+        redirect('products.php', 'Menu product created successfully!');
+    } else {
+        redirect('products-create.php', 'Something went wrong.');
     }
 }
 
