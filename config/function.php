@@ -99,7 +99,7 @@ function getById($tableName, $id){
         if(mysqli_num_rows($result) == 1){
             $row = mysqli_fetch_assoc($result);
             $response = [
-                'status' => 404,
+                'status' => 200,
                 'data' => $row,
                 'message' => 'Record found!'
             ];
