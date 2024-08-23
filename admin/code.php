@@ -10,13 +10,11 @@ if(isset($_POST['saveAdmin'])){
     $position = validate($_POST['position']);
     $is_banned = isset($_POST['is_banned']) == true ? 1 : 0;
 
-    if($firstname != '' && $lastname != '' && $username != '' && $position != '' && $password != ''){
+    if($firstname !== '' && $lastname != '' && $username != '' && $password != '' && $position != ''){
 
         $usernameCheck = mysqli_query($conn, "SELECT * FROM  admins WHERE username='$username'");
-        if($usernameCheck){
-            if(mysqli_num_rows($username) > 0){
-                redirect('admins-create.php', 'Username already in use.');
-            }
+        if ($usernameCheck && mysqli_num_rows($usernameCheck) > 0) {
+            redirect('admins-create.php', 'Username already used by another user.');
         }
 
         $bcrypt_password = password_hash($password, PASSWORD_BCRYPT);
@@ -25,7 +23,7 @@ if(isset($_POST['saveAdmin'])){
             'firstname' => $firstname,
             'lastname' => $lastname,
             'username' => $username,
-            'password' => $password,
+            'password' => $bcrypt_password,
             'position' => $position,
             'is_banned' => $is_banned
         ];
