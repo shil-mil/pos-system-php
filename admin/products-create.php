@@ -47,10 +47,6 @@
                         <label for="">Image *</label>
                         <input type="file" name="image" class="form-control" />
                     </div>
-                    <!-- <div class="col-md-6 mb-3">
-                        <label for="">Phone Number *</label>
-                        <input type="number" name="phone" required class="form-control" />
-                    </div> FOR PIC???-->
                     <div class="col-md-12 mb-3 text-end">
                         <button type="submit" name="saveProduct" class="btn btn-primary">Save</button>
                     </div>

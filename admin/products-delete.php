@@ -11,6 +11,10 @@ if(is_numeric($paramResultId)) {
     if($product['status'] == 200){
         $productDeleteRes = delete('products', $productId);
         if($productDeleteRes) {
+            $deleteImage = "../".$product['data']['image'];
+            if(file_exists($deleteImage)){
+                unlink($deleteImage);
+            }
             redirect('products.php','Product deleted successfully!');
         } else {
             redirect('products.php','Something went wrong.');

@@ -37,7 +37,11 @@
                             <td><?= $productItem['price'] ?></td>
                             <td>
                                 <a href="products-edit.php?id=<?= $productItem['id'];?>" class="btn btn-success btn-sm">Edit</a>
-                                <a href="products-delete.php?id=<?= $productItem['id'];?>" class="btn btn-danger btn-sm">Delete</a>
+                                <a 
+                                href="products-delete.php?id=<?= $productItem['id'];?>" 
+                                class="btn btn-danger btn-sm"
+                                onclick="return confirm('Are you sure you want to delete product?')">
+                                Delete</a>
                             </td>
                         </tr>
                         <?php endforeach; ?>

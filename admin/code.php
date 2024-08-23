@@ -151,7 +151,7 @@ if(isset($_POST['saveProduct'])){
     $price = validate($_POST['price']);
 
     if($_FILES['image']['size'] > 0) {
-        $path = "../assets/uploads/products/";
+        $path = "../assets/uploads/products";
         $image_ext = pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION);
 
         $filename = time().'.'.$image_ext;
@@ -179,34 +179,49 @@ if(isset($_POST['saveProduct'])){
 }
 
 if(isset($_POST['updateProduct'])){
-    $productId = validate($_POST['productId']);
+    $product_id = validate($_POST['product_id']);
 
-    $productData = getById('products',$productId);
-
+    $productData = getById('products', $product_id);
     if($productData['status'] != 200) {
-        redirect('products-edit.php?id='.$productId, 'Product not found.');
+        redirect('products-edit.php?id='.$product_id, 'Product not found.');
     }
 
+    $category_id = validate($_POST['category_id']);
     $productname = validate($_POST['productname']);
+    $description = validate($_POST['description']);
     $price = validate($_POST['price']);
-    $category = validate($_POST['category']);
 
-    if($productname != '' && $price != '' && $category!= ''){
-        $data = [
-            'productname' => $productname,
-            'price' => $price,
-            'category' => $category
-        ];
+    if($_FILES['image']['size'] > 0) {
+        $path = "../assets/uploads/products" ;
+        $image_ext = pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION);
 
-        $result = update('products', $productId, $data);
-        if($result){
-            redirect('products.php', 'Menu product updated successfully!');
-        } else {
-            redirect('products-edit.phpid='.$productId, 'Something went wrong.');
+        $filename = time().'.'.$image_ext;
+
+        move_uploaded_file($_FILES['image']['tmp_name'], $path."/".$filename);
+        $finalImage = "assets/uploads/products/".$filename;
+
+        $deleteImage = "../".$productData['data']['image'];
+        if(file_exists($deleteImage)) {
+            unlink($deleteImage);
         }
-
     } else {
-        redirect('products-edit.php','Please fill required fields.');
+        $finalImage = $productData['data']['image'];
+    }
+
+    $data = [
+        'category_id' => $category_id,
+        'productname' => $productname,
+        'description' => $description,
+        'price' => $price,
+        'image' => $finalImage
+    ];
+    
+    $result = update('products', $product_id, $data);
+    
+    if($result){
+        redirect('products.php', 'Menu product updated successfully!');
+    } else {
+        redirect('products-create.php', 'Something went wrong.');
     }
 }
 
