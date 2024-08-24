@@ -26,7 +26,7 @@
 
                 $supplierData = getById('suppliers', $supplierId);
                 if($supplierData){
-                    if($supplierData['status'] = 200) {
+                    if($supplierData['status'] == 200) {
                         ?>
                         <input type="hidden" name="supplierId" value="<?= $supplierData['data']['id']; ?>" >
 
