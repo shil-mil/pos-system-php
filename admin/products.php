@@ -24,6 +24,7 @@
                             <th>ID</th>
                             <th>Image</th>
                             <th>Menu Product Name</th>
+                            <th>Category</th>
                             <th>Price</th>
                             <th>Action</th>
                         </tr>
@@ -34,6 +35,22 @@
                             <td><?= $productItem['id'] ?></td>
                             <td><img src="../<?=$productItem['image']; ?>" style="width:70px;height:70px;" alt="product image" /></td>
                             <td><?= $productItem['productname'] ?></td>
+                            <?php
+                            $categoryId = $productItem['category_id'];
+
+                            // Fetch the category name from the database using the category_id
+                            $categoryQuery = "SELECT name FROM categories WHERE id = '$categoryId'";
+                            $categoryResult = mysqli_query($conn, $categoryQuery);
+
+                            if ($categoryResult && mysqli_num_rows($categoryResult) > 0) {
+                                $category = mysqli_fetch_assoc($categoryResult);
+                                $categoryName = $category['name'];
+                            } else {
+                                $categoryName = "Unknown Category";
+                            }
+                            ?>
+
+                            <td><?= $categoryName ?></td>
                             <td><?= $productItem['price'] ?></td>
                             <td>
                                 <a href="products-edit.php?id=<?= $productItem['id'];?>" class="btn btn-success btn-sm">Edit</a>
