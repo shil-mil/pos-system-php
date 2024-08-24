@@ -20,7 +20,7 @@
 
                 $productData = getById('products', $paramValue);
                 if($productData){
-                    if($productData['status'] = 200) {
+                    if($productData['status'] == 200) {
                         ?>
                         <input type="hidden" name="product_id" value="<?= $productData['data']['id']; ?>" >
 
