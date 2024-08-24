@@ -26,7 +26,7 @@
 
                 $adminData = getById('admins', $adminId);
                 if($adminData){
-                    if($adminData['status'] = 200) {
+                    if($adminData['status'] == 200) {
                         ?>
                         <input type="hidden" name="adminId" value="<?= $adminData['data']['id']; ?>" >
 
