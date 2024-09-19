@@ -19,7 +19,7 @@ if(isset($_POST['addItem'])){
         if(mysqli_num_rows($checkProduct)>0){
             $row = mysqli_fetch_assoc($checkProduct);
             if($row['quantity'] < $quantity){
-                redirect('order-create.php', 'Only ' .$row['quantity']. ' ' .$row['productname']. ' available.');
+                redirect('order-create.php', 'Only' .$row['quantity']. 'quantity available.');
             }
 
             $productData = [
@@ -56,6 +56,27 @@ if(isset($_POST['addItem'])){
         }
     } else {
         redirect('order-create.php','Something went wrong!');
+    }
+}
+
+if(isset($_POST['productIncDec'])){
+    $productId = validate($_POST['product_id']);
+    $quantity = validate($_POST['quantity']);
+
+    $flag = false;
+    foreach($_SESSION['productItems'] as $key => $item){
+        if($item['product_id'] == $productId){
+
+            $flag = true;
+            $_SESSION['productItems'][$key]['quantity']= $quantity;
+        }
+
+    }
+
+    if($flag){
+        jsonRespone(200, 'success', "Quantity Changed." );
+    }else{
+        jsonRespone(500, 'error', "Something went wrong!" );
     }
 }
 ?>
