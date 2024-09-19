@@ -11,7 +11,7 @@ $(document).ready(function(){
         if(!isNaN(currentValue)){
             var qtyVal = currentValue + 1;
             $quantityInput.val(qtyVal);
-            // quantityIncDec(productId, qtyVal);
+            quantityIncDec(productId, qtyVal);
         }
     });
 
@@ -19,12 +19,13 @@ $(document).ready(function(){
 
         var $quantityInput = $(this).closest('.qtyBox').find('.qty');
         var productId  = $(this).closest('.qtyBox').find('.prodId').val();
+
         var currentValue = parseInt($quantityInput.val());
 
         if(!isNaN(currentValue) && currentValue > 1 ){
             var qtyVal = currentValue - 1;
             $quantityInput.val(qtyVal);
-            // quantityIncDec(productId, qtyVal);  
+            quantityIncDec(productId, qtyVal);  
         }
     });
 
