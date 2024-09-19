@@ -152,7 +152,7 @@ function checkParam($type){
     }
 }
 
-function jsonRespone($status, $status_type, $message ){
+function jsonResponse($status, $status_type, $message ){
     $response =[
         'status' => $status,
         'status_type' => $status_type,
