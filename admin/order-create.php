@@ -90,7 +90,7 @@ include('includes/header.php'); ?>
                                         <button class="input-group-text increment">+</button>
                                      </div>
                                 </td>
-                                <td><?= number_format($item['price'] * $item['quantity'], 0); ?></td>
+                                <td>Php <?= number_format($item['price'] * $item['quantity'], 2); ?></td>
                                 <td>
                                 <a href="order-item-delete.php?index=<?= $key; ?>" class="btn btn-danger">Remove</a>
                                 </td>
@@ -125,7 +125,7 @@ include('includes/header.php'); ?>
               }
               else
               {
-                 echo '<h5>No items added!</h5>';
+                 echo '<h5>No items added</h5>';
               }
              ?>
         </div>
