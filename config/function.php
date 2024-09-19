@@ -1,41 +1,38 @@
 <?php
+
 session_start();
 
 require 'dbcon.php';
 
-
-// Input field validation
+// Input field
 function validate($inputData){
-
     global $conn;
     $validatedData = mysqli_real_escape_string($conn, $inputData);
     return trim($validatedData);
 }
 
-// Redirect from one page to another with status message
-
-function redirect($url, $status){
-
-    $_SESSION['status'] = $status;
-    header('Location: ' . $url);
+// Redirect from one page to another
+function redirect($url, $message){
+    $_SESSION['message'] = $message;  // Changed from 'status' to 'message'
+    header('Location: '. $url);
     exit(0);
 }
 
-// Display messages or status after any process
 
+// Display messages/status after any process
 function alertMessage(){
-
-    if(isset($_SESSION['status'])){
+    if (isset($_SESSION['message'])) {
         echo '<div class="alert alert-warning alert-dismissible fade show" role="alert">
-            <h6>'.$_SESSION['status'].'</h6>
+            <h6>'.htmlspecialchars($_SESSION['message']).'</h6>
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>';
-        unset($_SESSION['status']);
+          </div>';
+        unset($_SESSION['message']);  // Unset after displaying
     }
 }
 
-// Insert record
-function insert($tableName, $data){
+
+
+function insert($tableName, $data) {
     global $conn;
 
     $table = validate($tableName);
@@ -44,31 +41,40 @@ function insert($tableName, $data){
     $values = array_values($data);
 
     $finalColumn = implode(',', $columns);
-    $finalValues = "'".implode("', '", $values)."'";
+    $finalValues = "'" . implode("','", $values) . "'";
 
     $query = "INSERT INTO $table ($finalColumn) VALUES ($finalValues)";
-    $result = mysqli_query($conn,$query);
+    $result = mysqli_query($conn, $query);
+
+    if (!$result) {
+        echo 'Query Error: ' . mysqli_error($conn);
+    }
+
     return $result;
 }
 
-// Update data
-function update($tableName, $id, $data) {
-
+// Update data 
+function update($tableName, $id, $data){
     global $conn;
 
     $table = validate($tableName);
     $id = validate($id);
 
-    $updateDataSrting = "";
+    $updateDataString = "";
 
-    foreach($data as $column => $value) {
-        $updateDataSrting .= $column.'='."'$value',";
+    foreach($data as $column => $value){
+        $updateDataString .= $column. '='."'$value',";
     }
 
-    $finalUpdateData = substr(trim($updateDataSrting),0,-1);
+    $finalUpdateData = substr(trim($updateDataString),0,-1);
 
     $query = "UPDATE $table SET $finalUpdateData WHERE id='$id'";
     $result = mysqli_query($conn, $query);
+
+    if (!$result) {
+        echo 'Query Error: ' . mysqli_error($conn);
+    }
+
     return $result;
 }
 
@@ -78,11 +84,7 @@ function getAll($tableName, $status = NULL){
     $table = validate($tableName);
     $status = validate($status);
 
-    if($status == 'status'){
-        $query = "SELECT * FROM $table WHERE status='0'";
-    } else {
-        $query = "SELECT * FROM $table";
-    }
+    $query = ($status == 'status') ? "SELECT * FROM $table WHERE $status = '0'" : "SELECT * FROM $table";
     return mysqli_query($conn, $query);
 }
 
@@ -95,34 +97,33 @@ function getById($tableName, $id){
     $query = "SELECT * FROM $table WHERE id='$id' LIMIT 1";
     $result = mysqli_query($conn, $query);
 
-    if($result) {
+    if($result){
         if(mysqli_num_rows($result) == 1){
             $row = mysqli_fetch_assoc($result);
             $response = [
-                'status' => 200,
+                'status' =>200,
                 'data' => $row,
-                'message' => 'Record found!'
+                'message' => 'Record Found'
             ];
             return $response;
-        } else {
+        }else{
             $response = [
-                'status' => 404,
-                'message' => 'No data found.'
+                'status' =>404,
+                'message' => 'No Data Found'
             ];
             return $response;
         }
-    } else {
+    }else{
         $response = [
-            'status' => 500,
-            'message' => 'Something went wrong.'
+            'status' =>500,
+            'message' => 'Something Went Wrong'
         ];
         return $response;
     }
 }
 
-// Delete data from database using id
+// Delete Data
 function delete($tableName, $id){
-
     global $conn;
 
     $table = validate($tableName);
@@ -130,23 +131,36 @@ function delete($tableName, $id){
 
     $query = "DELETE FROM $table WHERE id='$id' LIMIT 1";
     $result = mysqli_query($conn, $query);
+
+    if (!$result) {
+        echo 'Query Error: ' . mysqli_error($conn);
+    }
+
     return $result;
 }
 
-function checkParamId($type){
+// Check parameter
+function checkParam($type){
     if(isset($_GET[$type])){
-        if($_GET[$type] != '') {
+        if($_GET[$type] != ''){
             return $_GET[$type];
-        } else {
-            return '<h5>ID not found.</h5>';
+        }else{
+            return '<h5>No ID found.</h5>';
         }
-    } else {
-        return '<h5>No ID Given.</h5>';
+    }else{
+        return '<h5>No ID given.</h5>';
     }
 }
 
-function logoutSession() {
-    unset($_SESSION['loggedIn']);
-    unset($_SESSION['loggedInUser']);
-}
+function jsonRespone($status, $status_type, $message ){
+    $response =[
+        'status' => $status,
+        'status_type' => $status_type,
+        'message' => $message
+    ];
+
+    echo json_encode($response);
+    return;
+}    
+
 ?>
