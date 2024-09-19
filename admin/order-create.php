@@ -10,7 +10,7 @@ include('includes/header.php'); ?>
             </h4>
         </div>
         <div class="card-body">
-        <?php alertMessage();?>
+        <?php alertMessage(); ?>
             <form action="orders-code.php" method="POST">
                 <div class="row">
                     <div class="col-md-3 mb-3">
@@ -51,13 +51,17 @@ include('includes/header.php'); ?>
         <div class="card-header">
              <h4 class="mb-0">Products</h4>
         </div>
-        <div class="card-body">
+        <div class="card-body" id= "productArea">
              <?php
               if(isset($_SESSION['productItems']))
               {
                 $sessionProducts = $_SESSION['productItems'];
+                if(empty($sessionProducts)){
+                    unset($_SESSION['productItems']);
+                    unset($_SESSION['productItemIds']);
+                }
                   ?>
-                <div class="table-responsive mb-3">
+                <div class="table-responsive mb-3" id= "productContent">
                     <table class="table table-bordered table-striped">
                         <thead>
                             <tr>
@@ -95,11 +99,33 @@ include('includes/header.php'); ?>
                         </tbody>
                     </table>
                 </div>
+
+                <div class="mt-2">
+                    <hr>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label>Select Payment Method</label>
+                            <select id="payment_mode" class="form-select">
+                                <option value="">-- Select Payment --</option>
+                                <option value="Cash Payment">Cash Payment</option>
+                                <option value="Online Payment">Online Payment</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label>Enter Customer Phone Number</label>
+                            <input type="number" id="cphone" class="form-control" value="" />
+                        </div>
+                        <div class="col-md-4">
+                            <br/>
+                            <button type="button" class="btn btn-warning w-100 proceedToPlace">Proceed to place order</button>
+                        </div>
+                    </div>
+                </div>
                 <?php
               }
               else
               {
-                 echo '<h5>No items added</h5>';
+                 echo '<h5>No items added!</h5>';
               }
              ?>
         </div>
