@@ -97,7 +97,6 @@
                                         <thead>
                                             <tr>
                                                 <th>Product</th>
-                                                
                                                 <th>Price</th>
                                                 <th>Quantity</th>
                                                 <th>Total</th>
@@ -116,13 +115,13 @@
                                                     </td>
                                                     
                                                     <td width="15%" class="fw-bold text-center">
-                                                        <?= number_format($orderItemRow['orderItemPrice'], 0); ?>
+                                                        Php <?= number_format($orderItemRow['orderItemPrice'], 2); ?>
                                                     </td>
                                                     <td width="15%" class="fw-bold text-center">
                                                         <?= $orderItemRow['orderItemQuantity']; ?>
                                                     </td>
                                                     <td width="15%" class="fw-bold text-center">
-                                                        <?= number_format($orderItemRow['orderItemPrice'] * $orderItemRow['orderItemQuantity'], 0); ?>
+                                                        Php <?= number_format($orderItemRow['orderItemPrice'] * $orderItemRow['orderItemQuantity'], 2); ?>
                                                     </td> 
                                                 </tr>
                                                 <?php $totalAmount += $orderItemRow['orderItemPrice'] * $orderItemRow['orderItemQuantity']; ?>
@@ -130,7 +129,7 @@
 
                                             <tr>
                                                 <td class="text-end fw-bold">Total Price: </td>
-                                                <td colspan="3" class="text-end fw-bold">Rs: <?= number_format($totalAmount, 0); ?></td>
+                                                <td colspan="3" class="text-end fw-bold">Php <?= number_format($totalAmount, 2); ?></td>
                                             </tr>
                                         </tbody>
 
