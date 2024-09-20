@@ -4,7 +4,7 @@
     <div class="card mt-4 shadow-sm">
         <div class="card-header">
             <h4 class="mb-0">Order View
-                <a href="orders.php" class="button btn-danger mx-2 btn-sm float-end">Back</a>
+                <a href="orders.php" class="btn-danger mx-2 btn-sm float-end" style="text-decoration: none;">Back</a>
             </h4>
         </div>
         <div class="card-body">
