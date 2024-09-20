@@ -63,27 +63,47 @@ if(isset($_POST['addItem'])){
     }
 }
 
-if(isset($_POST['productIncDec'])){
+if(isset($_POST['productIncDec'])) {
     $productId = validate($_POST['product_id']);
     $quantity = validate($_POST['quantity']);
 
+    // Fetch product details from the database
+    $checkProduct = mysqli_query($conn, "SELECT * FROM products WHERE id='$productId' LIMIT 1");
+
+    // Initialize flags
     $flag = false;
-    foreach($_SESSION['productItems'] as $key => $item){
-        if($item['product_id'] == $productId){
+    $flag1 = false;
 
-            $flag = true;
-            $_SESSION['productItems'][$key]['quantity']= $quantity;
+    // Check if product exists
+    if (mysqli_num_rows($checkProduct) > 0) {
+        $row = mysqli_fetch_assoc($checkProduct);
+
+        // Check against session items
+        foreach($_SESSION['productItems'] as $key => $item) {
+            if ($item['product_id'] == $productId) {
+                // Check if requested quantity exceeds available quantity
+                if ($row['quantity'] < $quantity + 1) {
+                    $flag1 = true; // Not enough available
+                } else {
+                    // Enough available, update the quantity
+                    $_SESSION['productItems'][$key]['quantity'] = $quantity;
+                    $flag = true; // Quantity changed
+                }
+                break; // Break once we find the item
+            }
         }
-
     }
 
-    if($flag){
-        jsonResponse(200, 'success', "Quantity changed." );
-    }else{
-        jsonResponse(500, 'error', "Something went wrong!" );
+    // Respond based on the flags
+    if ($flag1) {
+        jsonResponse(500, 'success', "Maximum quantity reached!");
+    } else if ($flag) {
+        jsonResponse(200, 'success', "Quantity changed.");
+    } else {
+        jsonResponse(500, 'error', "Something went wrong!");
     }
-
 }
+
 
 
 if (isset($_POST['proceedToPlaceBtn'])) {
