@@ -78,7 +78,7 @@ if(isset($_POST['productIncDec'])){
     }
 
     if($flag){
-        jsonResponse(200, 'success', "Quantity Changed." );
+        jsonResponse(200, 'success', "Quantity changed." );
     }else{
         jsonResponse(500, 'error', "Something went wrong!" );
     }
