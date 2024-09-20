@@ -71,7 +71,7 @@
                 </a>
                 <div class="collapse" id="collapseCustomer" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                     <nav class="sb-sidenav-menu-nested nav">
-                        <a class="nav-link" href="customers-create.php">Add Customer</a>
+                        <a class="nav-link" href="customer-create.php">Add Customer</a>
                         <a class="nav-link" href="customers.php">View Customer</a>
                     </nav>
                 </div>
