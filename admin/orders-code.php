@@ -23,7 +23,7 @@ if(isset($_POST['addItem'])){
         if(mysqli_num_rows($checkProduct)>0){
             $row = mysqli_fetch_assoc($checkProduct);
             if($row['quantity'] < $quantity){
-                redirect('order-create.php', 'Only' .$row['quantity']. 'quantity available.');
+                redirect('order-create.php', 'Only ' .$row['quantity']. ' '.$row['productname']. ' available.');
             }
 
             $productData = [
