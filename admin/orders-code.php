@@ -1,5 +1,9 @@
 <?php
 
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 include('../config/function.php');
 
 if(!isset($_SESSION['productItems'])) {
@@ -78,5 +82,53 @@ if(isset($_POST['productIncDec'])){
     }else{
         jsonResponse(500, 'error', "Something went wrong!" );
     }
+
 }
+
+
+if (isset($_POST['proceedToPlaceBtn'])) {
+    $phone = validate($_POST['cphone']);
+    $payment_mode = validate($_POST['payment_mode']);
+
+    $checkCustomer = mysqli_query($conn, "SELECT * FROM customers WHERE phone='$phone' LIMIT 1");
+
+    if ($checkCustomer) {
+        if (mysqli_num_rows($checkCustomer) > 0) {
+            $_SESSION['invoice_no'] = "INV-" .rand(111111, 999999);
+            $_SESSION['cphone'] = $phone;
+            $_SESSION['payment_mode'] = $payment_mode;
+
+            jsonResponse(200, 'success', 'Customer found');
+        } else {
+            $_SESSION['cphone'] = $phone;
+            jsonResponse(404, 'warning', 'Customer not found');
+        }
+    } else {
+        jsonResponse(500, 'error', 'Something Went Wrong');
+    }
+}
+
+if(isset($_POST['saveCustomerBtn'])){
+    $name = validate($_POST['name']);  // Change 'c_name' to 'name'
+    $phone = validate($_POST['phone']); // Change 'c_phone' to 'phone'
+
+    if($name != '' && $phone != ''){
+       $data = [
+            'name' => $name,
+            'phone' => $phone,
+        ];
+
+        $result = insert('customers', $data);
+
+        if($result){
+            jsonResponse(200, 'success', 'Customer Added Successfully!');
+        }else{
+            jsonResponse(500, 'error', 'Something Went Wrong');
+        }
+    }else{
+        jsonResponse(422, 'warning', 'Please fill required fields');
+    }
+}
+
+
 ?>
