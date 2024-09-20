@@ -98,10 +98,10 @@ if (isset($_POST['proceedToPlaceBtn'])) {
             $_SESSION['cphone'] = $phone;
             $_SESSION['payment_mode'] = $payment_mode;
 
-            jsonResponse(200, 'success', 'Customer found');
+            jsonResponse(200, 'success', 'Customer found!');
         } else {
             $_SESSION['cphone'] = $phone;
-            jsonResponse(404, 'warning', 'Customer not found');
+            jsonResponse(404, 'warning', 'Customer not found!');
         }
     } else {
         jsonResponse(500, 'error', 'Something Went Wrong');
