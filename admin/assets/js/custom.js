@@ -8,6 +8,8 @@ $(document).ready(function(){
 
         var currentValue = parseInt($quantityInput.val());
 
+
+
         if(!isNaN(currentValue)){
             var qtyVal = currentValue + 1;
             $quantityInput.val(qtyVal);
@@ -29,29 +31,30 @@ $(document).ready(function(){
         }
     });
 
-    function quantityIncDec(prodId, qty){
-        $.ajax({
-            type: "POST",
-            url: "orders-code.php",
-            data: {
-                'productIncDec': true,
-                'product_id': prodId,
-                'quantity': qty
-            },
-            success: function(response){
-                var res = JSON.parse(response);
-                // console.log(res);
-
-                if(res.status == 200){
-                    // window.location.reload();
-                    $('#productArea').load(' #productContent');
-                    alertify.success(res.message);
-                } else {
-                    alertify.error(res.message);
-                }
+    function quantityIncDec(prodId, qty) {
+    $.ajax({
+        type: "POST",
+        url: "orders-code.php",
+        data: {
+            'productIncDec': true,
+            'product_id': prodId,
+            'quantity': qty
+        },
+        success: function(response) {
+            var res = JSON.parse(response);
+            if (res.status == 200) {
+                $('#productArea').load(' #productContent');
+                alertify.success(res.message);
+            } else if (res.status == 500) {
+                alertify.error(res.message);
+                // Disable the increment button
+                var $quantityInput = $('.qtyBox').find('.prodId[value="' + prodId + '"]').closest('.qtyBox').find('.increment');
+                $quantityInput.prop('disabled', true); // Disable increment button
             }
-        });
-    }
+        }
+    });
+}
+
 
     //proceed to place order button click
     $(document).on('click', '.proceedToPlace', function(){
