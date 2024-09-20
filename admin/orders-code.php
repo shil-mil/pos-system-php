@@ -54,7 +54,7 @@ if(isset($_POST['addItem'])){
                     }
                 }
             }
-            redirect('order-create.php', 'Item added ' .$row['productname']);
+            redirect('order-create.php', 'Item added: ' .$quantity. ' ' .$row['productname']);
         } else {
             redirect('order-create.php', 'No such product found!');
         }
