@@ -69,7 +69,7 @@
                                 <h4>Customer Details</h4>
 
                                 <label class="mb-1">
-                                    Full Name: <span class="fw-bold"><?= htmlspecialchars($orderData['name'], ENT_QUOTES, 'UTF-8'); ?></span>
+                                    Name: <span class="fw-bold"><?= htmlspecialchars($orderData['name'], ENT_QUOTES, 'UTF-8'); ?></span>
                                 </label>
                                 <br/>
                                 <label class="mb-1">
