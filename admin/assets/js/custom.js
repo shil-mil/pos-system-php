@@ -55,7 +55,7 @@ $(document).ready(function(){
 
     //proceed to place order button click
     $(document).on('click', '.proceedToPlace', function(){
-        console.log('proceedToPlace');
+        // console.log('proceedToPlace');
         var cphone = $('#cphone').val();
         var payment_mode = $('#payment_mode').val();
     
