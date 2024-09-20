@@ -41,11 +41,11 @@ if(!isset($_SESSION['productItems'])){
                             $phone = validate($_SESSION['cphone']);
                             $invoiceNo = validate($_SESSION['invoice_no']);
 
-                            $CustomerQuery = mysqli_query($conn, "SELECT * FROM customers WHERE phone = '$phone' LIMIT 1");
-                            if($CustomerQuery){
-                                if(mysqli_num_rows($CustomerQuery) >0){
+                            $customerQuery = mysqli_query($conn, "SELECT * FROM customers WHERE phone = '$phone' LIMIT 1");
+                            if($customerQuery){
+                                if(mysqli_num_rows($customerQuery) >0){
 
-                                    $cRowData =mysqli_fetch_assoc($CustomerQuery);
+                                    $cRowData =mysqli_fetch_assoc($customerQuery);
 
                                     ?>
                                     <table style="width: 100%; margin-bottom: 20px;">
