@@ -163,4 +163,9 @@ function jsonResponse($status, $status_type, $message ){
     return;
 }    
 
+function logoutSession() {
+    unset($_SESSION['loggedIn']);
+    unset($_SESSION['loggedInUser']);
+}
+
 ?>
