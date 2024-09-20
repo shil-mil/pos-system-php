@@ -55,19 +55,19 @@ $(document).ready(function(){
 
     //proceed to place order button click
     $(document).on('click', '.proceedToPlace', function(){
-
+        console.log('proceedToPlace');
         var cphone = $('#cphone').val();
         var payment_mode = $('#payment_mode').val();
     
         // Validate Payment Method
         if(payment_mode == ''){
-            swal("Select Payment Method", "Select your payment method", "warning");
+            swal("Select Payment Method!", "Select your payment method.", "warning");
             return false;
         }
     
         // Validate Phone Number
         if(cphone == '' || !$.isNumeric(cphone)){
-            swal("Enter Phone Number", "Enter valid phone number", "warning");
+            swal("Enter Phone Number!", "Enter valid phone number.", "warning");
             return false;
         }
     
