@@ -55,19 +55,19 @@ $(document).ready(function(){
 
     //proceed to place order button click
     $(document).on('click', '.proceedToPlace', function(){
-        // console.log('proceedToPlace');
+
         var cphone = $('#cphone').val();
         var payment_mode = $('#payment_mode').val();
     
         // Validate Payment Method
         if(payment_mode == ''){
-            swal("Select Payment Method!", "Select your payment method.", "warning");
+            swal("Select Payment Method", "Select your payment method", "warning");
             return false;
         }
     
         // Validate Phone Number
         if(cphone == '' || !$.isNumeric(cphone)){
-            swal("Enter Phone Number!", "Enter valid phone number.", "warning");
+            swal("Enter Phone Number", "Enter valid phone number", "warning");
             return false;
         }
     
@@ -164,5 +164,38 @@ $(document).ready(function(){
         }
 
     });
+
+    $(document).on('click', '#saveOrder', function() {
+        $.ajax({
+            type: "POST",
+            url: "orders-code.php",
+            data: {
+                'saveOrder': true   
+            },
+            success: function(response){
+                try {
+                    var res = JSON.parse(response);  // Parse JSON only if valid
+                    if(res.status == 200){
+                        swal(res.message, res.message, res.status_type);
+                        $('#orderPlaceSuccessMessage').text(res.message);
+                        $('#orderSuccessModal').modal('show');
+
+                    }else{
+                        swal(res.message, res.message, res.status_type);
+                    }
+                } catch (e) {
+                    console.error("Invalid JSON response:", response);
+                    swal("Error", "Unexpected response from server", "error");
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error("AJAX Error:", error);
+                swal("Error", "Failed to process order", "error");
+            }
+        });
+    });    
+
+
+
     
 });
