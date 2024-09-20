@@ -106,7 +106,7 @@ include('includes/header.php'); ?>
                                 <tr>
                                 <td><?= $i++; ?></td>
                                 <td><?= $item['name']; ?></td>
-                                <td><?= $item['price']; ?></td>
+                                <td>Php <?= $item['price']; ?></td>
                                 <td>
                                      <div class="input-group qtyBox">
                                         <input type="hidden" value="<?= $item['product_id'];?>" class = "prodId" >
@@ -115,7 +115,7 @@ include('includes/header.php'); ?>
                                         <button class="input-group-text increment">+</button>
                                      </div>
                                 </td>
-                                <td><?= number_format($item['price'] * $item['quantity'], 0); ?></td>
+                                <td>Php <?= number_format($item['price'] * $item['quantity'], 2); ?></td>
                                 <td>
                                 <a href="order-item-delete.php?index=<?= $key; ?>" class="btn btn-danger">Remove</a>
                                 </td>
