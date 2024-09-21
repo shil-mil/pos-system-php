@@ -19,7 +19,6 @@
                             <tr>
                                 <th>Tracking No.</th>
                                 <th>Name</th>
-                                <th>Phone</th>
                                 <th>Order Date</th>
                                 <th>Order Status</th>
                                 <th>Payment Method</th>
@@ -31,8 +30,7 @@
                                 <tr>
                                     <td class="fw-bold"><?= $orderItem['tracking_no']; ?></td>
                                     <td><?= $orderItem['name']; ?></td>
-                                    <td><?= $orderItem['phone']; ?></td>
-                                    <td><?= date('d M, Y', strtotime($orderItem['order_date'])); ?></td>
+                                    <td><?= date('d M, Y h:i A', strtotime($orderItem['order_date'])); ?></td>
                                     <td><?= $orderItem['order_status']; ?></td>
                                     <td><?= $orderItem['payment_mode']; ?></td>
                                     <td>
