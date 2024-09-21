@@ -37,11 +37,11 @@ if(!isset($_SESSION['productItems'])){
                     <div id="myBillingArea">
 
                         <?php 
-                        if(isset($_SESSION['cphone'])){
-                            $phone = validate($_SESSION['cphone']);
+                        if(isset($_SESSION['cname'])){
+                            $name = validate($_SESSION['cname']);
                             $invoiceNo = validate($_SESSION['invoice_no']);
 
-                            $customerQuery = mysqli_query($conn, "SELECT * FROM customers WHERE phone = '$phone' LIMIT 1");
+                            $customerQuery = mysqli_query($conn, "SELECT * FROM customers WHERE name = '$name' LIMIT 1");
                             if($customerQuery){
                                 if(mysqli_num_rows($customerQuery) >0){
 
@@ -63,12 +63,11 @@ if(!isset($_SESSION['productItems'])){
                                                 <td>
                                                     <h5 style="font-size: 20px; line-height: 30px; margin: 0px; padding: 0;">Customer Details</h5>
                                                     <p style="font-size: 14px; line-height: 20px; margin: 0px; padding: 0;">Customer Name: <?= $cRowData['name']; ?></p>
-                                                    <p style="font-size: 14px; line-height: 20px; margin: 0px; padding: 0;">Customer Phone No: <?= $cRowData['phone']; ?></p>
                                                 </td>
                                                 <td align="end">
                                                     <h5 style="font-size: 20px; line-height: 30px; margin: 0px; padding: 0;">Invoice Details</h5>
                                                     <p style="font-size: 14px; line-height: 20px; margin: 0px; padding: 0;">Invoice No: <?= $invoiceNo; ?></p>
-                                                    <p style="font-size: 14px; line-height: 20px; margin: 0px; padding: 0;">Invoice Date: <?= date('d M Y'); ?></p>
+                                                    <p style="font-size: 14px; line-height: 20px; margin: 0px; padding: 0;">Invoice Date: <?= date('d M, Y h:i A'); ?></p>
                                                     <p style="font-size: 14px; line-height: 20px; margin: 0px; padding: 0;">Address: Davao City, Philippines</p>
                                                 </td>
                                             </tr>
