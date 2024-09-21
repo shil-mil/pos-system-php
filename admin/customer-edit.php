@@ -11,7 +11,7 @@
         <div class="card-body">
         <?php alertMessage();?>
             <form action="code.php" method="POST">
-
+                
             <?php
             $paramValue = checkParam('id');
             if(!is_numeric($paramValue)){
@@ -27,8 +27,6 @@
                         <label for="">Name *</label>
                         <input type="text" name="name" value="<?= $customers['data']['name']; ?>" required class="form-control" />
                     </div>  
-                
-                    
                     <div class="col-md-6 mb-3 text-end">
                         <br />
                         <button type="submit" name="updateCustomer" class="btn btn-outline-primary">Update</button>
