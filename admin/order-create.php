@@ -58,7 +58,7 @@ include('includes/header.php'); ?>
                     </div>
                     <div class="col-md-2 mb-3">
                         <label for="">Quantity</label>
-                        <input type="number" name="quantity" value="1" class="form-control" />
+                        <input type="number" name="quantity" value="1" min="1" class="form-control" />
                     </div>
                     <div class="col-md-3 mb-3 text-end">
                         <br/>
