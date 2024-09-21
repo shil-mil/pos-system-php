@@ -59,7 +59,7 @@ $(document).ready(function(){
     //proceed to place order button click
     $(document).on('click', '.proceedToPlace', function(){
 
-        var cphone = $('#cphone').val();
+        var cname = $('#cname').val();
         var payment_mode = $('#payment_mode').val();
     
         // Validate Payment Method
@@ -68,15 +68,15 @@ $(document).ready(function(){
             return false;
         }
     
-        // Validate Phone Number
-        if(cphone == '' || !$.isNumeric(cphone)){
-            swal("Enter Phone Number", "Enter valid phone number", "warning");
+        // Validate Customer Name
+        if(cname == ''){
+            swal("Enter customer name", "Enter valid customer name", "warning");
             return false;
         }
     
         var data = {
             'proceedToPlaceBtn': true,
-            'cphone': cphone,
+            'cname': cname,
             'payment_mode': payment_mode,
         };
     
@@ -107,7 +107,7 @@ $(document).ready(function(){
                     }).then((value) => {
                         switch (value) {
                             case "catch":
-                                $('#c_phone').val(cphone);
+                                $('#c_name').val(cname);
                                 $('#addCustomerModal').modal('show');
                                 // console.log('Pop the customer add modal');
                                 break;
@@ -130,38 +130,31 @@ $(document).ready(function(){
     $(document).on('click', '.saveCustomer', function() {
 
         var c_name = $('#c_name').val();
-        var c_phone = $('#c_phone').val();
 
-        if(c_name != '' && c_phone != ''){
-            if($.isNumeric(c_phone)){
+        if(c_name != ''){
+            var data = {
+                'saveCustomerBtn': true,
+                'name': c_name
+            };
+            
 
-                var data = {
-                    'saveCustomerBtn': true,
-                    'name': c_name,
-                    'phone': c_phone,  // Correct value for phone
-                };
-                
+            $.ajax({
+                type: "POST",
+                url: "orders-code.php",
+                data: data,
+                success: function(response){
+                    var res = JSON.parse(response);
 
-                $.ajax({
-                    type: "POST",
-                    url: "orders-code.php",
-                    data: data,
-                    success: function(response){
-                        var res = JSON.parse(response);
-
-                        if(res.status == 200){
-                            swal(res.message, res.message, res.status_type);
-                            $('#addCustomerModal').modal('hide');
-                        }else if(res.status == 422){
-                            swal(res.message, res.message, res.status_type);
-                        }else{
-                            swal(res.message, res.message, res.status_type);
-                        }
+                    if(res.status == 200){
+                        swal(res.message, res.message, res.status_type);
+                        $('#addCustomerModal').modal('hide');
+                    }else if(res.status == 422){
+                        swal(res.message, res.message, res.status_type);
+                    }else{
+                        swal(res.message, res.message, res.status_type);
                     }
-                });
-            }else{
-                swal("Enter Valid Phone Number","","warning");
-            }
+                }
+            });
         }else{
             swal("Please fill required fields","","warning");
         }
