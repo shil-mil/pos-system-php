@@ -107,20 +107,20 @@ if(isset($_POST['productIncDec'])) {
 
 
 if (isset($_POST['proceedToPlaceBtn'])) {
-    $phone = validate($_POST['cphone']);
+    $name = validate($_POST['cname']);
     $payment_mode = validate($_POST['payment_mode']);
 
-    $checkCustomer = mysqli_query($conn, "SELECT * FROM customers WHERE phone='$phone' LIMIT 1");
+    $checkCustomer = mysqli_query($conn, "SELECT * FROM customers WHERE name='$name' LIMIT 1");
 
     if ($checkCustomer) {
         if (mysqli_num_rows($checkCustomer) > 0) {
             $_SESSION['invoice_no'] = "INV-" .rand(111111, 999999);
-            $_SESSION['cphone'] = $phone;
+            $_SESSION['cname'] = $name;
             $_SESSION['payment_mode'] = $payment_mode;
 
             jsonResponse(200, 'success', 'Customer found');
         } else {
-            $_SESSION['cphone'] = $phone;
+            $_SESSION['cname'] = $name;
             jsonResponse(404, 'warning', 'Customer not found');
         }
     } else {
@@ -130,12 +130,10 @@ if (isset($_POST['proceedToPlaceBtn'])) {
 
 if(isset($_POST['saveCustomerBtn'])){
     $name = validate($_POST['name']);  // Change 'c_name' to 'name'
-    $phone = validate($_POST['phone']); // Change 'c_phone' to 'phone'
 
-    if($name != '' && $phone != ''){
+    if($name != ''){
        $data = [
-            'name' => $name,
-            'phone' => $phone,
+            'name' => $name
         ];
 
         $result = insert('customers', $data);
@@ -151,13 +149,13 @@ if(isset($_POST['saveCustomerBtn'])){
 }
 
 if (isset($_POST['saveOrder'])) {
-    $phone = validate($_SESSION['cphone']);
+    $name = validate($_SESSION['cname']);
     $invoice_no = validate($_SESSION['invoice_no']);
     $payment_mode = validate($_SESSION['payment_mode']);
     $order_placed_by_id = "Admin";
 
     // Check if customer exists
-    $checkCustomer = mysqli_query($conn, "SELECT * FROM customers WHERE phone='$phone' LIMIT 1");
+    $checkCustomer = mysqli_query($conn, "SELECT * FROM customers WHERE name='$name' LIMIT 1");
     if (!$checkCustomer) {
         jsonResponse(500, 'error', 'Something Went Wrong');
     }
@@ -216,7 +214,7 @@ if (isset($_POST['saveOrder'])) {
             $updateProductQty = update('products', $productId, $dataUpdate);
         }
 
-        unset($_SESSION['productItemIds'], $_SESSION['productItems'], $_SESSION['cphone'], $_SESSION['payment_mode'], $_SESSION['invoice_no']);
+        unset($_SESSION['productItemIds'], $_SESSION['productItems'], $_SESSION['payment_mode'], $_SESSION['invoice_no']);
         jsonResponse(200, 'success', 'Order placed successfully!');
     } else {
         jsonResponse(404, 'warning', 'No Customer found');
