@@ -136,8 +136,8 @@ include('includes/header.php'); ?>
                             </select>
                         </div>
                         <div class="col-md-4">
-                            <label>Enter Customer Name</label>
-                            <input type="text" id="cname" class="form-control" value="" />
+                            <label>Enter Customer Phone Number</label>
+                            <input type="number" id="cphone" class="form-control" value="" />
                         </div>
                         <div class="col-md-4">
                             <br/>
