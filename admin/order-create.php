@@ -86,7 +86,7 @@ include('includes/header.php'); ?>
                     unset($_SESSION['productItemIds']);
                 }
                   ?>
-                <div class="table-responsive mb-3" id= "productContent">
+                <div class="mb-3" id= "productContent">
                     <table class="table table-bordered table-striped">
                         <thead>
                             <tr>
@@ -123,9 +123,8 @@ include('includes/header.php'); ?>
                                 <?php endforeach; ?>
                         </tbody>
                     </table>
-                </div>
 
-                <div class="mt-2">
+                    <div class="mt-2">
                     <hr>
                     <div class="row">
                         <div class="col-md-4">
@@ -145,6 +144,10 @@ include('includes/header.php'); ?>
                             <button type="button" class="btn btn-warning w-100 proceedToPlace">Proceed to place order</button>
                         </div>
                     </div>
+                </div>
+
+
+                
                 </div>
                 <?php
               }
