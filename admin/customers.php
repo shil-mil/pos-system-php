@@ -22,7 +22,6 @@
                     <thead>
                         <tr style="background-color: #f8f9fa; color: #000;">
                             <th>Name</th>
-                            <th>Phone Number</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -35,7 +34,6 @@
                         ?>
                         <tr style="background-color: <?= $i % 2 == 0 ? '#fff' : '#f9f9f9'; ?>; border: 1px solid #dee2e6;">
                             <td><?= $item['name'] ?></td>
-                            <td><?= $item['phone'] ?></td>
                             <td>
                                 <a href="customer-edit.php?id=<?= $item['id'];?>" class="btn btn-outline-success btn-sm" style="margin: 0; padding: 0.25rem 0.5rem;">Edit</a>
                                 <a href="customer-delete.php?id=<?= $item['id'];?>" class="btn btn-outline-danger btn-sm" style="margin: 0; padding: 0.25rem 0.5rem;">Delete</a>
