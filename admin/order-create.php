@@ -14,10 +14,6 @@ include('includes/header.php'); ?>
             <label>Enter Name</label>
             <input type="text" class="form-control" id="c_name"/>
         </div>
-        <div class="mb-3">
-            <label>Enter Phone Number</label>
-            <input type="text" class="form-control" id="c_phone"/>
-        </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -136,8 +132,8 @@ include('includes/header.php'); ?>
                             </select>
                         </div>
                         <div class="col-md-4">
-                            <label>Enter Customer Phone Number</label>
-                            <input type="number" id="cphone" class="form-control" value="" />
+                            <label>Enter Customer Name</label>
+                            <input type="text" id="cname" class="form-control" value="" />
                         </div>
                         <div class="col-md-4">
                             <br/>
