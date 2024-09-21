@@ -26,11 +26,7 @@
                     <div class="col-md-12 mb-3">
                         <label for="">Name *</label>
                         <input type="text" name="name" value="<?= $customers['data']['name']; ?>" required class="form-control" />
-                    </div>
-                    <div class="col-md-12 mb-3">
-                        <label for="">Phone *</label>
-                        <input type="number" name="phone" value="<?= $customers['data']['name']; ?>" required class="form-control" />
-                    </div>
+                    </div>  
                 
                     
                     <div class="col-md-6 mb-3 text-end">
