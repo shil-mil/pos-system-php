@@ -72,9 +72,6 @@
                                     Name: <span class="fw-bold"><?= htmlspecialchars($orderData['name'], ENT_QUOTES, 'UTF-8'); ?></span>
                                 </label>
                                 <br/>
-                                <label class="mb-1">
-                                    Phone Number: <span class="fw-bold"><?= htmlspecialchars($orderData['phone'], ENT_QUOTES, 'UTF-8'); ?></span>
-                                </label>
                                 <br/>
                             </div>
                         </div>
