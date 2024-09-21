@@ -30,7 +30,7 @@
                                 <tr>
                                     <td class="fw-bold"><?= $orderItem['tracking_no']; ?></td>
                                     <td><?= $orderItem['name']; ?></td>
-                                    <td><?= date('d M, Y h:i A', strtotime($orderItem['order_date'])); ?></td>
+                                    <td><?= date('M d, Y h:i A'); ?></td>
                                     <td><?= $orderItem['order_status']; ?></td>
                                     <td><?= $orderItem['payment_mode']; ?></td>
                                     <td>
