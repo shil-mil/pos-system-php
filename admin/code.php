@@ -485,13 +485,11 @@ if (isset($_POST['updateProduct'])) {
 // Save Customer
 if (isset($_POST['saveCustomer'])) {
     $name = validate($_POST['name']);
-    $phone = validate($_POST['phone']);
     
 
-    if ($name != '' && $phone != '') {
+    if ($name != '') {
         $data = [
             'name' => $name,
-            'phone' =>$phone,
             
         ];
         $result = insert('customers', $data);
@@ -525,12 +523,10 @@ if (isset($_POST['updateCustomer'])) {
     }
 
     $name = validate($_POST['name']);
-    $phone = validate($_POST['phone']);
 
-    if ($name != '' && $phone != '') {
+    if ($name != '') {
         $data = [
-            'name' => $name,
-            'phone' =>$phone,
+            'name' => $name
             
         ];
         $result = update('customers', $customerId, $data);
