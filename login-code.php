@@ -19,7 +19,7 @@ if(isset($_POST['loginBtn'])){
                 }
 
                 if($row['is_banned'] == 1) {
-                    redirect('login.php', 'Your account has been banned. Contact your administrator.');
+                    redirect('login.php', 'Your access has been removed. Contact your administrator.');
                 }
 
                 $_SESSION['loggedIn'] = true;
