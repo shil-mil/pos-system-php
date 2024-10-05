@@ -51,7 +51,7 @@
                             ?>
 
                             <td><?= $categoryName ?></td>
-                            <td><?= $productItem['price'] ?></td>
+                            <td>Php <?= $productItem['price'] ?></td>
                             <td>
                                 <a href="products-edit.php?id=<?= $productItem['id'];?>" class="btn btn-success btn-sm">Edit</a>
                                 <a 
