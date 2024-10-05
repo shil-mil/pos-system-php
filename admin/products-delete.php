@@ -2,7 +2,7 @@
 
 require '../config/function.php';
 
-$paramResultId = checkParamId('id');
+$paramResultId = checkParam('id');
 if(is_numeric($paramResultId)) {
     $productId = validate($paramResultId);
 
