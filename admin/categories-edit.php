@@ -12,7 +12,7 @@
             <form action="code.php" method="POST">
 
             <?php
-            $paramValue = checkParamId('id');
+            $paramValue = checkParam('id');
             if(!is_numeric($paramValue)){
                 echo '<h5>'.$paramValue.'</h5>';
                 return false;
