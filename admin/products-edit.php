@@ -12,7 +12,7 @@
             <form action="code.php" method="POST" enctype="multipart/form-data">
 
             <?php 
-                $paramValue = checkParamId('id');
+                $paramValue = checkParam('id');
                 if(!is_numeric($paramValue)){
                     echo '<5>ID is not an integer.</h5>';
                     return false;
