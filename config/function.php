@@ -140,7 +140,7 @@ function delete($tableName, $id){
 }
 
 // Check parameter
-function checkParam($type){
+function checkParamId($type){
     if(isset($_GET[$type])){
         if($_GET[$type] != ''){
             return $_GET[$type];
