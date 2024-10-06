@@ -101,8 +101,10 @@ if(!isset($_SESSION['productItems'])){
                                         <?php
                                         $i = 1;
                                         $totalAmount = 0;
+                                        $totalQuantity =- 0;
                                         foreach ($sessionProducts as $key => $row) :
                                             $totalAmount += $row['price'] * $row['quantity'];
+                                            $totalQuantity += $row['quantity']
                                         ?>
                                         <tr>
                                             <td style="border-bottom: 1px solid #ccc;"><?= $i++; ?></td>
