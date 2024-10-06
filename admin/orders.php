@@ -1,12 +1,12 @@
 <?php include('includes/header.php'); ?>
 
-<div class="container-fluid px-4">
+<div class="container-fluid px-4 pb-4">
     <div class="card mt-4 shadow-sm">
         <div class="card-header">
             <h4 class="mb-0">Orders</h4>
         </div>
         <div class="card-body">
-
+        <?php alertMessage(); ?>
         <?php
             $query = "SELECT o.*, c.* FROM orders o, customers c WHERE c.id = o.customer_id ORDER BY o.id DESC";
             $orders = mysqli_query($conn, $query);
@@ -34,8 +34,8 @@
                                     <td><?= $orderItem['order_status']; ?></td>
                                     <td><?= $orderItem['payment_mode']; ?></td>
                                     <td>
+                                        <a href="order-edit.php?track=<?= $orderItem['tracking_no']; ?>" class="btn btn-primary mb-0 px-2 btn-sm">Edit</a>
                                         <a href="orders-view.php?track=<?= $orderItem['tracking_no']; ?>" class="btn btn-info mb-0 px-2 btn-sm">View</a>
-                                        <a href="orders-view-print.php?track=<?= $orderItem['tracking_no']; ?>" class="btn btn-primary mb-0 px-2 btn-sm">Print</a>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
