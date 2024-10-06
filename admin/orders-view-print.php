@@ -77,10 +77,12 @@
                             WHERE oi.order_id=o.id AND p.id=oi.product_id AND o.tracking_no='$trackingNo' ";
 
                         $orderItemQueryRes = mysqli_query($conn, $orderItemQuery);
-                        if($orderItemQueryRes)
-                        {
-                            if(mysqli_num_rows($orderItemQueryRes) > 0)
-                            {
+                        $totalQuantity = 0;
+                        if($orderItemQueryRes){
+                            if(mysqli_num_rows($orderItemQueryRes) > 0){
+                                while($orderItemRow = mysqli_fetch_assoc($orderItemQueryRes)){
+                                    $totalQuantity += $orderItemRow['orderItemQuantity'];
+                                }
                                 ?>
                                 <div class="table-responsive mb-3">
                                     <table style="width:100%;" cellpadding="5">
@@ -114,7 +116,10 @@
                                                 <td colspan="1" style="font-weight: bold;">Php <?= number_format($row['total_amount'], 2); ?></td>
                                             </tr>
                                             <tr>
-                                                <td colspan="5">Payment Mode: <?= $row['payment_mode']; ?></td>
+                                                <td colspan="5">
+                                                    <p style="font-size: 16px; line-height: 20px; margin: 0px; padding: 0;">Total Quantity: <?= $totalQuantity ?></p>
+                                                    <p style="font-size: 16px; line-height: 20px; margin: 0px; padding: 0;">Payment Mode: <?= $row['payment_mode']; ?></p>
+                                                </td>
                                             </tr>
                                         </tbody>
                                     </table>
