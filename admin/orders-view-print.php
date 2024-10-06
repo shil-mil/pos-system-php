@@ -119,6 +119,7 @@
                                                 <td colspan="5">
                                                     <p style="font-size: 16px; line-height: 20px; margin: 0px; padding: 0;">Total Quantity: <?= $totalQuantity ?></p>
                                                     <p style="font-size: 16px; line-height: 20px; margin: 0px; padding: 0;">Payment Mode: <?= $row['payment_mode']; ?></p>
+                                                    <p style="font-size: 16px; line-height: 20px; margin: 0px; padding: 0;">Order placed by: <?= $_SESSION['loggedInUser']['firstname']; ?></p>
                                                 </td>
                                             </tr>
                                         </tbody>
