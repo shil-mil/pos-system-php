@@ -112,10 +112,10 @@
                                                         <?= $orderItemRow['productname'];?>
                                                     </td>
                                                     
-                                                    <td width="15%" class="fw-bold text-center">
+                                                    <td width="15%" class="text-center">
                                                         Php <?= number_format($orderItemRow['orderItemPrice'], 2); ?>
                                                     </td>
-                                                    <td width="15%" class="fw-bold text-center">
+                                                    <td width="15%" class="text-center">
                                                         <?= $orderItemRow['orderItemQuantity']; ?>
                                                     </td>
                                                     <td width="15%" class="fw-bold text-center">
