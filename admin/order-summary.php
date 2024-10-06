@@ -22,7 +22,7 @@ if(!isset($_SESSION['productItems'])){
 </div>
 
 
-<div class="container-fluid px-4">
+<div class="container-fluid px-4 pb-4">
     <div class="row">
         <div class="col-md-12">
             <div class="card mt-4">
