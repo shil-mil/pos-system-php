@@ -153,7 +153,7 @@ if (isset($_POST['saveOrder'])) {
     $name = validate($_SESSION['cname']);
     $invoice_no = validate($_SESSION['invoice_no']);
     $payment_mode = validate($_SESSION['payment_mode']);
-    $order_placed_by_id = "Admin";
+    $order_placed_by_id = validate($_SESSION['loggedInUser']['firstname']);
 
     // Check if customer exists
     $checkCustomer = mysqli_query($conn, "SELECT * FROM customers WHERE name='$name' LIMIT 1");
