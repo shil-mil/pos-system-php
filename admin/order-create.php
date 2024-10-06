@@ -68,7 +68,7 @@ include('includes/header.php'); ?>
             </form>
         </div>
     </div>
-    <div class="card mt-3">
+    <div class="card mt-3 mb-4">
         <div class="card-header">
              <h4 class="mb-0">Products</h4>
         </div>
