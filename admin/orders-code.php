@@ -180,7 +180,7 @@ if (isset($_POST['saveOrder'])) {
             'tracking_no' => rand(111111, 999999),
             'invoice_no' => $invoice_no,
             'total_amount' => $totalAmount,
-            'order_date' => date('Y-m-d'),
+            'order_date' => date('Y-m-d H:i:s'),
             'order_status' => 'Booked',
             'payment_mode' => $payment_mode,
             'order_placed_by_id' => $order_placed_by_id
