@@ -119,7 +119,10 @@ if(!isset($_SESSION['productItems'])){
                                             <td colspan="1" style="font-weight: bold;">Php <?= number_format($totalAmount, 2); ?></td>
                                         </tr>
                                         <tr>
-                                            <td colspan="5">Payment Mode: <?= $_SESSION['payment_mode']; ?></td>
+                                            <td colspan="5">
+                                                <p style="font-size: 16px; line-height: 20px; margin: 0px; padding: 0;">Total Quantity: <?= $totalQuantity ?></p>
+                                                <p style="font-size: 16px; line-height: 20px; margin: 0px; padding: 0;">Payment Mode: <?= $_SESSION['payment_mode']; ?></p>
+                                            </td>
                                         </tr>
                                     </tbody>
                                 </table>
