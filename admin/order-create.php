@@ -60,7 +60,7 @@ include('includes/header.php'); ?>
                         <label for="">Quantity</label>
                         <input type="number" name="quantity" value="1" min="1" class="form-control" />
                     </div>
-                    <div class="col-md-3 mb-3 text-end">
+                    <div class="col-md-3 mb-3">
                         <br/>
                         <button type="submit" name="addItem" class="btn btn-outline-primary">Add Item</button>
                     </div>
