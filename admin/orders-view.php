@@ -75,7 +75,7 @@
                                 </label>
                                 <br/>
                                 <label class="mb-1">
-                                    Payment Method: <span class="fw-bold"><?= htmlspecialchars($orderData['payment_mode'], ENT_QUOTES, 'UTF-8'); ?></span>
+                                    Order placed by: <span class="fw-bold"><?= htmlspecialchars($orderData['order_placed_by_id'], ENT_QUOTES, 'UTF-8'); ?></span>
                                 </label>
                                 <br/>
                                 <label class="mb-1">
@@ -89,6 +89,10 @@
 
                                 <label class="mb-1">
                                     Name: <span class="fw-bold"><?= htmlspecialchars($orderData['name'], ENT_QUOTES, 'UTF-8'); ?></span>
+                                </label>
+                                <br/>
+                                <label class="mb-1">
+                                    Payment Method: <span class="fw-bold"><?= htmlspecialchars($orderData['payment_mode'], ENT_QUOTES, 'UTF-8'); ?></span>
                                 </label>
                                 <br/>
                                 <br/>
