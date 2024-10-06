@@ -1,6 +1,6 @@
 <?php include('includes/header.php'); ?>
 
-<div class="container-fluid px-4">
+<div class="container-fluid px-4 pb-4">
     <div class="card mt-4 shadow-sm">
         <div class="card-header">
             <h4 class="mb-0">Order View
@@ -37,12 +37,26 @@
 
             $orders = mysqli_query($conn, $query);
 
+            $orderItemQuery = "SELECT oi.quantity as orderItemQuantity, oi.price as orderItemPrice, o.*, oi.*, p.* 
+                                FROM orders as o, order_items as oi, products as p 
+                                WHERE  oi.order_id = o.id AND p.id = oi.product_id AND o.tracking_no='$trackingNo' ";
+
+            $orderItemsRes = mysqli_query($conn, $orderItemQuery);
+        
             if($orders){
 
                 if(mysqli_num_rows($orders) > 0){
                     $orderData = mysqli_fetch_assoc($orders);
                     $orderId = $orderData['id'];
+                    $totalQuantity = 0;
 
+                    if($orderItemsRes){
+                        if(mysqli_num_rows($orderItemsRes) > 0){
+                            while($orderItemRow = mysqli_fetch_assoc($orderItemsRes)){
+                                $totalQuantity += $orderItemRow['orderItemQuantity'];
+                            }
+                        }
+                    }
                     ?>
                     <div class="card card-body shadow border-1 mb-4 ">
                         <div class="row">
@@ -62,6 +76,10 @@
                                 <br/>
                                 <label class="mb-1">
                                     Payment Method: <span class="fw-bold"><?= htmlspecialchars($orderData['payment_mode'], ENT_QUOTES, 'UTF-8'); ?></span>
+                                </label>
+                                <br/>
+                                <label class="mb-1">
+                                    Total Quantity: <span class="fw-bold"><?= htmlspecialchars($totalQuantity, ENT_QUOTES, 'UTF-8'); ?></span>
                                 </label>
                                 <br/>
                             </div>
