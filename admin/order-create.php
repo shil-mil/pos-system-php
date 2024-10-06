@@ -96,11 +96,10 @@ include('includes/header.php'); ?>
                         </thead>
                         <tbody>
                             <?php 
-                                $i=1;
                                 foreach($sessionProducts as $key => $item ) : 
                             ?>
                                 <tr>
-                                <td><?= $i++; ?></td>
+                                <td><?= $item['product_id']; ?></td>
                                 <td><?= $item['name']; ?></td>
                                 <td>Php <?= $item['price']; ?></td>
                                 <td>
