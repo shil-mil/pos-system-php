@@ -25,7 +25,7 @@ if(!isset($_SESSION['ingredientItems'])){
 <div class="container-fluid px-4">
     <div class="row">
         <div class="col-md-12">
-            <div class="card mt-4 pb-4">
+            <div class="card mt-4 mb-4">
                 <div class="card-header">
                     <h4 class="mb-0"> Purchase Order Summary
                         <a href="purchase-order-create.php" class= "btn btn-danger float-end">Back</a>
