@@ -17,6 +17,28 @@
                     Orders
                 </a>
 
+                <!-- Inventory -->
+                <div class="sb-sidenav-menu-heading">Inventory</div>
+                <a class="nav-link" href="purchase-order-create.php">
+                    <div class="sb-nav-link-icon"><i class="fas fa-bell"></i></div>
+                    Create Purchase Order
+                </a>
+                <a class="nav-link" href="purchase-orders.php">
+                    <div class="sb-nav-link-icon"><i class="fas fa-list"></i></div>
+                    Purchase Orders
+                </a>
+                <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseInventory" aria-expanded="false" aria-controls="collapseInventory">
+                    <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
+                    Inventory
+                    <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                </a>
+                <div class="collapse" id="collapseInventory" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+                    <nav class="sb-sidenav-menu-nested nav">
+                        <a class="nav-link" href="inventoyr-ingredients.php">Ingredients</a>
+                        
+                    </nav>
+                </div>
+
                 <!-- Interface Section -->
                 <div class="sb-sidenav-menu-heading">Interface</div>
 
