@@ -77,9 +77,9 @@ include('includes/header.php');
                                 <div class="col-md-3">
                                     <label>Select Order Status</label>
                                     <select id="order_status" class="form-select">
-                                    <option value="Placed" <?= $order['order_status'] == 'Placed' ? 'selected' : ''; ?>>Placed</option>
-                                    <option value="Preparing" <?= $order['order_status'] == 'Preparing' ? 'selected' : ''; ?>>Preparing</option>
-                                    <option value="Cancelled" <?= $order['order_status'] == 'Cancelled' ? 'selected' : ''; ?>>Cancelled</option>
+                                    <option value="Placed" <?= $orderData['order_status'] == 'Placed' ? 'selected' : ''; ?>>Placed</option>
+                                    <option value="Preparing" <?= $orderData['order_status'] == 'Preparing' ? 'selected' : ''; ?>>Preparing</option>
+                                    <option value="Cancelled" <?= $orderData['order_status'] == 'Cancelled' ? 'selected' : ''; ?>>Cancelled</option>
                                     </select>
                                 </div>
                             </div>
