@@ -35,7 +35,6 @@
 
                         if(mysqli_num_rows($orderQueryRes) > 0)
                         {
-                            $invoiceNo = validate($_SESSION['invoice_no']);
                             
 
                             $orderDataRow = mysqli_fetch_assoc($orderQueryRes);
