@@ -67,10 +67,7 @@ if(!isset($_SESSION['ingredientItems'])){
                                                     <h5 style="font-size: 20px; line-height: 30px; margin: 0px; padding: 0;">Customer Details</h5>
                                                     <p style="font-size: 14px; line-height: 20px; margin: 0px; padding: 0;">Customer Name: <?= $iRowData['firstname']; ?> <?= $iRowData['lastname']; ?></p>
                                                     <p style="font-size: 14px; line-height: 20px; margin: 0px; padding: 0;">
-                                                        Position: 
-                                                        <?php 
-                                                            echo $iRowData['position'] == 1 ? 'Owner' : 'Employee'; 
-                                                        ?>
+                                                        Position: <?= $iRowData['position'] ?>
                                                     </p>
 
                                                 </td>
