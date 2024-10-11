@@ -42,7 +42,7 @@
 
                     
                     <!-- Placed Orders -->
-                    <div class="mt-4">
+                    <div class="mt-2">
                         <h5>Placed Orders</h5>
                         <table class="table table-striped table-bordered">
                             <thead>
