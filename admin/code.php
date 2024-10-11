@@ -212,11 +212,11 @@ if (isset($_POST['updateIngredient'])) {
               category='$category', sub_category='$sub_category', price='$price' WHERE id='$ingredientId'";
     
     if (mysqli_query($conn, $query)) {
-        $_SESSION['message'] = "Ingredient updated successfully";
+        $_SESSION['message'] = "Ingredient updated successfully!";
         header('Location: ingredients-view.php');
         exit(0);
     } else {
-        $_SESSION['message'] = "Failed to update ingredient";
+        $_SESSION['message'] = "Failed to update ingredient.";
         header('Location: ingredients-edit.php?id='.$ingredientId);
         exit(0);
     }
