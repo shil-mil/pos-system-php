@@ -58,7 +58,7 @@
                 </div>
                 <div class="col-md-4 mb-3">
                                 <label for="">Price *</label>
-                                <input type="number" name="price" value="<?= $productData['data']['price']; ?>" class="form-control" />
+                                <input type="number" name="price" value="<?= $ingredient['price']; ?>" class="form-control" />
                             </div>                
 
                 <button type="submit" name="updateIngredient" class="btn btn-outline-primary">Update Ingredient</button>
