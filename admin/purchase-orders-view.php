@@ -77,7 +77,7 @@
                                 <label class="mb-1">
                                     Position: 
                                     <span class="fw-bold">
-                                        <?= $orderData['position'] == 1 ? 'Owner' : 'Employee'; ?>
+                                        <?= $orderData['position']?>
                                     </span>
                                 </label>
                                 <br/>
