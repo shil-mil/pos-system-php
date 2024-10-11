@@ -1,6 +1,8 @@
 <?php
 
-include('includes/header.php'); ?>
+include('includes/header.php');
+// unset($_SESSION['productItems']);
+// unset($_SESSION['productItemIds']) ?>
 
 <div class="modal fade" id="addCustomerModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog">
@@ -64,6 +66,11 @@ include('includes/header.php'); ?>
                         <br/>
                         <button type="submit" name="addItem" class="btn btn-outline-primary">Add Item</button>
                     </div>
+                    
+                        <div class="col-md-3 mb-3">
+                            <input type="hidden" id="order_status" name="order_status" value="Placed">
+                        </div>
+
                 </div>
             </form>
         </div>
@@ -86,7 +93,6 @@ include('includes/header.php'); ?>
                     <table class="table table-bordered table-striped">
                         <thead>
                             <tr>
-                                <th>Id</th>
                                 <th>Product Name</th>
                                 <th>Price</th>
                                 <th>Quantity</th>
@@ -99,15 +105,14 @@ include('includes/header.php'); ?>
                                 foreach($sessionProducts as $key => $item ) : 
                             ?>
                                 <tr>
-                                <td><?= $item['product_id']; ?></td>
                                 <td><?= $item['name']; ?></td>
                                 <td>Php <?= $item['price']; ?></td>
                                 <td>
                                      <div class="input-group qtyBox">
                                         <input type="hidden" value="<?= $item['product_id'];?>" class = "prodId" >
-                                        <button class="input-group-text decrement">-</button>
+                                        <button class="input-group-text prod-decrement">-</button>
                                         <input type="text" value="<?= $item['quantity']; ?>" class="qty quantityInput" />
-                                        <button class="input-group-text increment">+</button>
+                                        <button class="input-group-text prod-increment">+</button>
                                      </div>
                                 </td>
                                 <td>Php <?= number_format($item['price'] * $item['quantity'], 2); ?></td>

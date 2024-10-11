@@ -31,8 +31,9 @@ function alertMessage(){
 }
 
 
-
-function insert($tableName, $data) {
+// Create new record
+function insert($tableName, $data){
+    
     global $conn;
 
     $table = validate($tableName);
@@ -41,15 +42,10 @@ function insert($tableName, $data) {
     $values = array_values($data);
 
     $finalColumn = implode(',', $columns);
-    $finalValues = "'" . implode("','", $values) . "'";
+    $finalValues = "'".implode("','", $values)."'";
 
     $query = "INSERT INTO $table ($finalColumn) VALUES ($finalValues)";
-    $result = mysqli_query($conn, $query);
-
-    if (!$result) {
-        echo 'Query Error: ' . mysqli_error($conn);
-    }
-
+    $result = mysqli_query($conn,$query);
     return $result;
 }
 
@@ -77,6 +73,7 @@ function update($tableName, $id, $data){
 
     return $result;
 }
+
 
 function getAll($tableName, $status = NULL){
     global $conn;
@@ -153,7 +150,7 @@ function checkParam($type){
 }
 
 function jsonResponse($status, $status_type, $message ){
-    $response =[
+    $response = [
         'status' => $status,
         'status_type' => $status_type,
         'message' => $message
@@ -161,8 +158,8 @@ function jsonResponse($status, $status_type, $message ){
 
     echo json_encode($response);
     return;
-}    
-
+}
+  
 function logoutSession() {
     unset($_SESSION['loggedIn']);
     unset($_SESSION['loggedInUser']);

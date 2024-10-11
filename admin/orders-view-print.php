@@ -58,7 +58,7 @@
                                         <td align="end">
                                             <h5 style="font-size: 20px; line-height: 30px; margin: 0px; padding: 0;">Invoice Details</h5>
                                             <p style="font-size: 14px; line-height: 20px; margin: 0px; padding: 0;">Invoice No: <?= $orderDataRow['invoice_no']; ?></p>
-                                            <p style="font-size: 14px; line-height: 20px; margin: 0px; padding: 0;">Invoice Date: <?= $orderDataRow['order_date']; ?></p>
+                                            <p style="font-size: 14px; line-height: 20px; margin: 0px; padding: 0;">Invoice Date: <?= $orderDataRow['order_date'] ?></p>
                                             <p style="font-size: 14px; line-height: 20px; margin: 0px; padding: 0;">Address: Davao City, Philippines</p>
                                         </td>
                                     </tr>
@@ -77,12 +77,10 @@
                             WHERE oi.order_id=o.id AND p.id=oi.product_id AND o.tracking_no='$trackingNo' ";
 
                         $orderItemQueryRes = mysqli_query($conn, $orderItemQuery);
-                        $totalQuantity = 0;
-                        if($orderItemQueryRes){
-                            if(mysqli_num_rows($orderItemQueryRes) > 0){
-                                while($orderItemRow = mysqli_fetch_assoc($orderItemQueryRes)){
-                                    $totalQuantity += $orderItemRow['orderItemQuantity'];
-                                }
+                        if($orderItemQueryRes)
+                        {
+                            if(mysqli_num_rows($orderItemQueryRes) > 0)
+                            {
                                 ?>
                                 <div class="table-responsive mb-3">
                                     <table style="width:100%;" cellpadding="5">
@@ -98,7 +96,9 @@
                                         <tbody>
                                             <?php
                                             $i = 1;
+                                            $totalQuantity = 0;
                                             foreach($orderItemQueryRes as $key => $row) :
+                                                $totalQuantity += $row['orderItemQuantity'];
                                             ?>
                                             <tr>
                                                 <td style="border-bottom: 1px solid #ccc;"><?= $i++; ?></td>
@@ -119,7 +119,7 @@
                                                 <td colspan="5">
                                                     <p style="font-size: 16px; line-height: 20px; margin: 0px; padding: 0;">Total Quantity: <?= $totalQuantity ?></p>
                                                     <p style="font-size: 16px; line-height: 20px; margin: 0px; padding: 0;">Payment Mode: <?= $row['payment_mode']; ?></p>
-                                                    <p style="font-size: 16px; line-height: 20px; margin: 0px; padding: 0;">Order placed by: <?= $_SESSION['loggedInUser']['firstname']; ?></p>
+                                                    <p style="font-size: 16px; line-height: 20px; margin: 0px; padding: 0;">Order placed by: <?= $row['order_placed_by_id']; ?></p>
                                                 </td>
                                             </tr>
                                         </tbody>

@@ -1,6 +1,6 @@
 <?php include('includes/header.php'); ?>
 
-<div class="container-fluid px-4 pb-4">
+<div class="container-fluid px-4">
     <div class="card mt-4 shadow-sm">
         <div class="card-header">
             <h4 class="mb-0">Order View
@@ -40,13 +40,12 @@
             $orderItemQuery = "SELECT oi.quantity as orderItemQuantity, oi.price as orderItemPrice, o.*, oi.*, p.* 
                                 FROM orders as o, order_items as oi, products as p 
                                 WHERE  oi.order_id = o.id AND p.id = oi.product_id AND o.tracking_no='$trackingNo' ";
-
             $orderItemsRes = mysqli_query($conn, $orderItemQuery);
-        
+
             if($orders){
 
                 if(mysqli_num_rows($orders) > 0){
-                    $orderData = mysqli_fetch_assoc($orders);
+                    $orderData = mysqli_fetch_assoc($orders);  
                     $orderId = $orderData['id'];
                     $totalQuantity = 0;
 
@@ -57,6 +56,7 @@
                             }
                         }
                     }
+
                     ?>
                     <div class="card card-body shadow border-1 mb-4 ">
                         <div class="row">

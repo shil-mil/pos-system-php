@@ -104,7 +104,7 @@ if(!isset($_SESSION['productItems'])){
                                         $totalQuantity = 0;
                                         foreach ($sessionProducts as $key => $row) :
                                             $totalAmount += $row['price'] * $row['quantity'];
-                                            $totalQuantity += $row['quantity']
+                                            $totalQuantity += $row['quantity'];
                                         ?>
                                         <tr>
                                             <td style="border-bottom: 1px solid #ccc;"><?= $i++; ?></td>
@@ -125,7 +125,6 @@ if(!isset($_SESSION['productItems'])){
                                                 <p style="font-size: 16px; line-height: 20px; margin: 0px; padding: 0;">Total Quantity: <?= $totalQuantity ?></p>
                                                 <p style="font-size: 16px; line-height: 20px; margin: 0px; padding: 0;">Payment Mode: <?= $_SESSION['payment_mode']; ?></p>
                                                 <p style="font-size: 16px; line-height: 20px; margin: 0px; padding: 0;">Order placed by: <?= $_SESSION['loggedInUser']['firstname']; ?></p>
-
                                             </td>
                                         </tr>
                                     </tbody>
@@ -142,8 +141,8 @@ if(!isset($_SESSION['productItems'])){
                     <?php if(isset($_SESSION['productItems'])) : ?>
                     <div class="mt-4 text-end">
                         <button type="button" class="btn btn-primary px-4 mx-1" id="saveOrder">Save</button>
-                        <!-- <button type="button" class="btn btn-info px-4 mx-1" onclick="printMyBillingArea()" class="btn btn-danger">Print</button>
-                        <button type="button" class="btn btn-warning px-4 mx-1" onclick="downloadPDF('<?= $_SESSION['invoice_no']; ?>')">Download PDF</button> -->
+                        <button type="button" class="btn btn-info px-4 mx-1" onclick="printMyBillingArea()" class="btn btn-danger">Print</button>
+                        <button type="button" class="btn btn-warning px-4 mx-1" onclick="downloadPDF('<?= $_SESSION['invoice_no']; ?>')">Download PDF</button>
                     </div>
                     <?php endif; ?>
 

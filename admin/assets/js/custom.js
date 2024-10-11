@@ -1,37 +1,37 @@
 $(document).ready(function(){
 
-    alertify.set('notifier','position', 'top-right');
-    $(document).on('click', '.increment', function(){
+    // Set alertify notification position
+    alertify.set('notifier', 'position', 'top-right');
 
-        var $quantityInput = $(this).closest('.qtyBox').find('.qty');
-        var productId  = $(this).closest('.qtyBox').find('.prodId').val();
+    // Increment Product Quantity
+$(document).on('click', '.prod-increment', function(){
+    var $quantityInput = $(this).closest('.qtyBox').find('.qty');
+    var productId  = $(this).closest('.qtyBox').find('.prodId').val();
+    var currentValue = parseInt($quantityInput.val());
 
-        var currentValue = parseInt($quantityInput.val());
+    if(!isNaN(currentValue)){
+        var qtyVal = currentValue + 1;
+        $quantityInput.val(qtyVal);
+        quantityIncDec(productId, qtyVal);
+    }
+});
+
+// Decrement Product Quantity
+$(document).on('click', '.prod-decrement', function(){
+    var $quantityInput = $(this).closest('.qtyBox').find('.qty');
+    var productId  = $(this).closest('.qtyBox').find('.prodId').val();
+    var currentValue = parseInt($quantityInput.val());
+
+    if(!isNaN(currentValue) && currentValue > 1){
+        var qtyVal = currentValue - 1;
+        $quantityInput.val(qtyVal);
+        quantityIncDec(productId, qtyVal);
+    }
+});
 
 
-
-        if(!isNaN(currentValue)){
-            var qtyVal = currentValue + 1;
-            $quantityInput.val(qtyVal);
-            quantityIncDec(productId, qtyVal);
-        }
-    });
-
-    $(document).on('click', '.decrement', function(){
-
-        var $quantityInput = $(this).closest('.qtyBox').find('.qty');
-        var productId  = $(this).closest('.qtyBox').find('.prodId').val();
-
-        var currentValue = parseInt($quantityInput.val());
-
-        if(!isNaN(currentValue) && currentValue > 1 ){
-            var qtyVal = currentValue - 1;
-            $quantityInput.val(qtyVal);
-            quantityIncDec(productId, qtyVal);  
-        }
-    });
-
-    function quantityIncDec(prodId, qty) {
+    // Quantity Increment/Decrement with AJAX
+function quantityIncDec(prodId, qty) {
     $.ajax({
         type: "POST",
         url: "orders-code.php",
@@ -42,101 +42,166 @@ $(document).ready(function(){
         },
         success: function(response) {
             var res = JSON.parse(response);
+
             if (res.status == 200) {
+                // Load updated product area content
                 $('#productArea').load(' #productContent');
                 alertify.success(res.message);
+
+                // Re-enable increment button since quantity is valid
+                var $quantityInput = $('.qtyBox').find('.prodId[value="' + prodId + '"]').closest('.qtyBox').find('.prod-increment');
+                $quantityInput.prop('disabled', false);
             } else if (res.status == 500) {
                 alertify.error(res.message);
-                // Disable the increment button
-                var $quantityInput = $('.qtyBox').find('.prodId[value="' + prodId + '"]').closest('.qtyBox').find('.increment');
+                var $quantityInput = $('.qtyBox').find('.prodId[value="' + prodId + '"]').closest('.qtyBox').find('.prod-increment');
                 $quantityInput.prop('disabled', true); // Disable increment button
+
+                // Check if the error type is due to quantity being 0
+                if (res.status_type === 'error-quantity-zero') {
+                    var $quantityInput = $('.qtyBox').find('.prodId[value="' + prodId + '"]').closest('.qtyBox').find('.prod-increment');
+                    $quantityInput.prop('disabled', true); // Disable increment button
+                }
             }
         }
     });
 }
 
 
-    //proceed to place order button click
+    // Proceed to Place Order
     $(document).on('click', '.proceedToPlace', function(){
-
         var cname = $('#cname').val();
         var payment_mode = $('#payment_mode').val();
-    
-        // Validate Payment Method
-        if(payment_mode == ''){
+        var order_status = $('#order_status').val();
+
+        // Validate Payment Method and Customer Name
+        if (payment_mode === '') {
             swal("Select Payment Method", "Select your payment method", "warning");
             return false;
         }
-    
-        // Validate Customer Name
-        if(cname == ''){
+        if (cname === '') {
             swal("Enter customer name", "Enter valid customer name", "warning");
             return false;
         }
-    
+
+        // Place Order via AJAX
         var data = {
             'proceedToPlaceBtn': true,
             'cname': cname,
             'payment_mode': payment_mode,
+            'order_status': order_status
         };
-    
+
         $.ajax({
             type: "POST",
             url: "orders-code.php",
             data: data,
             success: function(response){
-                var res;
-                try {
-                    res = JSON.parse(response); // Parse response manually, but it could be redundant
-                } catch(e) {
-                    console.error('Error parsing JSON', e);
-                    return;
-                }
-            
+                var res = JSON.parse(response);
                 if (res.status == 200) {
                     window.location.href = "order-summary.php";
                 } else if (res.status == 404) {
                     swal(res.message, res.message, res.status_type, {
                         buttons: {
-                            catch: {
-                                text: "Add Customer",
-                                value: "catch"
-                            },
+                            catch: { text: "Add Customer", value: "catch" },
                             cancel: "Cancel"
                         }
                     }).then((value) => {
-                        switch (value) {
-                            case "catch":
-                                $('#c_name').val(cname);
-                                $('#addCustomerModal').modal('show');
-                                // console.log('Pop the customer add modal');
-                                break;
-                            default:
+                        if (value === "catch") {
+                            $('#c_name').val(cname);
+                            $('#addCustomerModal').modal('show');
                         }
                     });
                 } else {
                     swal(res.message, res.message, res.status_type);
                 }
             },
-            error: function(jqXHR, textStatus, errorThrown) {
-                console.error('AJAX Error', textStatus, errorThrown);
+            error: function() {
                 swal('Error', 'Failed to process the request', 'error');
             }
-            
         });
     });
 
-    //Add customers to customer table
-    $(document).on('click', '.saveCustomer', function() {
+    $(document).on('click', '.proceedToUpdate', function() {
+        var order_status = $('#order_status').val();
+        var order_id = $('#order_id').val(); // Fetch the hidden order_id
+    
+        // Prepare data to send via AJAX
+        var data = {
+            'proceedToUpdateBtn': true,
+            'order_id': order_id, // Include order_id
+            'order_status': order_status
+        };
+    
+        $.ajax({
+            type: "POST",
+            url: "orders-code.php",
+            data: data,
+            success: function(response) {
+                console.log(response); // Log response for debugging
+                try {
+                    var res = JSON.parse(response);
+                    if (res.status == 200) {
+                        window.location.href = "orders.php"; // Redirect on success
+                    } else {
+                        swal(res.message, res.message, res.status_type); // Display error
+                    }
+                } catch (e) {
+                    console.error('Error parsing JSON:', e, response);
+                    swal('Error', 'Failed to process the response', 'error');
+                }
+            }
+        });
+    });
 
+    $(document).on('click', '.proceedToComplete', function() {
+        var order_track = $(this).closest('tr').find('input[name="order_track"]').val(); // Get the tracking number from the current row
+        var order_status = 'Completed'; // Set the status directly to 'Completed'
+    
+        console.log('Order Track:', order_track); // Log for debugging
+    
+        // Prepare data to send via AJAX
+        var data = {
+            'proceedToCompleteBtn': true,
+            'order_track': order_track,
+            'order_status': order_status
+        };
+    
+        $.ajax({
+            type: "POST",
+            url: "orders-code.php",
+            data: data,
+            success: function(response) {
+                console.log(response); // Log response for debugging
+                try {
+                    var res = JSON.parse(response);
+                    if (res.status == 200) {
+                        window.location.href = "orders.php"; // Redirect on success
+                    } else {
+                        swal(res.message, res.message, res.status_type); // Display error
+                    }
+                } catch (e) {
+                    console.error('Error parsing JSON:', e, response);
+                    swal('Error', 'Failed to process the response', 'error');
+                }
+            }
+        });
+    });
+    
+    
+    
+    
+    
+    
+
+    // Save Customer
+    $(document).on('click', '.saveCustomer', function() {
         var c_name = $('#c_name').val();
 
-        if(c_name != ''){
+        if (c_name !== '') {
             var data = {
                 'saveCustomerBtn': true,
                 'name': c_name
             };
-            
 
             $.ajax({
                 type: "POST",
@@ -144,86 +209,171 @@ $(document).ready(function(){
                 data: data,
                 success: function(response){
                     var res = JSON.parse(response);
-
-                    if(res.status == 200){
-                        swal(res.message, res.message, res.status_type);
+                    swal(res.message, res.message, res.status_type);
+                    if (res.status == 200) {
                         $('#addCustomerModal').modal('hide');
-                    }else if(res.status == 422){
-                        swal(res.message, res.message, res.status_type);
-                    }else{
-                        swal(res.message, res.message, res.status_type);
                     }
                 }
             });
-        }else{
-            swal("Please fill required fields","","warning");
+        } else {
+            swal("Please fill required fields", "", "warning");
         }
-
     });
 
+    // Save Order
     $(document).on('click', '#saveOrder', function() {
         $.ajax({
             type: "POST",
             url: "orders-code.php",
-            data: {
-                'saveOrder': true   
-            },
+            data: { 'saveOrder': true },
             success: function(response){
-                try {
-                    var res = JSON.parse(response);  // Parse JSON only if valid
-                    if(res.status == 200){
-                        swal(res.message, res.message, res.status_type);
-                        $('#orderPlaceSuccessMessage').text(res.message);
-                        $('#orderSuccessModal').modal('show');
-
-                    }else{
-                        swal(res.message, res.message, res.status_type);
-                    }
-                } catch (e) {
-                    console.error("Invalid JSON response:", response);
-                    swal("Error", "Unexpected response from server", "error");
+                var res = JSON.parse(response);
+                if (res.status == 200) {
+                    swal(res.message, res.message, res.status_type);
+                    $('#orderPlaceSuccessMessage').text(res.message);
+                    $('#orderSuccessModal').modal('show');
+                } else {
+                    swal(res.message, res.message, res.status_type);
                 }
             },
-            error: function(xhr, status, error) {
-                console.error("AJAX Error:", error);
+            error: function() {
                 swal("Error", "Failed to process order", "error");
             }
         });
-    });    
-
-    function printMyBillingArea(){
-        var divContents = document.getElementById("myBillingArea").innerHTML;
-        var a = window.open('', '');
-        a.document.write('<html><title>Kapitan Sisig</title>');
-        a.document.write('<body style="font-family: fangsong;">');
-        a.document.write(divContents);
-        a.document.write('</body></html>');
-        a.document.close;
-        a.print();
-    }
+    });
 
     
+
+    // Increment Ingredient Quantity
+$(document).on('click', '.ing-increment', function(){
+    var $quantityInput = $(this).closest('.qtyBox').find('.qty');
+    var ingredientId = $(this).closest('.qtyBox').find('.ingId').val();
+    var currentValue = parseInt($quantityInput.val());
+
+    if(!isNaN(currentValue)){
+        var qtyVal = currentValue + 1;
+        $quantityInput.val(qtyVal);
+        ingredientIncDec(ingredientId, qtyVal);
+    }
 });
 
-function printMyBillingArea(){
+// Decrement Ingredient Quantity
+$(document).on('click', '.ing-decrement', function(){
+    var $quantityInput = $(this).closest('.qtyBox').find('.qty');
+    var ingredientId = $(this).closest('.qtyBox').find('.ingId').val();
+    var currentValue = parseInt($quantityInput.val());
+
+    if(!isNaN(currentValue) && currentValue > 1){
+        var qtyVal = currentValue - 1;
+        $quantityInput.val(qtyVal);
+        ingredientIncDec(ingredientId, qtyVal);
+    }
+});
+
+
+    // Ingredient Increment/Decrement AJAX
+    function ingredientIncDec(ingId, qty) {
+        $.ajax({
+            type: "POST",
+            url: "purchase-orders-code.php",
+            data: {
+                'ingredientIncDec': true,
+                'ingredient_id': ingId,
+                'quantity': qty
+            },
+            success: function(response) {
+                var res = JSON.parse(response);
+                if (res.status == 200) {
+                    $('#ingredientArea').load(' #ingredientContent');
+                    alertify.success(res.message);
+                } else if (res.status == 500) {
+                    alertify.error(res.message);
+                    $('.ing-increment').prop('disabled', true);
+                }
+            }
+        });
+    }
+
+    // Proceed to Place Ingredient Order
+    $(document).on('click', '.proceedToPlaceIng', function() {
+        var adminName = $('#adminName').val();
+        var ingPayment_mode = $('#ingPayment_mode').val();
+        var supplierName = $('#supplierName').val();
+
+        // Validate Form Fields
+        if (!ingPayment_mode || !supplierName || !adminName) {
+            swal("Complete Form", "Please fill in all required fields", "warning");
+            return false;
+        }
+
+        var data = {
+            'proceedToPlaceIng': true,
+            'adminName': adminName,
+            'ingPayment_mode': ingPayment_mode,
+            'supplierName': supplierName
+        };
+
+        $.ajax({
+            type: "POST",
+            url: "purchase-orders-code.php",
+            data: data,
+            dataType: "json",
+            success: function(response) {
+                if (response.status == 200) {
+                    window.location.href = "purchase-order-summary.php";
+                } else {
+                    swal(response.message, response.message, response.status_type);
+                }
+            },
+            error: function() {
+                swal('Error', 'Failed to process the request', 'error');
+            }
+        });
+    });
+
+    // Save Purchase Order
+    $(document).on('click', '#savePurchaseOrder', function() {
+        $.ajax({
+            type: "POST",
+            url: "purchase-orders-code.php",
+            data: { 'savePurchaseOrder': true },
+            success: function(response){
+                var res = JSON.parse(response);
+                if (res.status == 200) {
+                    swal(res.message, res.message, res.status_type);
+                    $('#orderPlaceSuccessMessage').text(res.message);
+                    $('#orderSuccessModal').modal('show');
+                } else {
+                    swal(res.message, res.message, res.status_type);
+                }
+            },
+            error: function() {
+                swal("Error", "Failed to process order", "error");
+            }
+        });
+    });
+
+});
+
+// Print Billing Area
+function printMyBillingArea() {
     var divContents = document.getElementById("myBillingArea").innerHTML;
     var a = window.open('', '');
     a.document.write('<html><title>Kapitan Sisig</title>');
-    a.document.write('<body style="font-family: fangsong;">');
-    a.document.write(divContents);
-    a.document.write('</body></html>');
-    a.document.close;
+    a.document.write('<body style="font-family: fangsong;">' + divContents + '</body></html>');
+    a.document.close();
     a.print();
 }
 
+// Download PDF
 window.jsPDF = window.jspdf.jsPDF;
 var docPDF = new jsPDF();
 
-function downloadPDF(invoiceNo){
+function downloadPDF(invoiceNo) {
     var elementHTML = document.querySelector("#myBillingArea");
-    docPDF.html( elementHTML, {
+    docPDF.html(elementHTML, {
         callback: function() {
-            docPDF.save(invoiceNo+'.pdf');
+            docPDF.save(invoiceNo + '.pdf');
         },
         x: 15,
         y: 15,
