@@ -2,6 +2,11 @@
 
 include('../config/function.php');
 
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
+
 // Save Admin Functionality
 if (isset($_POST['saveAdmin'])) {
     $firstname = validate($_POST['firstname']);
@@ -80,11 +85,11 @@ if (isset($_POST['updateAdmin'])) {
         $result = update('admins', $adminId, $data);
         if ($result) {
             $_SESSION['message'] = 'Admin updated.';
-            header('Location: admins-edit.php?id=' . $adminId);
+            header('Location: admins.php');
             exit();
         } else {
             $_SESSION['message'] = 'Something went wrong.';
-            header('Location: admins-edit.php?id=' . $adminId);
+            header('Location: admins.php');
             exit();
         }
     } else {
@@ -135,7 +140,7 @@ if (isset($_POST['updateSupplier'])) {
 
     if ($supplierData['status'] != 200) {
         $_SESSION['message'] = 'Invalid Supplier ID.';
-        header('Location: suppliers-edit.php?id=' . $supplierId);
+        header('Location: suppliers.php');
         exit();
     }
 
@@ -155,11 +160,11 @@ if (isset($_POST['updateSupplier'])) {
         $result = update('suppliers', $supplierId, $data);
         if ($result) {
             $_SESSION['message'] = 'Supplier updated successfully.';
-            header('Location: suppliers-edit.php?id=' . $supplierId);
+            header('Location: suppliers.php');
             exit();
         } else {
             $_SESSION['message'] = 'Something went wrong.';
-            header('Location: suppliers-edit.php?id=' . $supplierId);
+            header('Location: suppliers.php');
             exit();
         }
     } else {
@@ -170,50 +175,52 @@ if (isset($_POST['updateSupplier'])) {
 }
 
 
-// // Save Ingredient
-// if (isset($_POST['saveIngredient'])) {
-//     $name = $_POST['name'];
-//     $quantity = $_POST['quantity'];
-//     $unit_id = $_POST['unit_id'];
-//     $category = $_POST['category'];
-//     $sub_category = $_POST['sub_category'];
+// Save Ingredient
+if (isset($_POST['saveIngredient'])) {
+    $name = $_POST['name'];
+    $unit_id = $_POST['unit_id'];
+    $category = $_POST['category'];
+    $sub_category = $_POST['sub_category'];
+    $price = $_POST['price'];
 
-//     $query = "INSERT INTO ingredients (name, quantity, unit_id, category, sub_category) 
-//               VALUES ('$name', '$quantity', '$unit_id', '$category', '$sub_category')";
+    $query = "INSERT INTO ingredients (name, unit_id, category, sub_category, price) 
+              VALUES ('$name', '$unit_id', '$category', '$sub_category', '$price ')";
     
-//     if (mysqli_query($conn, $query)) {
-//         $_SESSION['message'] = "Ingredient added successfully";
-//         header('Location: ingredients-view.php');
-//         exit(0);
-//     } else {
-//         $_SESSION['message'] = "Failed to add ingredient";
-//         header('Location: ingredients-add.php');
-//         exit(0);
-//     }
-// }
+    if (mysqli_query($conn, $query)) {
+        $_SESSION['message'] = "Ingredient added successfully";
+        header('Location: ingredients-view.php');
+        exit(0);
+    } else {
+        $_SESSION['message'] = "Failed to add ingredient";
+        header('Location: ingredients-add.php');
+        exit(0);
+    }
+}
 
-// // Update Ingredient
-// if (isset($_POST['updateIngredient'])) {
-//     $ingredientId = $_POST['ingredientId'];
-//     $name = $_POST['name'];
-//     $quantity = $_POST['quantity'];
-//     $unit_id = $_POST['unit_id'];
-//     $category = $_POST['category'];
-//     $sub_category = $_POST['sub_category'];
-
-//     $query = "UPDATE ingredients SET name='$name', quantity='$quantity', unit_id='$unit_id', 
-//               category='$category', sub_category='$sub_category' WHERE id='$ingredientId'";
+// Update Ingredient
+if (isset($_POST['updateIngredient'])) {
+    $ingredientId = $_POST['ingredientId'];
+    $name = $_POST['name'];
     
-//     if (mysqli_query($conn, $query)) {
-//         $_SESSION['message'] = "Ingredient updated successfully";
-//         header('Location: ingredients-view.php');
-//         exit(0);
-//     } else {
-//         $_SESSION['message'] = "Failed to update ingredient";
-//         header('Location: ingredients-edit.php?id='.$ingredientId);
-//         exit(0);
-//     }
-// }
+    $unit_id = $_POST['unit_id'];
+    $category = $_POST['category'];
+    $sub_category = $_POST['sub_category'];
+    $price = $_POST['price'];
+
+
+    $query = "UPDATE ingredients SET name='$name',  unit_id='$unit_id', 
+              category='$category', sub_category='$sub_category', price='$price' WHERE id='$ingredientId'";
+    
+    if (mysqli_query($conn, $query)) {
+        $_SESSION['message'] = "Ingredient updated successfully";
+        header('Location: ingredients-view.php');
+        exit(0);
+    } else {
+        $_SESSION['message'] = "Failed to update ingredient";
+        header('Location: ingredients-edit.php?id='.$ingredientId);
+        exit(0);
+    }
+}
 
 
 // Save Category
@@ -291,56 +298,35 @@ if (isset($_POST['saveProduct'])) {
     $category_id = validate($_POST['category_id']);
     $productname = validate($_POST['productname']);
     $description = validate($_POST['description']);
+    $quantity = validate($_POST['quantity']);  // Corrected quantity validation
     $price = validate($_POST['price']);
-
-    $finalImage = '';
 
     if ($_FILES['image']['size'] > 0) {
         $path = "../pics/uploads/products";
         $image_ext = pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION);
-        $allowed_ext = ['jpg', 'jpeg', 'png', 'gif'];
-
-        if (!in_array($image_ext, $allowed_ext)) {
-            $_SESSION['message'] = 'Invalid image type.';
-            header('Location: products-create.php');
-            exit();
-        }
-
-        if ($_FILES['image']['error'] !== UPLOAD_ERR_OK) {
-            $_SESSION['message'] = 'File upload error: ' . $_FILES['image']['error'];
-            header('Location: products-create.php');
-            exit();
-        }
 
         $filename = time() . '.' . $image_ext;
-        $destination = $path . "/" . $filename;
 
-        if (move_uploaded_file($_FILES['image']['tmp_name'], $destination)) {
-            $finalImage = "pics/uploads/products/" . $filename;
-        } else {
-            $_SESSION['message'] = 'Failed to move the uploaded file.';
-            header('Location: products-create.php');
-            exit();
-        }
+        move_uploaded_file($_FILES['image']['tmp_name'], $path . "/" . $filename);
+        $finalImage = "pics/uploads/products/" . $filename;
+    } else {
+        $finalImage = '';
     }
 
     $data = [
         'category_id' => $category_id,
         'productname' => $productname,
         'description' => $description,
+        'quantity' => $quantity,  // Added quantity to the data array
         'price' => $price,
         'image' => $finalImage
     ];
 
     $result = insert('products', $data);
     if ($result) {
-        $_SESSION['message'] = 'Menu product created successfully!';
-        header('Location: products.php');
-        exit();
+        redirect('products.php', 'Menu product created successfully!');
     } else {
-        $_SESSION['message'] = 'Something went wrong.';
-        header('Location: products-create.php');
-        exit();
+        redirect('products-create.php', 'Something went wrong.');
     }
 }
 
@@ -359,6 +345,7 @@ if (isset($_POST['updateProduct'])) {
     $category_id = validate($_POST['category_id']);
     $productname = validate($_POST['productname']);
     $description = validate($_POST['description']);
+    $quantity = validate($_POST['quantity']);  // Corrected quantity validation for update
     $price = validate($_POST['price']);
 
     if ($_FILES['image']['size'] > 0) {
@@ -396,12 +383,13 @@ if (isset($_POST['updateProduct'])) {
         'category_id' => $category_id,
         'productname' => $productname,
         'description' => $description,
+        'quantity' => $quantity,  // Added quantity to the update array
         'price' => $price,
         'image' => $finalImage
     ];
 
     $result = update('products', $product_id, $data);
-    
+
     if ($result) {
         $_SESSION['message'] = 'Menu product updated successfully!';
         header('Location: products.php');
@@ -414,73 +402,74 @@ if (isset($_POST['updateProduct'])) {
 }
 
 
-// // Save Unit
-// if (isset($_POST['saveUnit'])) {
-//     $name = validate($_POST['name']);
-//     $status = isset($_POST['status']) ? 1 : 0;
 
-//     $data = [
-//         'name' => $name,
-//         'status' => $status
-//     ];
+// Save Unit
+if (isset($_POST['saveUnit'])) {
+    $name = validate($_POST['name']);
+    $status = isset($_POST['status']) ? 1 : 0;
 
-//     $result = insert('units', $data);
+    $data = [
+        'name' => $name,
+        'status' => $status
+    ];
 
-//     if ($result) {
-//         $_SESSION['message'] = 'Unit created successfully!';
-//         header('Location: units.php');
-//         exit();
-//     } else {
-//         $_SESSION['message'] = 'Something went wrong.';
-//         header('Location: units-create.php');
-//         exit();
-//     }
-// }
+    $result = insert('units', $data);
+
+    if ($result) {
+        $_SESSION['message'] = 'Unit created successfully!';
+        header('Location: units.php');
+        exit();
+    } else {
+        $_SESSION['message'] = 'Something went wrong.';
+        header('Location: units-create.php');
+        exit();
+    }
+}
 
 
-// // Update Unit
-// if (isset($_POST['updateUnit'])) {
-//     $unitId = validate($_POST['unitId']);
+// Update Unit
+if (isset($_POST['updateUnit'])) {
+    $unitId = validate($_POST['unitId']);
     
-//     if (empty($unitId)) {
-//         $_SESSION['message'] = 'No ID provided.';
-//         header('Location: units-edit.php?id=' . $unitId);
-//         exit();
-//     }
+    if (empty($unitId)) {
+        $_SESSION['message'] = 'No ID provided.';
+        header('Location: units-edit.php?id=' . $unitId);
+        exit();
+    }
 
-//     $unitData = getById('units', $unitId);
+    $unitData = getById('units', $unitId);
 
-//     if ($unitData['status'] != 200) {
-//         $_SESSION['message'] = 'Unit not found.';
-//         header('Location: units-edit.php?id=' . $unitId);
-//         exit();
-//     }
+    if ($unitData['status'] != 200) {
+        $_SESSION['message'] = 'Unit not found.';
+        header('Location: units-edit.php?id=' . $unitId);
+        exit();
+    }
 
-//     $name = validate($_POST['name']);
-//     $status = isset($_POST['status']) ? 1 : 0;
+    $name = validate($_POST['name']);
+    $status = isset($_POST['status']) ? 1 : 0;
 
-//     if (!empty($name)) {
-//         $data = [
-//             'name' => $name,
-//             'status' => $status
-//         ];
-//         $result = update('units', $unitId, $data);
+    if (!empty($name)) {
+        $data = [
+            'name' => $name,
+            'status' => $status
+        ];
+        $result = update('units', $unitId, $data);
 
-//         if ($result) {
-//             $_SESSION['message'] = 'Unit updated successfully!';
-//             header('Location: units.php');
-//             exit();
-//         } else {
-//             $_SESSION['message'] = 'Something went wrong.';
-//             header('Location: units.php');
-//             exit();
-//         }
-//     } else {
-//         $_SESSION['message'] = 'Please fill required fields.';
-//         header('Location: units-edit.php?id=' . $unitId);
-//         exit();
-//     }
-// }
+        if ($result) {
+            $_SESSION['message'] = 'Unit updated successfully!';
+            header('Location: units.php');
+            exit();
+        } else {
+            $_SESSION['message'] = 'Something went wrong.';
+            header('Location: units.php');
+            exit();
+        }
+    } else {
+        $_SESSION['message'] = 'Please fill required fields.';
+        header('Location: units-edit.php?id=' . $unitId);
+        exit();
+    }
+}
 
 // Save Customer
 if (isset($_POST['saveCustomer'])) {
@@ -494,7 +483,7 @@ if (isset($_POST['saveCustomer'])) {
         ];
         $result = insert('customers', $data);
         if ($result) {
-            $_SESSION['message'] = 'Category created successfully!';
+            $_SESSION['message'] = 'Customer created successfully!';
             header('Location: customers.php');
             exit();
         } else {
