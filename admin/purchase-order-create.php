@@ -48,6 +48,9 @@ ini_set('display_errors', 1);
                         <br/>
                         <button type="submit" name="addIngredient" class="btn btn-outline-primary">Add Ingredient</button>
                     </div>
+                    <div class="col-md-3 mb-3">
+                        <input type="hidden" id="order_status" name="order_status" value="Pending">
+                    </div>
                 </div>
             </form>
         </div>
@@ -150,6 +153,7 @@ ini_set('display_errors', 1);
                             ?>
                         </select>
                     </div>
+                    
                     <div class="row d-flex justify-content-end">
                         <div class="col-md-4">
                              <br/>

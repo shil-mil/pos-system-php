@@ -293,26 +293,29 @@ $(document).on('click', '.ing-decrement', function(){
             }
         });
     }
-
-    // Proceed to Place Ingredient Order
     $(document).on('click', '.proceedToPlaceIng', function() {
         var adminName = $('#adminName').val();
         var ingPayment_mode = $('#ingPayment_mode').val();
         var supplierName = $('#supplierName').val();
-
+        var order_status = $('#order_status').val() || 'Pending';
+    
+        // Log for debugging
+        console.log('Order Status:', order_status);
+    
         // Validate Form Fields
         if (!ingPayment_mode || !supplierName || !adminName) {
             swal("Complete Form", "Please fill in all required fields", "warning");
             return false;
         }
-
+    
         var data = {
             'proceedToPlaceIng': true,
             'adminName': adminName,
+            'order_status': order_status,
             'ingPayment_mode': ingPayment_mode,
             'supplierName': supplierName
         };
-
+    
         $.ajax({
             type: "POST",
             url: "purchase-orders-code.php",
@@ -327,6 +330,41 @@ $(document).on('click', '.ing-decrement', function(){
             },
             error: function() {
                 swal('Error', 'Failed to process the request', 'error');
+            }
+        });
+    });
+    
+
+    $(document).on('click', '.proceedToDeliveredIng', function() {
+        var order_track = $(this).closest('tr').find('input[name="order_track"]').val(); // Get the tracking number from the current row
+        var order_status = 'Delivered'; // Set the status directly to 'Completed'
+    
+        console.log('Order Track:', order_track); // Log for debugging
+    
+        // Prepare data to send via AJAX
+        var data = {
+            'proceedToDeliveredIng': true,
+            'order_track': order_track,
+            'order_status': order_status
+        };
+    
+        $.ajax({
+            type: "POST",
+            url: "purchase-orders-code.php",
+            data: data,
+            success: function(response) {
+                console.log(response); // Log response for debugging
+                try {
+                    var res = JSON.parse(response);
+                    if (res.status == 200) {
+                        window.location.href = "purchase-orders.php"; // Redirect on success
+                    } else {
+                        swal(res.message, res.message, res.status_type); // Display error
+                    }
+                } catch (e) {
+                    console.error('Error parsing JSON:', e, response);
+                    swal('Error', 'Failed to process the response', 'error');
+                }
             }
         });
     });

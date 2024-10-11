@@ -114,6 +114,7 @@ if (isset($_POST['proceedToPlaceIng'])) {
     $adminName = validate($_POST['adminName']);
     $ingPayment_mode = validate($_POST['ingPayment_mode']);
     $supplierName = validate($_POST['supplierName']);
+    $order_status = validate($_POST['order_status']);
 
     // Ensure correct usage of variable names
     $checkAdmin = mysqli_query($conn, "SELECT * FROM admins WHERE firstname='$adminName' LIMIT 1");
@@ -122,6 +123,7 @@ if (isset($_POST['proceedToPlaceIng'])) {
         if (mysqli_num_rows($checkAdmin) > 0) {
             $_SESSION['invoice_no'] = "INV-" . rand(111111, 999999);
             $_SESSION['adminName'] = $adminName;
+            $_SESSION['order_status'] = $order_status;
             $_SESSION['ingPayment_mode'] = $ingPayment_mode;
             $_SESSION['supplierName'] = $supplierName;
 
@@ -135,9 +137,51 @@ if (isset($_POST['proceedToPlaceIng'])) {
     }
 }
 
+if (isset($_POST['proceedToDeliveredIng'])) {
+    // Check what POST data is received
+    error_log(print_r($_POST, true)); // Log POST data for debugging
+
+    $order_status = validate($_POST['order_status'] ?? ''); // Use null coalescing to avoid undefined index
+    $order_track = validate($_POST['order_track'] ?? ''); // Use null coalescing to avoid undefined index
+
+    if (empty($order_track)) {
+        jsonResponse(400, 'error', 'Invalid order tracking number');
+        exit();
+    }
+
+    // Fetch the order ID based on the tracking number
+    $query = "SELECT id FROM purchaseorders WHERE tracking_no = '$order_track' LIMIT 1";
+    $result = mysqli_query($conn, $query);
+    
+    // Check for query error
+    if (!$result) {
+        jsonResponse(500, 'error', 'Database query failed: ' . mysqli_error($conn));
+        exit();
+    }
+
+    $orderData = mysqli_fetch_assoc($result);
+
+    if ($orderData) {
+        $order_id = $orderData['id']; // Get the order ID
+
+        $data = ['order_status' => $order_status];
+        $updateResult = update('purchaseorders', $order_id, $data);
+
+        if ($updateResult) {
+            jsonResponse(200, 'success', 'Order updated successfully');
+        } else {
+            jsonResponse(500, 'error', 'Failed to update order status');
+        }
+    } else {
+        jsonResponse(404, 'error', 'Order not found');
+    }
+}
+
+
 if (isset($_POST['savePurchaseOrder'])) {
     $adminName = validate($_SESSION['adminName']);
     $invoice_no = validate($_SESSION['invoice_no']);
+    $order_status = validate($_SESSION['order_status']);
     $ingPayment_mode = validate($_SESSION['ingPayment_mode']);
     $supplierName = validate($_SESSION['supplierName']);
     $order_placed_by_id = "Admin";
@@ -177,7 +221,7 @@ if (isset($_POST['savePurchaseOrder'])) {
                 'invoice_no' => $invoice_no,
                 'total_amount' => $totalAmount,
                 'order_date' => date('Y-m-d H:i:s'),
-                'order_status' => 'Booked',
+                'order_status' => $order_status,
                 'ingPayment_mode' => $ingPayment_mode,
                 'order_placed_by_id' => $order_placed_by_id,
                 'supplierName' => $supplierName
