@@ -8,7 +8,7 @@
         <div class="card-body">
 
         <?php
-            $query = "SELECT po.*, a.* FROM purchaseOrders po, admins a WHERE a.id = po.customer_id ORDER BY po.id DESC";
+            $query = "SELECT po.*, a.* FROM purchaseOrders po, admins a WHERE a.id = po.customer_id ORDER BY po.order_date DESC";
             $purchaseOrders = mysqli_query($conn, $query);
 
             if($purchaseOrders){
