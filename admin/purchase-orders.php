@@ -31,6 +31,7 @@
                     }
                     ?>
                     <!-- Pending Purchase Orders -->
+                    <h5>Pending Purchase Orders</h5>
                     <table class="table table-striped table-bordered align-items-center justify-content-center">
                         <thead>
                             <tr>
@@ -61,6 +62,7 @@
                     </table>
 
                     <!-- Delivered Purchase Orders -->
+                    <h5>Delivered Purchase Orders</h5>
                     <table class="table table-striped table-bordered align-items-center justify-content-center">
                         <thead>
                             <tr>
