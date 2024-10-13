@@ -178,7 +178,7 @@
                 <div class="text-center py-5">
                     <h5>No tracking number found!</h5>
                     <div>
-                    <a href="orders.php" class="btn btn-primary mt-4 w-25">Return to Orders View</a>
+                    <a href="purchase-orders.php" class="btn btn-primary mt-4 w-25">Return to Purchase Orders View</a>
                     </div>
                     
                 </div>
