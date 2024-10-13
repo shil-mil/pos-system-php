@@ -335,8 +335,8 @@ $(document).on('click', '.ing-decrement', function(){
     });
 
     $(document).on('click', '.proceedToUpdateIng', function() {
-        $order_status = validate($_POST['order_status']);
-        $order_id = validate($_POST['order_id']);
+        var order_status = $('#order_status').val();
+        var order_id = $('#order_id').val(); // Fetch the hidden order_id
     
         // Log for debugging
         console.log('Order Status:', order_status);
@@ -353,18 +353,14 @@ $(document).on('click', '.ing-decrement', function(){
             data: data,
             dataType: "json",
             success: function(response) {
-                console.log(response); //Log response for debugging
-                try {
-                    var res = JSON.parse(response);
-                    if (res.status == 200) {
-                        window.location.href = "purchase-orders.php";
-                    } else {
-                        swal(res.message, res.message, res.status_type);
-                    }
-                } catch (e) {
-                    console.error('Error parsing JSON:', e, response);
-                    swal('Error', 'Failed to process the request', 'error');
+                if (response.status == 200) {
+                    window.location.href = "purchase-orders.php";
+                } else {
+                    swal(response.message, response.message, response.status_type);
                 }
+            },
+            error: function() {
+                swal('Error', 'Failed to process the request', 'error');
             }
         });
     });
