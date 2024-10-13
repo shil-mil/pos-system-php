@@ -32,19 +32,28 @@
             }
             $trackingNo = validate($_GET['track']);
 
-            $query = "SELECT po.*, a.* FROM purchaseOrders po, admins a WHERE 
-                        a.id = po.customer_id AND tracking_no='$trackingNo' 
-                        ORDER BY po.id DESC";
+            $query = "SELECT po.*
+                FROM purchaseOrders po 
+                WHERE po.tracking_no = '$trackingNo' 
+                ORDER BY po.id DESC";
+
+            $customerQuery = "SELECT po.*, a.* FROM purchaseOrders po, admins a WHERE 
+                a.id = po.customer_id AND tracking_no='$trackingNo' 
+                ORDER BY po.id DESC";
 
             $orders = mysqli_query($conn, $query);
+            $customers = mysqli_query($conn, $customerQuery);
 
             if($orders){
 
                 if(mysqli_num_rows($orders) > 0){
                     $orderData = mysqli_fetch_assoc($orders);
+                    $customerData = mysqli_fetch_assoc($customers);
+
                     $supplierName = $orderData['supplierName'];
                     $supplier = mysqli_query($conn, "SELECT * FROM suppliers WHERE id = '$supplierName' LIMIT 1");
                     $supplierData = mysqli_fetch_assoc($supplier);
+
                     $orderId = $orderData['id'];
 
                     ?>
@@ -70,13 +79,13 @@
                             <div class="col-md-6">
                                 <h4>Customer Details</h4>
                                 <label class="mb-1">
-                                    Name: <span class="fw-bold"><?= htmlspecialchars($orderData['firstname'], ENT_QUOTES, 'UTF-8'); ?> <?= htmlspecialchars($orderData['lastname'], ENT_QUOTES, 'UTF-8'); ?></span>
+                                    Name: <span class="fw-bold"><?= htmlspecialchars($customerData['firstname'], ENT_QUOTES, 'UTF-8'); ?> <?= htmlspecialchars($customerData['lastname'], ENT_QUOTES, 'UTF-8'); ?></span>
                                 </label>
                                 <br/>
                                 <label class="mb-1">
                                     Position: 
                                     <span class="fw-bold">
-                                        <?= $orderData['position']?>
+                                        <?= $customerData['position']?>
                                     </span>
                                 </label>
                                 <br />
