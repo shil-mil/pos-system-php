@@ -34,8 +34,33 @@
                 </a>
                 <div class="collapse" id="collapseInventory" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                     <nav class="sb-sidenav-menu-nested nav">
-                        <a class="nav-link" href="inventoyr-ingredients.php">Ingredients</a>
                         
+                        <!-- Ingredients Section -->
+                        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseIngredients" aria-expanded="false" aria-controls="collapseIngredients">
+                            <div class="sb-nav-link-icon"><i class="fas fa-utensils"></i></div>
+                            Ingredients
+                            <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                        </a>
+                        <div class="collapse" id="collapseIngredients" aria-labelledby="headingOne" data-bs-parent="#collapseInventory">
+                            <nav class="sb-sidenav-menu-nested nav">
+                                <a class="nav-link" href="ingredients-add.php">Add Ingredients</a>
+                                <a class="nav-link" href="ingredients-view.php">View Ingredients</a>
+                            </nav>
+                        </div>
+
+                        <!-- Products Section -->
+                        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseProducts" aria-expanded="false" aria-controls="collapseProducts">
+                            <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
+                            Menu Products
+                            <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                        </a>
+                        <div class="collapse" id="collapseProducts" aria-labelledby="headingOne" data-bs-parent="#collapseInventory">
+                            <nav class="sb-sidenav-menu-nested nav">
+                                <a class="nav-link" href="products.php">View Menu Products</a>
+                                <a class="nav-link" href="products-create.php">Add Menu Product</a>
+                            </nav>
+                        </div>
+
                     </nav>
                 </div>
 
@@ -53,6 +78,11 @@
                         <a class="nav-link" href="categories.php">View Categories</a> 
                     </nav>
                 </div>
+
+                <a class="nav-link" href="sales.php">
+                    <div class="sb-nav-link-icon"><i class="fas fa-dollar-sign"></i></div>
+                    Sales Management
+                </a>
 
                 <!-- Units of Measurement -->
                 <li class="nav-item">
@@ -111,32 +141,7 @@
                     </nav>
                 </div>
 
-                <!-- Products Section -->
-                <div class="sb-sidenav-menu-heading">Manage Menu Products</div>
-                <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseProducts" aria-expanded="false" aria-controls="collapseProducts">
-                    <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
-                    Menu Products
-                    <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
-                </a>
-                <div class="collapse" id="collapseProducts" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
-                    <nav class="sb-sidenav-menu-nested nav">
-                        <a class="nav-link" href="products.php">View Menu Products</a>
-                        <a class="nav-link" href="products-create.php">Add Menu Product</a>
-                    </nav>
-                </div>
-
-                <!-- Ingredients Section -->
-                <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseIngredients" aria-expanded="false" aria-controls="collapseIngredients">
-                    <div class="sb-nav-link-icon"><i class="fas fa-utensils"></i></div>
-                    Ingredients
-                    <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
-                </a>
-                <div class="collapse" id="collapseIngredients" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
-                    <nav class="sb-sidenav-menu-nested nav">
-                        <a class="nav-link" href="ingredients-add.php">Add Ingredients</a>
-                        <a class="nav-link" href="ingredients-view.php">View Ingredients</a>
-                    </nav>
-                </div>
+                
 
             </div>
         </div>
