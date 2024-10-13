@@ -1,6 +1,6 @@
 <?php include('includes/header.php'); ?>
 
-<div class="container-fluid px-4">
+<div class="container-fluid px-4 pb-4">
     <div class="card mt-4 shadow-sm">
         <div class="card-header">
             <h4 class="mb-0">Purchase Orders</h4>
@@ -18,6 +18,7 @@
                     $placedPurchaseOrders = [];
                     $pendingPurchaseOrders = [];
                     $deliveredPurchaseOrders = [];
+                    $cancelledPurchaseOrders = [];
 
                     // Categorize orders based on their status
                     foreach($purchaseOrders as $orderItem) {
@@ -30,6 +31,9 @@
                                 break;
                             case 'Delivered':
                                 $deliveredPurchaseOrders[] = $orderItem;
+                                break;
+                            case 'Cancelled':
+                                $CancelledPurchaseOrders[] = $orderItem;
                                 break;
                         }
                     }
@@ -111,6 +115,35 @@
                         </thead>
                         <tbody>
                             <?php foreach($deliveredPurchaseOrders as $ingredientItem): ?>
+                                <tr>
+                                    <td class="fw-bold"><?= $ingredientItem['tracking_no']; ?></td>
+                                    <td><?= $ingredientItem['firstname']; ?></td>
+                                    <td><?= $ingredientItem['order_date']; ?></td>
+                                    <td><?= $ingredientItem['order_status']; ?></td>
+                                    <td><?= $ingredientItem['ingPayment_mode']; ?></td>
+                                    <td>
+                                        <a href="purchase-orders-view.php?track=<?= $ingredientItem['tracking_no']; ?>" class="btn btn-info mb-0 px-2 btn-sm w-100">View</a>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                    
+                    <!-- Cancelled Purchase Orders -->
+                    <h5>Cancelled Purchase Orders</h5>
+                    <table class="table table-striped table-bordered align-items-center justify-content-center">
+                        <thead>
+                            <tr>
+                                <th>Tracking No.</th>
+                                <th>Name</th>
+                                <th>Order Date</th>
+                                <th>Order Status</th>
+                                <th>Payment Method</th>
+                                <th style="width: 250px;">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach($cancelledPurchaseOrders as $ingredientItem): ?>
                                 <tr>
                                     <td class="fw-bold"><?= $ingredientItem['tracking_no']; ?></td>
                                     <td><?= $ingredientItem['firstname']; ?></td>
