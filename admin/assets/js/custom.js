@@ -146,7 +146,7 @@ function quantityIncDec(prodId, qty) {
                         swal(res.message, res.message, res.status_type); // Display error
                     }
                 } catch (e) {
-                    console.error('Error parsing JSON:', e, response);
+                    
                     swal('Error', 'Failed to process the response', 'error');
                 }
             }
@@ -330,6 +330,41 @@ $(document).on('click', '.ing-decrement', function(){
             },
             error: function() {
                 swal('Error', 'Failed to process the request', 'error');
+            }
+        });
+    });
+
+    $(document).on('click', '.proceedToUpdateIng', function() {
+        $order_status = validate($_POST['order_status']);
+        $order_id = validate($_POST['order_id']);
+    
+        // Log for debugging
+        console.log('Order Status:', order_status);
+    
+        var data = {
+            'proceedToUpdateIng': true,
+            'order_id': order_id,
+            'order_status': order_status
+        };
+    
+        $.ajax({
+            type: "POST",
+            url: "purchase-orders-code.php",
+            data: data,
+            dataType: "json",
+            success: function(response) {
+                console.log(response); //Log response for debugging
+                try {
+                    var res = JSON.parse(response);
+                    if (res.status == 200) {
+                        window.location.href = "purchase-orders.php";
+                    } else {
+                        swal(res.message, res.message, res.status_type);
+                    }
+                } catch (e) {
+                    console.error('Error parsing JSON:', e, response);
+                    swal('Error', 'Failed to process the request', 'error');
+                }
             }
         });
     });

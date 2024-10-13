@@ -137,6 +137,34 @@ if (isset($_POST['proceedToPlaceIng'])) {
     }
 }
 
+if (isset($_POST['proceedToUpdateIng'])) {
+    $order_status = validate($_POST['order_status']);
+    $order_id = validate($_POST['order_id']);
+
+    // Debugging: print the order ID and the order data
+    error_log("Order ID: " . $order_id);
+    $orderData = getByID('purchaseorders', $order_id);
+    error_log(print_r($orderData, true));
+
+    if ($orderData['status'] != 200) {
+        jsonResponse(404, 'error', 'Purchase order not found');
+        exit();
+    }
+
+    if ($order_status != '') {
+        $data = ['order_status' => $order_status];
+        $updateResult = update('purchaseorders', $order_id, $data);
+
+        if ($updateResult) {
+            jsonResponse(200, 'success', 'Purchase order updated successfully');
+        } else {
+            jsonResponse(500, 'error', 'Failed to update order status');
+        }
+    } else {
+        jsonResponse(400, 'error', 'Invalid order ID or status');
+    }
+}
+
 if (isset($_POST['proceedToDeliveredIng'])) {
     // Check what POST data is received
     error_log(print_r($_POST, true)); // Log POST data for debugging
