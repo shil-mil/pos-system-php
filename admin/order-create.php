@@ -41,12 +41,15 @@ include('includes/header.php');
                         <select name="product_id" class="form-select mySelect2 ">
                             <option value="">-- Select Product --</option>
                             <?php
-                                $products = getAll('products');
-                                if($products) {
-                                    if(mysqli_num_rows($products) > 0) {
-                                        foreach($products as $prodItem) {
+                                // Show products that have >= 1 quantity
+                                $productsQuery = "SELECT * FROM products WHERE quantity >= 1";
+                                $productsResult = mysqli_query($conn, $productsQuery);
+                                
+                                if($productsResult) {
+                                    if(mysqli_num_rows($productsResult) > 0) {
+                                        foreach($productsResult as $prodItem) {
                                             ?>
-                                                <option value="<?= $prodItem['id']; ?>"><?= $prodItem['productname']; ?></option>
+                                            <option value="<?= $prodItem['id']; ?>"><?= $prodItem['productname']; ?></option>
                                             <?php
                                         }
                                     } else {
