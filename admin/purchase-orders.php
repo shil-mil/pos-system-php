@@ -33,7 +33,7 @@
                                 $deliveredPurchaseOrders[] = $orderItem;
                                 break;
                             case 'Cancelled':
-                                $CancelledPurchaseOrders[] = $orderItem;
+                                $cancelledPurchaseOrders[] = $orderItem;
                                 break;
                         }
                     }
