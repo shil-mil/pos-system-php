@@ -12,6 +12,7 @@
             <div class="card bg-primary text-white mb-4">
                 <div class="card-body">
                     <?php
+                    alertMessage();
                     $productsQuery = "SELECT COUNT(*) AS total_products FROM products";
                     $productsResult = mysqli_query($conn, $productsQuery);
                     $totalProducts = mysqli_fetch_assoc($productsResult)['total_products'];
