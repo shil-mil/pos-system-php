@@ -1,6 +1,9 @@
 <?php include('includes/header.php'); ?>
 
 <div class="container-fluid px-4">
+<div class="pt-4">
+    <?php alertMessage(); ?>
+</div>
     <h1 class="mt-4">Dashboard</h1>
     <ol class="breadcrumb mb-4">
         <li class="breadcrumb-item active">Dashboard</li>
@@ -12,7 +15,6 @@
             <div class="card bg-primary text-white mb-4">
                 <div class="card-body">
                     <?php
-                    alertMessage();
                     $productsQuery = "SELECT COUNT(*) AS total_products FROM products";
                     $productsResult = mysqli_query($conn, $productsQuery);
                     $totalProducts = mysqli_fetch_assoc($productsResult)['total_products'];
