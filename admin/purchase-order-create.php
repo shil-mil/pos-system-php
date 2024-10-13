@@ -49,7 +49,7 @@ ini_set('display_errors', 1);
                         <button type="submit" name="addIngredient" class="btn btn-outline-primary">Add Ingredient</button>
                     </div>
                     <div class="col-md-3 mb-3">
-                        <input type="hidden" id="order_status" name="order_status" value="Pending">
+                        <input type="hidden" id="order_status" name="order_status" value="Placed">
                     </div>
                 </div>
             </form>
