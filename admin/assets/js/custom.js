@@ -297,7 +297,7 @@ $(document).on('click', '.ing-decrement', function(){
         var adminName = $('#adminName').val();
         var ingPayment_mode = $('#ingPayment_mode').val();
         var supplierName = $('#supplierName').val();
-        var order_status = $('#order_status').val() || 'Pending';
+        var order_status = $('#order_status').val();
     
         // Log for debugging
         console.log('Order Status:', order_status);
