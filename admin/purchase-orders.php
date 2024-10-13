@@ -57,7 +57,7 @@
                                     <td><?= $ingredientItem['ingPayment_mode']; ?></td>
                                     <td style="display: flex; justify-content: space-evenly; gap: 5px;">
                                         <input type="hidden" name="order_track" value="<?= $ingredientItem['tracking_no']; ?>">
-                                        <a href="order-edit.php?track=<?= $ingredientItem['tracking_no']; ?>" class="btn btn-primary btn-sm w-100">Edit</a>
+                                        <a href="purchase-order-edit.php?track=<?= $ingredientItem['tracking_no']; ?>" class="btn btn-primary btn-sm w-100">Edit</a>
                                         <a href="purchase-orders-view.php?track=<?= $ingredientItem['tracking_no']; ?>" class="btn btn-info mb-0 px-2 btn-sm w-100">View</a>
                                     </td>
                                 </tr>
