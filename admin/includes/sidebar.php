@@ -45,6 +45,7 @@
                             <nav class="sb-sidenav-menu-nested nav">
                                 <a class="nav-link" href="ingredients-add.php">Add Ingredients</a>
                                 <a class="nav-link" href="ingredients-view.php">View Ingredients</a>
+                                <a class="nav-link" href="stock-out.php">Stock Out</a>
                             </nav>
                         </div>
 
