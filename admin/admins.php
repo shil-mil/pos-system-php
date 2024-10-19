@@ -38,7 +38,7 @@
                             <td><?= $adminItem['username'] ?></td>
                             <td><?= $adminItem['firstname'] ?></td>
                             <td><?= $adminItem['lastname'] ?></td>
-                            <td><?= $adminItem['position'] ?></td>
+                            <td><?= $adminItem['position'] == 1 ? 'Owner' : 'Employee' ?></td>
                             <td>
                                 <?php
                                     if($adminItem['is_banned'] == 1) {
