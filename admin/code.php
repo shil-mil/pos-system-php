@@ -302,13 +302,13 @@ if (isset($_POST['saveProduct'])) {
     $price = validate($_POST['price']);
 
     if ($_FILES['image']['size'] > 0) {
-        $path = "../pics/uploads/products";
+        $path = "../assets/uploads/products";
         $image_ext = pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION);
 
         $filename = time() . '.' . $image_ext;
 
         move_uploaded_file($_FILES['image']['tmp_name'], $path . "/" . $filename);
-        $finalImage = "pics/uploads/products/" . $filename;
+        $finalImage = "assets/uploads/products/" . $filename;
     } else {
         $finalImage = '';
     }
@@ -349,7 +349,7 @@ if (isset($_POST['updateProduct'])) {
     $price = validate($_POST['price']);
 
     if ($_FILES['image']['size'] > 0) {
-        $path = "../pics/uploads/products";
+        $path = "../assets/uploads/products";
         $image_ext = strtolower(pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION));
         $allowed_ext = ['jpg', 'jpeg', 'png', 'gif'];
 
@@ -363,7 +363,7 @@ if (isset($_POST['updateProduct'])) {
         $destination = $path . "/" . $filename;
 
         if (move_uploaded_file($_FILES['image']['tmp_name'], $destination)) {
-            $finalImage = "pics/uploads/products/" . $filename;
+            $finalImage = "assets/uploads/products/" . $filename;
 
             $deleteImage = "../" . $productData['data']['image'];
             if (file_exists($deleteImage)) {
