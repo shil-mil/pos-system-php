@@ -60,6 +60,7 @@ include('includes/header.php');
                                 }
                             ?>
                         </select>
+
                     </div>
                     <div class="col-md-2 mb-3">
                         <label for="">Quantity</label>
@@ -82,84 +83,91 @@ include('includes/header.php');
         <div class="card-header">
              <h4 class="mb-0">Products</h4>
         </div>
-        <div class="card-body" id= "productArea">
-             <?php
-              if(isset($_SESSION['productItems']))
-              {
+        <div class="card-body" id="productArea">
+            <?php
+            // Check if productItems are in session
+            if(isset($_SESSION['productItems']))
+            {
                 $sessionProducts = $_SESSION['productItems'];
+
+                // Check if the session array is empty after removing all products
                 if(empty($sessionProducts)){
+                    // Unset session variables if no products left
                     unset($_SESSION['productItems']);
                     unset($_SESSION['productItemIds']);
                 }
-                  ?>
-                <div class="mb-3" id= "productContent">
-                    <table class="table table-bordered table-striped">
-                        <thead>
-                            <tr>
-                                <th>Product Name</th>
-                                <th>Price</th>
-                                <th>Quantity</th>
-                                <th>Total Price</th> 
-                                <th>Remove</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php 
-                                foreach($sessionProducts as $key => $item ) : 
-                            ?>
-                                <tr>
-                                <td><?= $item['name']; ?></td>
-                                <td>Php <?= $item['price']; ?></td>
-                                <td>
-                                     <div class="input-group qtyBox">
-                                        <input type="hidden" value="<?= $item['product_id'];?>" class = "prodId" >
-                                        <button class="input-group-text prod-decrement">-</button>
-                                        <input type="text" value="<?= $item['quantity']; ?>" class="qty quantityInput" />
-                                        <button class="input-group-text prod-increment">+</button>
-                                     </div>
-                                </td>
-                                <td>Php <?= number_format($item['price'] * $item['quantity'], 2); ?></td>
-                                <td>
-                                <a href="order-item-delete.php?index=<?= $key; ?>" class="btn btn-danger">Remove</a>
-                                </td>
-                                </tr>
-                                <?php endforeach; ?>
-                        </tbody>
-                    </table>
 
-                    <div class="mt-2">
-                    <hr>
-                    <div class="row">
-                        <div class="col-md-4">
-                            <label>Select Payment Method</label>
-                            <select id="payment_mode" class="form-select">
-                                <option value="">-- Select Payment --</option>
-                                <option value="Cash Payment">Cash Payment</option>
-                                <option value="Online Payment">Online Payment</option>
-                            </select>
-                        </div>
-                        <div class="col-md-4">
-                            <label>Enter Customer Name</label>
-                            <input type="text" id="cname" class="form-control" value="" />
-                        </div>
-                        <div class="col-md-4">
-                            <br/>
-                            <button type="button" class="btn btn-warning w-100 proceedToPlace">Proceed to place order</button>
+                // If there are still products in the cart, display them
+                if (!empty($sessionProducts)) {
+                ?>
+                    <div class="mb-3" id="productContent">
+                        <table class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Product Name</th>
+                                    <th>Price</th>
+                                    <th>Quantity</th>
+                                    <th>Total Price</th>
+                                    <th>Remove</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php 
+                                foreach($sessionProducts as $key => $item) : 
+                                ?>
+                                    <tr>
+                                        <td><?= $item['name']; ?></td>
+                                        <td>Php <?= $item['price']; ?></td>
+                                        <td>
+                                            <div class="input-group qtyBox">
+                                                <input type="hidden" value="<?= $item['product_id'];?>" class="prodId">
+                                                <button class="input-group-text prod-decrement">-</button>
+                                                <input type="text" value="<?= $item['quantity']; ?>" class="qty quantityInput" />
+                                                <button class="input-group-text prod-increment">+</button>
+                                            </div>
+                                        </td>
+                                        <td>Php <?= number_format($item['price'] * $item['quantity'], 2); ?></td>
+                                        <td>
+                                            <a href="order-item-delete.php?index=<?= $key; ?>" class="btn btn-danger">Remove</a>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                        <div class="mt-2">
+                            <hr>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <label>Select Payment Method</label>
+                                    <select id="payment_mode" class="form-select">
+                                        <option value="">-- Select Payment --</option>
+                                        <option value="Cash Payment">Cash Payment</option>
+                                        <option value="Online Payment">Online Payment</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label>Enter Customer Name</label>
+                                    <input type="text" id="cname" class="form-control" value="" />
+                                </div>
+                                <div class="col-md-4">
+                                    <br/>
+                                    <button type="button" class="btn btn-warning w-100 proceedToPlace">Proceed to place order</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
-
-
-                
-                </div>
                 <?php
-              }
-              else
-              {
-                 echo '<h5>No items added</h5>';
-              }
-             ?>
+                } else {
+                    // If no products are left, show the "No items added" message
+                    echo '<h5>No items added</h5>';
+                }
+            } else {
+                // If no products have been added to the session
+                echo '<h5>No items added</h5>';
+            }
+            ?>
         </div>
+
     </div>
 </div>
 
