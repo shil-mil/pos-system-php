@@ -166,11 +166,11 @@ if (isset($_POST['proceedToUpdateIng'])) {
 }
 
 if (isset($_POST['proceedToDeliveredIng'])) {
-    // Check what POST data is received
-    error_log(print_r($_POST, true)); // Log POST data for debugging
+    // Log the POST data for debugging
+    error_log(print_r($_POST, true));
 
-    $order_status = validate($_POST['order_status'] ?? ''); // Use null coalescing to avoid undefined index
-    $order_track = validate($_POST['order_track'] ?? ''); // Use null coalescing to avoid undefined index
+    $order_status = validate($_POST['order_status'] ?? ''); 
+    $order_track = validate($_POST['order_track'] ?? ''); 
 
     if (empty($order_track)) {
         jsonResponse(400, 'error', 'Invalid order tracking number');
@@ -180,8 +180,7 @@ if (isset($_POST['proceedToDeliveredIng'])) {
     // Fetch the order ID based on the tracking number
     $query = "SELECT id FROM purchaseorders WHERE tracking_no = '$order_track' LIMIT 1";
     $result = mysqli_query($conn, $query);
-    
-    // Check for query error
+
     if (!$result) {
         jsonResponse(500, 'error', 'Database query failed: ' . mysqli_error($conn));
         exit();
@@ -190,13 +189,49 @@ if (isset($_POST['proceedToDeliveredIng'])) {
     $orderData = mysqli_fetch_assoc($result);
 
     if ($orderData) {
-        $order_id = $orderData['id']; // Get the order ID
+        $order_id = $orderData['id'];
 
         $data = ['order_status' => $order_status];
         $updateResult = update('purchaseorders', $order_id, $data);
 
         if ($updateResult) {
-            jsonResponse(200, 'success', 'Order updated successfully');
+            if ($order_status == 'Delivered') {
+                // Use your provided query to fetch the ordered ingredients
+                $orderItemQuery = "SELECT ii.quantity as orderItemQuantity, ii.price as orderItemPrice, i.name as ingredientName, i.id as ingredientId, i.quantity as current_quantity
+                                   FROM purchaseOrders po 
+                                   JOIN ingredients_items ii ON ii.order_id = po.id 
+                                   JOIN ingredients i ON i.id = ii.ingredient_id 
+                                   WHERE po.tracking_no='$order_track'";
+
+                $orderItemsRes = mysqli_query($conn, $orderItemQuery);
+
+                if ($orderItemsRes && mysqli_num_rows($orderItemsRes) > 0) {
+                    // Loop through each ordered ingredient and update its quantity
+                    while ($orderItemRow = mysqli_fetch_assoc($orderItemsRes)) {
+                        $ingredientId = $orderItemRow['ingredientId'];
+                        $orderQuantity = $orderItemRow['orderItemQuantity'];
+                        $currentQuantity = $orderItemRow['current_quantity'];
+
+                        // Add the delivered quantity to the available stock
+                        $newQuantity = $currentQuantity + $orderQuantity;
+
+                        // Update the ingredient's quantity in the database
+                        $updateIngredientQtyQuery = "UPDATE ingredients SET quantity='$newQuantity' WHERE id='$ingredientId'";
+                        $updateIngredientQtyResult = mysqli_query($conn, $updateIngredientQtyQuery);
+
+                        if (!$updateIngredientQtyResult) {
+                            jsonResponse(500, 'error', 'Failed to update ingredient quantity for ingredient ID: ' . $ingredientId);
+                            exit();
+                        }
+                    }
+
+                    jsonResponse(200, 'success', 'Order delivered and ingredient quantities updated successfully');
+                } else {
+                    jsonResponse(404, 'error', 'No ingredients found for this order');
+                }
+            } else {
+                jsonResponse(200, 'success', 'Order status updated successfully');
+            }
         } else {
             jsonResponse(500, 'error', 'Failed to update order status');
         }
@@ -204,6 +239,8 @@ if (isset($_POST['proceedToDeliveredIng'])) {
         jsonResponse(404, 'error', 'Order not found');
     }
 }
+
+
 
 
 if (isset($_POST['savePurchaseOrder'])) {
@@ -271,17 +308,6 @@ if (isset($_POST['savePurchaseOrder'])) {
                 ];
 
                 $orderItemQuery = insert('ingredients_items', $dataIngredientItem);
-
-                // Update product quantities
-                $checkIngredientQuantityQuery = mysqli_query($conn, "SELECT * FROM ingredients WHERE id='$ingredientId'");
-                $ingredientQtyData = mysqli_fetch_assoc($checkIngredientQuantityQuery);
-                $totalIngredientQuantity = $ingredientQtyData['quantity'] + $quantity;
-
-                $dataUpdate = [
-                    'quantity' => $totalIngredientQuantity
-                ];
-
-                $updateIngredientQty = update('ingredients', $ingredientId, $dataUpdate);
             }
 
             unset($_SESSION['ingredientItemIds'], $_SESSION['ingredientItems'], $_SESSION['ingPayment_mode'], $_SESSION['invoice_no'], $_SESSION['supplierName']);
