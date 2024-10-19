@@ -87,36 +87,37 @@
 
                 <!-- Units of Measurement -->
                 <li class="nav-item">
-                        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseUnits" aria-expanded="false" aria-controls="collapseUnits">
-                            <i class="fas fa-balance-scale"></i>
-                            <span>Units of Measurement</span>
-                            <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
-                        </a>
-                        <div class="collapse" id="collapseUnits" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
-                            <nav class="sb-sidenav-menu-nested nav">
-                                <a class="nav-link" href="units-create.php">Add Unit</a>
-                                <a class="nav-link" href="units.php">View Units</a>
-                            </nav>
-                        </div>
+                    <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseUnits" aria-expanded="false" aria-controls="collapseUnits">
+                        <i class="fas fa-balance-scale"></i>
+                        <span>Units of Measurement</span>
+                        <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                    </a>
+                    <div class="collapse" id="collapseUnits" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+                        <nav class="sb-sidenav-menu-nested nav">
+                            <a class="nav-link" href="units-create.php">Add Unit</a>
+                            <a class="nav-link" href="units.php">View Units</a>
+                        </nav>
+                    </div>
                 </li>
 
-            
-
-                <!-- Manage Staff Section -->
-                <div class="sb-sidenav-menu-heading">Manage Staff</div>
-                <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseAdmins" aria-expanded="false" aria-controls="collapseAdmins">
-                    <div class="sb-nav-link-icon"><i class="fas fa-users"></i></div>
-                    Admins/Staff
-                    <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
-                </a>
-                <div class="collapse" id="collapseAdmins" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
-                    <nav class="sb-sidenav-menu-nested nav">
-                        <a class="nav-link" href="admins-create.php">Add Admin</a>
-                        <a class="nav-link" href="admins.php">View Admin</a>
-                    </nav>
-                </div>
+                <!-- Manage Staff Section (Only for Owners/Admins) -->
+                <?php if ($_SESSION['loggedInUser']['position'] == 1): ?>
+                    <div class="sb-sidenav-menu-heading">Manage Staff</div>
+                    <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseAdmins" aria-expanded="false" aria-controls="collapseAdmins">
+                        <div class="sb-nav-link-icon"><i class="fas fa-users"></i></div>
+                        Admins/Staff
+                        <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                    </a>
+                    <div class="collapse" id="collapseAdmins" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+                        <nav class="sb-sidenav-menu-nested nav">
+                            <a class="nav-link" href="admins-create.php">Add Admin</a>
+                            <a class="nav-link" href="admins.php">View Admin</a>
+                        </nav>
+                    </div>
+                <?php endif; ?>
 
                 <!-- Manage Customer Section -->
+                <div class="sb-sidenav-menu-heading">Manage People</div>
                 <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseCustomer" aria-expanded="false" aria-controls="collapseCustomer">
                     <div class="sb-nav-link-icon"><i class="fas fa-users"></i></div>
                     Customers
