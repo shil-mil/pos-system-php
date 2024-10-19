@@ -133,29 +133,67 @@ if (isset($_POST['proceedToUpdateBtn'])) {
     $order_status = validate($_POST['order_status']);
     $order_id = validate($_POST['order_id']);
 
-    // Debugging: print the order ID and the order data
-    error_log("Order ID: " . $order_id);
+    // Fetch order details
     $orderData = getByID('orders', $order_id);
-    error_log(print_r($orderData, true));
-
     if ($orderData['status'] != 200) {
         jsonResponse(404, 'error', 'Order not found');
         exit();
     }
 
+    // Update order status
     if ($order_status != '') {
         $data = ['order_status' => $order_status];
         $updateResult = update('orders', $order_id, $data);
 
-        if ($updateResult) {
-            jsonResponse(200, 'success', 'Order updated successfully');
-        } else {
+        if (!$updateResult) {
             jsonResponse(500, 'error', 'Failed to update order status');
+            exit();
+        }
+
+        // Deduct product quantity if the order is being prepared
+        if ($order_status == 'Preparing') {
+            $orderItemQuery = "SELECT oi.quantity as orderItemQuantity, oi.product_id, p.quantity as productQuantity 
+                               FROM order_items as oi 
+                               JOIN products as p ON oi.product_id = p.id 
+                               WHERE oi.order_id = '$order_id'";
+
+            $orderItemsRes = mysqli_query($conn, $orderItemQuery);
+
+            if ($orderItemsRes && mysqli_num_rows($orderItemsRes) > 0) {
+                while ($orderItemRow = mysqli_fetch_assoc($orderItemsRes)) {
+                    $productId = $orderItemRow['product_id'];
+                    $orderItemQuantity = $orderItemRow['orderItemQuantity'];
+                    $productQuantity = $orderItemRow['productQuantity'];
+
+                    // Ensure there is enough stock before deducting
+                    if ($productQuantity >= $orderItemQuantity) {
+                        $newQuantity = $productQuantity - $orderItemQuantity;
+
+                        $updateProductQtyQuery = "UPDATE products SET quantity='$newQuantity' WHERE id='$productId'";
+                        $updateProductQtyResult = mysqli_query($conn, $updateProductQtyQuery);
+
+                        if (!$updateProductQtyResult) {
+                            jsonResponse(500, 'error', 'Failed to update product quantity for product ID: ' . $productId);
+                            exit();
+                        }
+                    } else {
+                        jsonResponse(400, 'error', 'Insufficient stock for product ID: ' . $productId);
+                        exit();
+                    }
+                }
+
+                jsonResponse(200, 'success', 'Order updated and product quantities deducted successfully');
+            } else {
+                jsonResponse(404, 'error', 'No order items found');
+            }
+        } else {
+            jsonResponse(200, 'success', 'Order updated successfully');
         }
     } else {
-        jsonResponse(400, 'error', 'Invalid order ID or status');
+        jsonResponse(400, 'error', 'Invalid order status');
     }
 }
+
 
 if (isset($_POST['proceedToCompleteBtn'])) {
     // Check what POST data is received
@@ -277,16 +315,16 @@ if (isset($_POST['saveOrder'])) {
 
             $orderItemQuery = insert('order_items', $dataOrderItem);
 
-            // Update product quantities
-            $checkProductQuantityQuery = mysqli_query($conn, "SELECT * FROM products WHERE id='$productId'");
-            $productQtyData = mysqli_fetch_assoc($checkProductQuantityQuery);
-            $totalProductsQuantity = $productQtyData['quantity'] - $quantity;
+            // // Update product quantities
+            // $checkProductQuantityQuery = mysqli_query($conn, "SELECT * FROM products WHERE id='$productId'");
+            // $productQtyData = mysqli_fetch_assoc($checkProductQuantityQuery);
+            // $totalProductsQuantity = $productQtyData['quantity'] - $quantity;
 
-            $dataUpdate = [
-                'quantity' => $totalProductsQuantity
-            ];
+            // $dataUpdate = [
+            //     'quantity' => $totalProductsQuantity
+            // ];
 
-            $updateProductQty = update('products', $productId, $dataUpdate);
+            // $updateProductQty = update('products', $productId, $dataUpdate);
         }
 
         unset($_SESSION['productItemIds'], $_SESSION['productItems'], $_SESSION['payment_mode'], $_SESSION['invoice_no']);
