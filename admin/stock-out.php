@@ -61,88 +61,91 @@ ini_set('display_errors', 1);
         </div>
         <div class="card-body" id="ingredientArea">
              <?php
+              // Check if ingredientItems are in session
               if(isset($_SESSION['ingredientItems']))
               {
-                $sessionIngredients = $_SESSION['ingredientItems'];
-                if(empty($sessionIngredients)){
-                    unset($_SESSION['ingredientItems']);
-                    unset($_SESSION['ingredientItemIds']);
-                }
+                  $sessionIngredients = $_SESSION['ingredientItems'];
+
+                  // Check if the session array is empty after removing all ingredients
+                  if(empty($sessionIngredients)){
+                      // Unset session variables if no ingredients left
+                      unset($_SESSION['ingredientItems']);
+                      unset($_SESSION['ingredientItemIds']);
+                  }
                   ?>
-                <div class="mb-3" id="ingredientContent">
-                    <table class="table table-bordered table-striped">
-                    <thead>
-                        <tr>
-                            <th>Id</th>
-                            <th>Product Name</th>
-                            <th>UoM</th> <!-- Update header for UoM -->
-                            <th>Category</th>
-                            <th>Sub Category</th>
-                            <th>Price</th>
-                            <th>Quantity</th>
-                            <th>Total Price</th> 
-                            <th>Remove</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php 
-                            $i = 1;
-                            foreach($sessionIngredients as $key => $item) : 
-                        ?>
-                            <tr>
-                                <td><?= $i++; ?></td>
-                                <td><?= $item['name']; ?></td>
-                                <td><?= $item['unit_name']; ?></td> <!-- Updated to display UoM name -->
-                                <td><?= $item['category']; ?></td>
-                                <td><?= $item['sub_category']; ?></td>
-                                <td>Php <?= $item['price']; ?></td>
-                                <td>
-                                <div class="input-group qtyBox">
-                                    <input type="hidden" value="<?= $item['ingredient_id'];?>" class="ingId">
-                                    <button class="input-group-text so-decrement">-</button>
-                                    <input type="text" value="<?= $item['quantity']; ?>" class="qty quantityInput" />
-                                    <button class="input-group-text so-increment">+</button>
-                                </div>
 
-                                </td>
-                                <td>Php <?= number_format($item['price'] * $item['quantity'], 2); ?></td>
-                                <td>
-                                    <a href="purchase-order-item-delete.php?index=<?= $key; ?>" class="btn btn-danger">Remove</a>
-                                </td>
-                            </tr>
-                        <?php endforeach; ?>
-                    </tbody>
+                  <div class="mb-3" id="ingredientContent">
+                      <table class="table table-bordered table-striped">
+                      <thead>
+                          <tr>
+                              <th>Id</th>
+                              <th>Product Name</th>
+                              <th>UoM</th>
+                              <th>Category</th>
+                              <th>Sub Category</th>
+                              <th>Price</th>
+                              <th>Quantity</th>
+                              <th>Total Price</th> 
+                              <th>Remove</th>
+                          </tr>
+                      </thead>
+                      <tbody>
+                          <?php 
+                              $i = 1;
+                              foreach($sessionIngredients as $key => $item) : 
+                          ?>
+                              <tr>
+                                  <td><?= $i++; ?></td>
+                                  <td><?= $item['name']; ?></td>
+                                  <td><?= $item['unit_name']; ?></td>
+                                  <td><?= $item['category']; ?></td>
+                                  <td><?= $item['sub_category']; ?></td>
+                                  <td>Php <?= $item['price']; ?></td>
+                                  <td>
+                                  <div class="input-group qtyBox">
+                                      <input type="hidden" value="<?= $item['ingredient_id'];?>" class="ingId">
+                                      <button class="input-group-text so-decrement">-</button>
+                                      <input type="text" value="<?= $item['quantity']; ?>" class="qty quantityInput" />
+                                      <button class="input-group-text so-increment">+</button>
+                                  </div>
+                                  </td>
+                                  <td>Php <?= number_format($item['price'] * $item['quantity'], 2); ?></td>
+                                  <td>
+                                      <a href="purchase-order-item-delete.php?index=<?= $key; ?>" class="btn btn-danger">Remove</a>
+                                  </td>
+                              </tr>
+                          <?php endforeach; ?>
+                      </tbody>
+                      </table>
 
-
-                    </table>
-
-                    <div class="mt-2">
-                    <hr>
-                    <div class="row">
-                        <div class="col-md-4">
-                            <label>Select Reason</label>
-                            <select id="ingPayment_mode" class="form-select">
-                                <option value="">-- Select Reason --</option>
-                                <option value="Damaged">Damaged</option>
-                                <option value="Expired">Expired</option>
-                                <option value="Lacking">Lacking</option>
-                            </select>
-                        </div>
-                        <div class="col-md-4">
-                            <label>Enter Admin Name</label>
-                            <input type="text" id="adminName" class="form-control" value="" />
-                        </div>
-                        <div class="col-md-4">
-                             <br/>
-                            <button type="button" class="btn btn-warning w-100 proceedToPlaceIng">Proceed to place order</button>
-                        </div>
-                    </div>
-                </div>
-                </div>
-                <?php
+                      <div class="mt-2">
+                      <hr>
+                      <div class="row">
+                          <div class="col-md-4">
+                              <label>Select Reason</label>
+                              <select id="ingPayment_mode" class="form-select">
+                                  <option value="">-- Select Reason --</option>
+                                  <option value="Damaged">Damaged</option>
+                                  <option value="Expired">Expired</option>
+                                  <option value="Lacking">Lacking</option>
+                              </select>
+                          </div>
+                          <div class="col-md-4">
+                              <label>Enter Admin Name</label>
+                              <input type="text" id="adminName" class="form-control" value="" />
+                          </div>
+                          <div class="col-md-4">
+                               <br/>
+                              <button type="button" class="btn btn-warning w-100 proceedToPlaceIng">Proceed to place order</button>
+                          </div>
+                      </div>
+                  </div>
+                  </div>
+                  <?php
               }
               else
               {
+                 // If no items have been added to the session
                  echo '<h5>No items added</h5>';
               }
              ?>
