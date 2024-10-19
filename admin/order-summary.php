@@ -14,8 +14,6 @@ if(!isset($_SESSION['productItems'])){
             </div>
             <div class="modal-footer">
                 <a href="orders.php" class="btn btn-secondary">Close</a>
-                <button type="button" onclick="printMyBillingArea()" class="btn btn-danger">Print</button>
-                <button type="button" onclick="downloadPDF('<?= $_SESSION['invoice_no']; ?>')" class="btn btn-warning">Download PDF</button>
             </div>
         </div>
     </div>
@@ -141,8 +139,6 @@ if(!isset($_SESSION['productItems'])){
                     <?php if(isset($_SESSION['productItems'])) : ?>
                     <div class="mt-4 text-end">
                         <button type="button" class="btn btn-primary px-4 mx-1" id="saveOrder">Save</button>
-                        <button type="button" class="btn btn-info px-4 mx-1" onclick="printMyBillingArea()" class="btn btn-danger">Print</button>
-                        <button type="button" class="btn btn-warning px-4 mx-1" onclick="downloadPDF('<?= $_SESSION['invoice_no']; ?>')">Download PDF</button>
                     </div>
                     <?php endif; ?>
 
