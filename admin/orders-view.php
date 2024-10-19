@@ -78,6 +78,12 @@
                                     Order placed by: <span class="fw-bold"><?= htmlspecialchars($orderData['order_placed_by_id'], ENT_QUOTES, 'UTF-8'); ?></span>
                                 </label>
                                 <br/>
+                                <?php if ($orderData['order_status'] === 'Cancelled'): ?>
+                                    <label class="mb-1">
+                                        Order cancelled by: <span class="fw-bold"><?= htmlspecialchars($orderData['order_placed_by_id'], ENT_QUOTES, 'UTF-8'); ?></span>
+                                    </label>
+                                    <br/>
+                                <?php endif; ?>
                                 <label class="mb-1">
                                     Total Quantity: <span class="fw-bold"><?= htmlspecialchars($totalQuantity, ENT_QUOTES, 'UTF-8'); ?></span>
                                 </label>
@@ -89,6 +95,10 @@
 
                                 <label class="mb-1">
                                     Name: <span class="fw-bold"><?= htmlspecialchars($orderData['name'], ENT_QUOTES, 'UTF-8'); ?></span>
+                                </label>
+                                <br/>
+                                <label class="mb-1">
+                                    Invoice No: <span class="fw-bold"><?= htmlspecialchars($orderData['invoice_no'], ENT_QUOTES, 'UTF-8'); ?></span>
                                 </label>
                                 <br/>
                                 <label class="mb-1">
