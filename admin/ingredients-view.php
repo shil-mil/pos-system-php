@@ -7,7 +7,7 @@ $query = "SELECT ingredients.*, units.name AS unit_name FROM ingredients
 $result = mysqli_query($conn, $query);
 ?>
 
-<div class="container-fluid px-4">
+<div class="container-fluid px-4 pb-4">
     <div class="card mt-4 shadow-sm">
         <div class="card-header">
             <h4 class="mb-0">Ingredients
@@ -26,7 +26,6 @@ $result = mysqli_query($conn, $query);
                         <th>Category</th>
                         <th>Sub Category</th>
                         <th>Quantity</th>
-                        <th>Price</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -39,12 +38,10 @@ $result = mysqli_query($conn, $query);
                         <tr style="background-color: <?= $i % 2 == 0 ? '#fff' : '#f9f9f9'; ?>; border: 1px solid #dee2e6;">
                             <!-- <td><?php echo htmlspecialchars($row['id']); ?></td> -->
                             <td><?php echo htmlspecialchars($row['name']); ?></td>
-                         
                             <td><?php echo htmlspecialchars($row['unit_name']); ?></td> <!-- Display unit name -->
                             <td><?php echo htmlspecialchars($row['category']); ?></td>
                             <td><?php echo htmlspecialchars($row['sub_category']); ?></td>
                             <td><?php echo htmlspecialchars($row['quantity']); ?></td>
-                            <td><?php echo htmlspecialchars($row['price']); ?></td>
                             <td>
                                 <a href="ingredients-edit.php?id=<?php echo $row['id']; ?>" class="btn btn-outline-success btn-sm" style="margin: 0; padding: 0.25rem 0.5rem;">Edit</a>
                                 <a href="ingredients-delete.php?id=<?php echo $row['id']; ?>" class="btn btn-outline-danger btn-sm" style="margin: 0; padding: 0.25rem 0.5rem;">Delete</a>

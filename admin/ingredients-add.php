@@ -52,11 +52,6 @@
                     </select>
                 </div>
 
-                <div class="col-md-4 mb-3">
-                        <label for="">Price *</label>
-                        <input type="number" name="price" required class="form-control" />
-                    </div>
-
                 <!-- Submit Button -->
                 <button type="submit" name="saveIngredient" class="btn btn-outline-primary">Save Ingredient</button>
             </form>
