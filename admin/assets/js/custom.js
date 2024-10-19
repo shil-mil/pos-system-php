@@ -146,7 +146,7 @@ function quantityIncDec(prodId, qty) {
                         swal(res.message, res.message, res.status_type); // Display error
                     }
                 } catch (e) {
-                    
+                    console.error('Error parsing JSON:', e, response);
                     swal('Error', 'Failed to process the response', 'error');
                 }
             }
