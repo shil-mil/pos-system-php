@@ -14,7 +14,7 @@ ini_set('display_errors', 1);
         </div>
         <div class="card-body">
         <?php alertMessage(); ?>
-            <form action="purchase-orders-code.php" method="POST">
+            <form action="code.php" method="POST">
                 <div class="row">
                     <div class="col-md-3 mb-3">
                         <label for="">Select Ingredients</label>
@@ -60,90 +60,91 @@ ini_set('display_errors', 1);
         </div>
         <div class="card-body" id="ingredientArea">
              <?php
-              // Check if ingredientItems are in session
-              if(isset($_SESSION['ingredientItems']))
+              // Check if soItems are in session
+              if(isset($_SESSION['soItems']))
               {
-                  $sessionIngredients = $_SESSION['ingredientItems'];
+                  $sessionIngredients = $_SESSION['soItems'];
 
                   // Check if the session array is empty after removing all ingredients
                   if(empty($sessionIngredients)){
                       // Unset session variables if no ingredients left
-                      unset($_SESSION['ingredientItems']);
-                      unset($_SESSION['ingredientItemIds']);
+                      unset($_SESSION['soItems']);
+                      unset($_SESSION['soItemIds']);
                   }
+
+                  if (!empty($sessionIngredients)) {
                   ?>
 
-                  <div class="mb-3" id="ingredientContent">
-                      <table class="table table-bordered table-striped">
-                      <thead>
-                          <tr>
-                              <th>Id</th>
-                              <th>Product Name</th>
-                              <th>UoM</th>
-                              <th>Category</th>
-                              <th>Sub Category</th>
-                              <th>Price</th>
-                              <th>Quantity</th>
-                              <th>Total Price</th> 
-                              <th>Remove</th>
-                          </tr>
-                      </thead>
-                      <tbody>
-                          <?php 
-                              $i = 1;
-                              foreach($sessionIngredients as $key => $item) : 
-                          ?>
-                              <tr>
-                                  <td><?= $i++; ?></td>
-                                  <td><?= $item['name']; ?></td>
-                                  <td><?= $item['unit_name']; ?></td>
-                                  <td><?= $item['category']; ?></td>
-                                  <td><?= $item['sub_category']; ?></td>
-                                  <td>Php <?= $item['price']; ?></td>
-                                  <td>
-                                  <div class="input-group qtyBox">
-                                      <input type="hidden" value="<?= $item['ingredient_id'];?>" class="ingId">
-                                      <button class="input-group-text so-decrement">-</button>
-                                      <input type="text" value="<?= $item['quantity']; ?>" class="qty quantityInput" />
-                                      <button class="input-group-text so-increment">+</button>
-                                  </div>
-                                  </td>
-                                  <td>Php <?= number_format($item['price'] * $item['quantity'], 2); ?></td>
-                                  <td>
-                                      <a href="purchase-order-item-delete.php?index=<?= $key; ?>" class="btn btn-danger">Remove</a>
-                                  </td>
-                              </tr>
-                          <?php endforeach; ?>
-                      </tbody>
-                      </table>
+                    <div class="mb-3" id="ingredientContent">
+                        <table class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th>Product Name</th>
+                                <th>UoM</th>
+                                <th>Category</th>
+                                <th>Sub Category</th>
+                                <th>Price</th>
+                                <th>Quantity</th>
+                                <th>Total Price</th> 
+                                <th>Remove</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php 
+                                foreach($sessionIngredients as $key => $item) : 
+                            ?>
+                                <tr>
+                                    <td><?= $item['name']; ?></td>
+                                    <td><?= $item['unit_name']; ?></td>
+                                    <td><?= $item['category']; ?></td>
+                                    <td><?= $item['sub_category']; ?></td>
+                                    <td>Php <?= $item['price']; ?></td>
+                                    <td>
+                                    <div class="input-group qtyBox">
+                                        <input type="hidden" value="<?= $item['ingredient_id'];?>" class="ingId">
+                                        <button class="input-group-text so-decrement">-</button>
+                                        <input type="text" value="<?= $item['quantity']; ?>" class="qty quantityInput" />
+                                        <button class="input-group-text so-increment">+</button>
+                                    </div>
+                                    </td>
+                                    <td>Php <?= number_format($item['price'] * $item['quantity'], 2); ?></td>
+                                    <td>
+                                        <a href="stock-out-item-delete.php?index=<?= $key; ?>" class="btn btn-danger">Remove</a>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                        </table>
 
-                      <div class="mt-2">
-                      <hr>
-                      <div class="row">
-                          <div class="col-md-4">
-                              <label>Select Reason</label>
-                              <select id="ingPayment_mode" class="form-select">
-                                  <option value="">-- Select Reason --</option>
-                                  <option value="Damaged">Damaged</option>
-                                  <option value="Expired">Expired</option>
-                                  <option value="Lacking">Lacking</option>
-                              </select>
-                          </div>
-                          <div class="col-md-4">
-                              <label>Enter Admin Name</label>
-                              <input type="text" id="adminName" class="form-control" value="" />
-                          </div>
-                          <div class="col-md-4">
-                               <br/>
-                              <button type="button" class="btn btn-warning w-100 proceedToPlaceIng">Proceed to place order</button>
-                          </div>
-                      </div>
-                  </div>
-                  </div>
+                        <div class="mt-2">
+                        <hr>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <label>Select Reason</label>
+                                <select id="ingPayment_mode" class="form-select">
+                                    <option value="">-- Select Reason --</option>
+                                    <option value="Damaged">Damaged</option>
+                                    <option value="Expired">Expired</option>
+                                    <option value="Lacking">Lacking</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label>Enter Admin Name</label>
+                                <input type="text" id="adminName" class="form-control" value="" />
+                            </div>
+                            <div class="col-md-4">
+                                <br/>
+                                <button type="button" class="btn btn-warning w-100 proceedToPlaceIng">Proceed to Stock Out</button>
+                            </div>
+                        </div>
+                    </div>
+                    </div>
                   <?php
-              }
-              else
-              {
+                  } else {
+                    // If no products are left, show the "No items added" message
+                    echo '<h5>No items added</h5>';
+                }
+              } else {
                  // If no items have been added to the session
                  echo '<h5>No items added</h5>';
               }

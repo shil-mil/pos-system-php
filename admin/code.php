@@ -6,6 +6,14 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
+if(!isset($_SESSION['soItems'])) {
+    $_SESSION['soItems'] = [];
+}
+
+if(!isset($_SESSION['soItemIds'])) {
+    $_SESSION['soItemIds'] = [];
+}
+
 
 // Save Admin Functionality
 if (isset($_POST['saveAdmin'])) {
@@ -532,6 +540,109 @@ if (isset($_POST['updateCustomer'])) {
         $_SESSION['message'] = 'Please fill required fields.';
         header('Location: customer-edit.php');
         exit();
+    }
+}
+
+if(isset($_POST['soIncDec'])) {
+    $ingId = validate($_POST['ingredient_id']);
+    $quantity = validate($_POST['quantity']);
+
+    // Fetch ingredient details from the database
+    $checkIngredient = mysqli_query($conn, "SELECT * FROM ingredients WHERE id='$ingId' LIMIT 1");
+
+    // Initialize flags
+    $flag = false;
+    $flag1 = false;
+
+    // Check if ingredient exists
+    if (mysqli_num_rows($checkIngredient) > 0) {
+        $row = mysqli_fetch_assoc($checkIngredient);
+            // Check against session items
+            foreach($_SESSION['soItems'] as $key => $item) {
+                if ($item['ingredient_id'] == $ingId) {
+                    // Check if requested quantity exceeds available quantity
+                    if ($row['quantity'] < $quantity + 1) {
+                        $flag1 = true; // Not enough available
+                    } else {
+                        // Enough available, update the quantity
+                        $_SESSION['soItems'][$key]['quantity'] = $quantity;
+                        $flag = true; // Quantity changed
+                    }
+                    break; // Break once we find the item
+                }
+            }
+        
+    }
+    if ($flag1) {
+        jsonResponse(500, 'success', "Maximum quantity reached!");
+    } else if ($flag) {
+        jsonResponse(200, 'success', "Quantity changed.");
+    } else {
+        jsonResponse(500, 'error', "Something went wrong!");
+    }
+}
+
+if(isset($_POST['addIngredient'])){
+    $ingredientId = validate($_POST['ingredient_id']);
+    $quantity = validate($_POST['quantity']);
+
+    // Updated query to join the units table
+    $checkIngredient = mysqli_query($conn, "
+        SELECT i.*, u.name AS unit_name 
+        FROM ingredients i
+        LEFT JOIN units u ON i.unit_id = u.id 
+        WHERE i.id='$ingredientId' LIMIT 1
+    ");
+
+    if($checkIngredient){
+        if(mysqli_num_rows($checkIngredient) > 0){
+            $row = mysqli_fetch_assoc($checkIngredient); // Fetch the ingredient details
+            if($row['quantity'] < $quantity){
+                redirect('stock-out.php', 'Only ' .$row['quantity']. ' ' .$row['productname']. ' available.');
+            }
+
+            $ingredientData = [
+                'ingredient_id' => $row['id'],
+                'name' => $row['name'],
+                'unit_id' => $row['unit_id'],
+                'unit_name' => $row['unit_name'], // Added UoM name
+                'category' => $row['category'],
+                'sub_category' => $row['sub_category'],
+                'price' => $row['price'],
+                'quantity' => $quantity,
+            ];
+
+            if(!in_array($row['id'], $_SESSION['soItemIds'])){
+                array_push($_SESSION['soItemIds'], $row['id']);
+                array_push($_SESSION['soItems'], $ingredientData);
+            } else {
+                foreach($_SESSION['soItems'] as $key => $ingSessionItem) {
+                    $newQuantity = $ingSessionItem['quantity'] + $quantity;
+                    if($ingSessionItem['ingredient_id'] == $row['id']){
+                        if($row['quantity'] < $newQuantity){ //if available is less than order
+                            redirect('stock-out.php', 'Only ' .$row['quantity']. ' ' .$row['productname']. ' available.');
+                        } else {
+                            $ingredientData = [
+                                'ingredient_id' => $row['id'],
+                                'name' => $row['name'],
+                                'unit_id' => $row['unit_id'], // Store UoM ID
+                                'unit_name' => $row['unit_name'], // Store UoM name
+                                'category' => $row['category'],
+                                'sub_category' => $row['sub_category'],
+                                'price' => $row['price'],
+                                'quantity' => $newQuantity,
+                            ];
+                            $_SESSION['soItems'][$key] = $ingredientData;
+                        }
+                    }
+                }
+            }
+            redirect('stock-out.php', 'Ingredient added: ' .$quantity. ' ' .$row['name']);
+        } else {
+            redirect('stock-out.php', 'No such ingredient found!');
+        }
+    } else {
+        redirect('stock-out.php', 'Something went wrong!');
     }
 }
 
