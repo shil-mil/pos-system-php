@@ -61,7 +61,7 @@
                                             <h5 style="font-size: 20px; line-height: 30px; margin: 0px; padding: 0;">Customer Details</h5>
                                             <p style="font-size: 14px; line-height: 20px; margin: 0px; padding: 0;">Customer Name: <?= $orderDataRow['firstname']; ?> <?= $orderDataRow['lastname']; ?></p>
                                             <p style="font-size: 14px; line-height: 20px; margin: 0px; padding: 0;">
-                                                Position: <?= $iRowData['position'] ?>
+                                                Position: <?= $orderDataRow['position'] == 1 ? 'Owner' : 'Employee' ?>
                                             </p>
                                             
                                         </td>
