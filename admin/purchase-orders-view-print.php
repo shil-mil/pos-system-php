@@ -7,7 +7,7 @@
                 <a href="purchase-orders.php" class="btn btn-danger btn-sm float-end">Back</a>
             </h4>
         </div>
-        <div class="card-body">
+        <div class="card-body" style="padding: 20px;">
             <div id="myBillingArea">
                 <?php
                     if(isset($_GET['track']))
@@ -48,36 +48,37 @@
                             <table style="width: 100%; margin-bottom: 20px;">
                                 <tbody> 
                                     <tr>
-                                        <td style="text-align: center;" colspan="2">
-                                            <h4 style="font-size: 23px; line-height: 30px; margin: 2px; padding: 0;">Kapitan Sisig</h4>
-                                            <p style="font-size: 16px; line-height: 24px; margin: 2px; padding: 0;">
-                                                    GDG Building Door 16, Purok 2, Barangay Lubogan Toril, Davao City, Philippines
+                                        <td style="text-align: left;">
+                                            <h4 style="font-size: 28px; line-height: 30px; margin-bottom: 5px; padding: 0;">Kapitan Sisig</h4>
+                                            <p style="font-size: 14px; line-height: 20px; margin: 0px; padding: 0;">
+                                                    GDG Building Door 16, Purok 2, Barangay Lubogan
                                             </p>
-                                            <p style="font-size: 16px; line-height: 24px; margin: 2px; padding: 0;">Food Business</p>
+                                            <p style="font-size: 14px; line-height: 20px; margin: 0px; padding: 0;">
+                                                    Toril, Davao City, Philippines
+                                            </p>
+                                            <p style="font-size: 14px; line-height: 20px; margin: 0px; padding: 0;">Food Business</p>
+                                        </td>
+                                        <td align="end">
+                                            <h5 style="font-size: 35px; line-height: 30px; letter-spacing: 3px; margin: 0px; margin-bottom: 5px; padding: 0;"><b>PURCHASE ORDER</b></h5>
+                                            <p style="font-size: 14px; line-height: 20px; margin: 0px; padding: 0;"><b>PURCHASE ORDER NO.: <?= $orderDataRow['tracking_no']; ?></b></p>
+                                            <p style="font-size: 14px; line-height: 20px; margin: 0px; padding: 0;"><b>DATE: <?= $orderDataRow['order_date']; ?></b></p>
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td>
+                                        <td style="padding-top: 20px;">
                                             <h5 style="font-size: 20px; line-height: 30px; margin: 0px; padding: 0;">Customer Details</h5>
                                             <p style="font-size: 14px; line-height: 20px; margin: 0px; padding: 0;">Customer Name: <?= $orderDataRow['firstname']; ?> <?= $orderDataRow['lastname']; ?></p>
                                             <p style="font-size: 14px; line-height: 20px; margin: 0px; padding: 0;">
                                                 Position: <?= $orderDataRow['position'] == 1 ? 'Owner' : 'Employee' ?>
                                             </p>
+                                            <p style="font-size: 14px; line-height: 20px; margin: 0px; padding: 0;">Address: Davao City, Philippines</p>
                                             
                                         </td>
-                                        <td align="end">
-                                            <h5 style="font-size: 20px; line-height: 30px; margin: 0px; padding: 0;">Invoice Details</h5>
-                                            <p style="font-size: 14px; line-height: 20px; margin: 0px; padding: 0;">Invoice No: <?= $orderDataRow['invoice_no']; ?></p>
-                                            <p style="font-size: 14px; line-height: 20px; margin: 0px; padding: 0;">Invoice Date: <?= $orderDataRow['order_date']; ?></p>
-                                            <p style="font-size: 14px; line-height: 20px; margin: 0px; padding: 0;">Address: Davao City, Philippines</p>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <h5 style="font-size: 20px; line-height: 30px; margin: 0px; padding: 0;">Suppplier Details</h5>
+                                        <td align="end"  style="padding-top: 20px;">
+                                        <h5 style="font-size: 20px; line-height: 30px; margin: 0px; padding: 0;">Suppplier Details</h5>
                                             <p style="font-size: 14px; line-height: 20px; margin: 0px; padding: 0;">Supplier Name: <?= $supplierData['firstname'] ?> <?= $supplierData['lastname'] ?></p>
                                             <p style="font-size: 14px; line-height: 20px; margin: 0px; padding: 0;">Phone Number: <?= $supplierData['phonenumber'] ?></p>
-                                            <p style="font-size: 14px; line-height: 20px; margin: 0px; padding: 0;">Address: <?= $supplierData['address'] ?></p>
+                                            <p style="font-size: 14px; line-height: 20px; margin: 0px; padding: 0;">Address: <?= $supplierData['address'] ?></p>                        
                                         </td>
                                     </tr>
                                 </tbody>
