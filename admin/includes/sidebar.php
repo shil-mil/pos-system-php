@@ -19,14 +19,16 @@
 
                 <!-- Inventory -->
                 <div class="sb-sidenav-menu-heading">Inventory</div>
-                <a class="nav-link" href="purchase-order-create.php">
-                    <div class="sb-nav-link-icon"><i class="fas fa-bell"></i></div>
-                    Create Purchase Order
-                </a>
-                <a class="nav-link" href="purchase-orders.php">
-                    <div class="sb-nav-link-icon"><i class="fas fa-list"></i></div>
-                    Purchase Orders
-                </a>
+                <?php if ($_SESSION['loggedInUser']['position'] == 1): ?>
+                    <a class="nav-link" href="purchase-order-create.php">
+                        <div class="sb-nav-link-icon"><i class="fas fa-bell"></i></div>
+                        Create Purchase Order
+                    </a>
+                    <a class="nav-link" href="purchase-orders.php">
+                        <div class="sb-nav-link-icon"><i class="fas fa-list"></i></div>
+                        Purchase Orders
+                    </a>
+                <?php endif; ?>
                 <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseInventory" aria-expanded="false" aria-controls="collapseInventory">
                     <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
                     Inventory
@@ -45,7 +47,9 @@
                             <nav class="sb-sidenav-menu-nested nav">
                                 <a class="nav-link" href="ingredients-add.php">Add Ingredients</a>
                                 <a class="nav-link" href="ingredients-view.php">View Ingredients</a>
-                                <a class="nav-link" href="stock-out.php">Stock Out</a>
+                                <?php if ($_SESSION['loggedInUser']['position'] == 1): ?>
+                                    <a class="nav-link" href="stock-out.php">Stock Out</a>
+                                <?php endif; ?>
                             </nav>
                         </div>
 
