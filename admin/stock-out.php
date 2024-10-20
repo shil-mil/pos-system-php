@@ -119,22 +119,18 @@ ini_set('display_errors', 1);
                         <div class="mt-2">
                         <hr>
                         <div class="row">
-                            <div class="col-md-4">
+                            <div class="col-md-6">
                                 <label>Select Reason</label>
-                                <select id="ingPayment_mode" class="form-select">
+                                <select id="reason" class="form-select">
                                     <option value="">-- Select Reason --</option>
                                     <option value="Damaged">Damaged</option>
                                     <option value="Expired">Expired</option>
                                     <option value="Lacking">Lacking</option>
                                 </select>
                             </div>
-                            <div class="col-md-4">
-                                <label>Enter Admin Name</label>
-                                <input type="text" id="adminName" class="form-control" value="" />
-                            </div>
-                            <div class="col-md-4">
+                            <div class="col-md-6">
                                 <br/>
-                                <button type="button" class="btn btn-warning w-100 proceedToPlaceIng">Proceed to Stock Out</button>
+                                <button type="button" class="btn btn-warning w-100 proceedToPlaceSo">Proceed to Stock Out</button>
                             </div>
                         </div>
                     </div>

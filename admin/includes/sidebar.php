@@ -48,7 +48,7 @@
                                 <a class="nav-link" href="ingredients-add.php">Add Ingredients</a>
                                 <a class="nav-link" href="ingredients-view.php">View Ingredients</a>
                                 <?php if ($_SESSION['loggedInUser']['position'] == 1): ?>
-                                    <a class="nav-link" href="stock-out.php">Stock Out</a>
+                                    <a class="nav-link" href="stock-out-create.php">Stock Out</a>
                                 <?php endif; ?>
                             </nav>
                         </div>
