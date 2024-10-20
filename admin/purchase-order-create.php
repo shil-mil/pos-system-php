@@ -77,7 +77,6 @@ ini_set('display_errors', 1);
                         <table class="table table-bordered table-striped">
                             <thead>
                                 <tr>
-                                    <th>Id</th>
                                     <th>Product Name</th>
                                     <th>UoM</th> <!-- Update header for UoM -->
                                     <th>Category</th>
@@ -90,11 +89,9 @@ ini_set('display_errors', 1);
                             </thead>
                             <tbody>
                                 <?php 
-                                $i = 1;
                                 foreach ($sessionIngredients as $key => $item) : 
                                 ?>
                                     <tr>
-                                        <td><?= $i++; ?></td>
                                         <td><?= $item['name']; ?></td>
                                         <td><?= $item['unit_name']; ?></td> <!-- Updated to display UoM name -->
                                         <td><?= $item['category']; ?></td>
@@ -129,10 +126,6 @@ ini_set('display_errors', 1);
                                     </select>
                                 </div>
                                 <div class="col-md-4">
-                                    <label>Enter Admin Name</label>
-                                    <input type="text" id="adminName" class="form-control" value="" />
-                                </div>
-                                <div class="col-md-4">
                                     <label for="">Select Supplier</label>
                                     <select name="supplier_id" id="supplierName" class="form-select mySelect2 ">
                                         <option value="">-- Select Supplier --</option>
@@ -153,14 +146,12 @@ ini_set('display_errors', 1);
                                             }
                                         ?>
                                     </select>
+                                    
                                 </div>
-
-                                <div class="row d-flex justify-content-end">
-                                    <div class="col-md-4">
+                                <div class="col-md-4">
                                         <br/>
                                         <button type="button" class="btn btn-warning w-100 proceedToPlaceIng">Proceed to place order</button>
                                     </div>
-                                </div>
                             </div>
                         </div>
                     </div>
