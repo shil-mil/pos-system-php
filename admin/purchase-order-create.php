@@ -48,6 +48,7 @@ ini_set('display_errors', 1);
                     </div>
                     <div class="col-md-3 mb-3">
                         <input type="hidden" id="order_status" name="order_status" value="Placed">
+                        <input type="hidden" value="<?= $_SESSION['loggedInUser']['firstname'] ?>" id="adminName" name="adminName">
                     </div>
                 </div>
             </form>

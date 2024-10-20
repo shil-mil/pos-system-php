@@ -646,5 +646,26 @@ if(isset($_POST['addIngredient'])){
     }
 }
 
+if (isset($_POST['proceedToPlaceSoBtn'])) {
+    $reason = validate($_POST['reason']);
+
+    $checkCustomer = mysqli_query($conn, "SELECT * FROM customers WHERE name='$name' LIMIT 1");
+
+    if ($checkCustomer) {
+        if (mysqli_num_rows($checkCustomer) > 0) {
+            $_SESSION['invoice_no'] = "INV-" .rand(111111, 999999);
+            $_SESSION['cname'] = $name;
+            $_SESSION['payment_mode'] = $payment_mode;
+            $_SESSION['order_status'] = $order_status;
+
+            jsonResponse(200, 'success', 'Customer found');
+        } else {
+            $_SESSION['cname'] = $name;
+            jsonResponse(404, 'warning', 'Customer not found');
+        }
+    } else {
+        jsonResponse(500, 'error', 'Something Went Wrong');
+    }
+}
 
 ?>

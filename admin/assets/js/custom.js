@@ -374,7 +374,7 @@ $(document).on('click', '.ing-decrement', function(){
         console.log('Order Status:', order_status);
     
         // Validate Form Fields
-        if (!ingPayment_mode || !supplierName || !adminName) {
+        if (!ingPayment_mode || !supplierName) {
             swal("Complete Form", "Please fill in all required fields", "warning");
             return false;
         }
@@ -467,6 +467,39 @@ $(document).on('click', '.ing-decrement', function(){
                     console.error('Error parsing JSON:', e, response);
                     swal('Error', 'Failed to process the response', 'error');
                 }
+            }
+        });
+    });
+
+     // Proceed to Place Order
+     $(document).on('click', '.proceedToPlaceSo', function(){
+        var reason = $('#reason').val();
+
+        // Validate Payment Method and Customer Name
+        if (reason === '') {
+            swal("Select Reason", "Select reason for stock out", "warning");
+            return false;
+        }
+
+        // Place Order via AJAX
+        var data = {
+            'proceedToPlaceSoBtn': true,
+            'reason': reason
+        };
+
+        $.ajax({
+            type: "POST",
+            url: "code.php",
+            data: data,
+            success: function(response) {
+                if (response.status == 200) {
+                    window.location.href = "stock-out-summary.php";
+                } else {
+                    swal(response.message, response.message, response.status_type);
+                }
+            },
+            error: function() {
+                swal('Error', 'Failed to process the request', 'error');
             }
         });
     });

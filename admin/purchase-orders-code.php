@@ -255,69 +255,72 @@ if (isset($_POST['savePurchaseOrder'])) {
     $checkAdmin = mysqli_query($conn, "SELECT * FROM admins WHERE firstname='$adminName' LIMIT 1");
     $checkSupplier = mysqli_query($conn, "SELECT * FROM suppliers WHERE id = '$supplierName' LIMIT 1");
 
-    if (!$checkAdmin) {
+    if (!$checkAdmin || !$checkSupplier) {
         jsonResponse(500, 'error', 'Something Went Wrong');
+        exit;
     }
 
-    if (!$checkSupplier) {
-        jsonResponse(500, 'error', 'Something Went Wrong');
-    }
+    if (mysqli_num_rows($checkAdmin) > 0 && mysqli_num_rows($checkSupplier) > 0) {
+        $adminData = mysqli_fetch_assoc($checkAdmin);
+        $supplierData = mysqli_fetch_assoc($checkSupplier);
 
-    if (mysqli_num_rows($checkAdmin) > 0) {
-        if(mysqli_num_rows($checkSupplier) > 0){
-            $adminData = mysqli_fetch_assoc($checkAdmin);
-            $supplierData = mysqli_fetch_assoc($checkSupplier);
+        if (!isset($_SESSION['ingredientItems'])) {
+            jsonResponse(404, 'warning', 'No items to place order');
+            exit;
+        }
 
-            
-            if (!isset($_SESSION['ingredientItems'])) {
-                jsonResponse(404, 'warning', 'No items to place order');
-                exit;
-            }
+        // Get the last tracking number from the purchaseOrders table
+        $lastTrackingQuery = mysqli_query($conn, "SELECT tracking_no FROM purchaseOrders ORDER BY id DESC LIMIT 1");
+        $lastTrackingNumber = 0;
 
-            $totalAmount = 0;
-            $sessionIngredients = $_SESSION['ingredientItems'];  // Make sure this exists
-            foreach ($sessionIngredients as $ingredientItems) {
-                $totalAmount += $ingredientItems['price'] * $ingredientItems['quantity'];  // Fix typo
-            }
+        if ($lastTrackingQuery && mysqli_num_rows($lastTrackingQuery) > 0) {
+            $lastTracking = mysqli_fetch_assoc($lastTrackingQuery);
+            $lastTrackingNumber = (int) $lastTracking['tracking_no'];
+        }
 
-            $data = [
-                'customer_id' => $adminData['id'],
-                'tracking_no' => rand(111111, 999999),
-                'invoice_no' => $invoice_no,
-                'total_amount' => $totalAmount,
-                'order_date' => date('Y-m-d H:i:s'),
-                'order_status' => $order_status,
-                'ingPayment_mode' => $ingPayment_mode,
-                'order_placed_by_id' => $order_placed_by_id,
-                'supplierName' => $supplierName
+        // Increment the tracking number
+        $newTrackingNumber = str_pad($lastTrackingNumber + 1, 6, '0', STR_PAD_LEFT);
+
+        $totalAmount = 0;
+        $sessionIngredients = $_SESSION['ingredientItems'];  // Make sure this exists
+        foreach ($sessionIngredients as $ingredientItems) {
+            $totalAmount += $ingredientItems['price'] * $ingredientItems['quantity'];
+        }
+
+        $data = [
+            'customer_id' => $adminData['id'],
+            'tracking_no' => $newTrackingNumber,
+            'invoice_no' => $invoice_no,
+            'total_amount' => $totalAmount,
+            'order_date' => date('Y-m-d H:i:s'),
+            'order_status' => $order_status,
+            'ingPayment_mode' => $ingPayment_mode,
+            'order_placed_by_id' => $order_placed_by_id,
+            'supplierName' => $supplierName
+        ];
+
+        $result = insert('purchaseOrders', $data);
+        $lastOrderId = mysqli_insert_id($conn);
+
+        foreach ($sessionIngredients as $ingItem) {
+            $ingredientId = $ingItem['ingredient_id'];
+            $price = $ingItem['price'];
+            $quantity = $ingItem['quantity'];
+
+            $dataIngredientItem = [
+                'order_id' => $lastOrderId,
+                'ingredient_id' => $ingredientId,
+                'price' => $price,
+                'quantity' => $quantity,
             ];
 
-            $result = insert('purchaseOrders', $data);
-            $lastOrderId = mysqli_insert_id($conn);
-
-            foreach ($sessionIngredients as $ingItem) {
-                $ingredientId = $ingItem['ingredient_id'];
-                $price = $ingItem['price'];
-                $quantity = $ingItem['quantity'];
-
-                $dataIngredientItem = [
-                    'order_id' => $lastOrderId,
-                    'ingredient_id' => $ingredientId,
-                    'price' => $price,
-                    'quantity' => $quantity,
-                ];
-
-                $orderItemQuery = insert('ingredients_items', $dataIngredientItem);
-            }
-
-            unset($_SESSION['ingredientItemIds'], $_SESSION['ingredientItems'], $_SESSION['ingPayment_mode'], $_SESSION['invoice_no'], $_SESSION['supplierName']);
-            jsonResponse(200, 'success', 'Order placed successfully!');
+            $orderItemQuery = insert('ingredients_items', $dataIngredientItem);
         }
+
+        unset($_SESSION['ingredientItemIds'], $_SESSION['ingredientItems'], $_SESSION['ingPayment_mode'], $_SESSION['invoice_no'], $_SESSION['supplierName']);
+        jsonResponse(200, 'success', 'Order placed successfully!');
     } else {
-        jsonResponse(404, 'warning', 'No Admin found');
+        jsonResponse(404, 'warning', 'No Admin or Supplier found');
     }
 }
-
-
-
 ?>
