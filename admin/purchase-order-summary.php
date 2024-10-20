@@ -55,7 +55,7 @@ if(!isset($_SESSION['ingredientItems'])){
                                                 <td style="text-align: center;" colspan="2">
                                                     <h4 style="font-size: 23px; line-height: 30px; margin: 2px; padding: 0;">Kapitan Sisig</h4>
                                                     <p style="font-size: 16px; line-height: 24px; margin: 2px; padding: 0;">
-                                                        Davao City, Philippines
+                                                        GDG Building Door 16, Purok 2, Barangay Lubogan Toril, Davao City, Philippines
                                                     </p>
                                                     <p style="font-size: 16px; line-height: 24px; margin: 2px; padding: 0;">Food Business</p>
                                                 </td>
