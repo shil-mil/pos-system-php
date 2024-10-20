@@ -52,7 +52,7 @@
                             <div class="col-md-6">
                                 <h4>Order Details</h4>
                                 <label class="mb-1">
-                                    Tracking No: <span class="fw-bold"><?= htmlspecialchars($orderData['tracking_no'], ENT_QUOTES, 'UTF-8'); ?></span>
+                                    Purchase Order No: <span class="fw-bold"><?= htmlspecialchars($orderData['tracking_no'], ENT_QUOTES, 'UTF-8'); ?></span>
                                 </label>
                                 <br/>
                                 <label class="mb-1">
