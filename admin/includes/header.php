@@ -1,5 +1,6 @@
 <?php
 require '../config/function.php';
+require 'authentication.php';
 date_default_timezone_set('Asia/Manila');
 ?>
 
