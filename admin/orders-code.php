@@ -40,18 +40,20 @@ if(isset($_POST['addItem'])){
                 array_push($_SESSION['productItems'],$productData);
             }else{
                 foreach($_SESSION['productItems'] as $key => $prodSessionItem) {
+                    $newQuantity = $prodSessionItem['quantity'] + $quantity;
                     if($prodSessionItem['product_id'] == $row['id']){
-                        $newQuantity = $prodSessionItem['quantity'] + $quantity;
-
-                        $productData = [
-                            'product_id' => $row['id'],
-                            'name' => $row['productname'],
-                            'image' => $row['image'],
-                            'price' => $row['price'],
-                            'quantity' => $newQuantity,
-                        ];
-
-                        $_SESSION['productItems'][$key] = $productData;
+                        if($row['quantity'] < $newQuantity){ //if available is less than order
+                            redirect('order-create.php', 'Only ' .$row['quantity']. ' ' .$row['productname']. ' available.');
+                        } else {
+                            $productData = [
+                                'product_id' => $row['id'],
+                                'name' => $row['productname'],
+                                'image' => $row['image'],
+                                'price' => $row['price'],
+                                'quantity' => $newQuantity,
+                            ];
+                            $_SESSION['productItems'][$key] = $productData;
+                        }
                     }
                 }
             }
