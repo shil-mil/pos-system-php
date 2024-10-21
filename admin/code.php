@@ -598,7 +598,7 @@ if(isset($_POST['addIngredient'])){
         if(mysqli_num_rows($checkIngredient) > 0){
             $row = mysqli_fetch_assoc($checkIngredient); // Fetch the ingredient details
             if($row['quantity'] < $quantity){
-                redirect('stock-out.php', 'Only ' .$row['quantity']. ' ' .$row['productname']. ' available.');
+                redirect('stock-out-create.php', 'Only ' .$row['quantity']. ' ' .$row['productname']. ' available.');
             }
 
             $ingredientData = [
@@ -620,7 +620,7 @@ if(isset($_POST['addIngredient'])){
                     $newQuantity = $ingSessionItem['quantity'] + $quantity;
                     if($ingSessionItem['ingredient_id'] == $row['id']){
                         if($row['quantity'] < $newQuantity){ //if available is less than order
-                            redirect('stock-out.php', 'Only ' .$row['quantity']. ' ' .$row['productname']. ' available.');
+                            redirect('stock-out-create.php', 'Only ' .$row['quantity']. ' ' .$row['productname']. ' available.');
                         } else {
                             $ingredientData = [
                                 'ingredient_id' => $row['id'],
@@ -637,12 +637,12 @@ if(isset($_POST['addIngredient'])){
                     }
                 }
             }
-            redirect('stock-out.php', 'Ingredient added: ' .$quantity. ' ' .$row['name']);
+            redirect('stock-out-create.php', 'Ingredient added: ' .$quantity. ' ' .$row['name']);
         } else {
-            redirect('stock-out.php', 'No such ingredient found!');
+            redirect('stock-out-create.php', 'No such ingredient found!');
         }
     } else {
-        redirect('stock-out.php', 'Something went wrong!');
+        redirect('stock-out-create.php', 'Something went wrong!');
     }
 }
 
