@@ -15,6 +15,82 @@ if(!isset($_SESSION['productItemIds'])) {
     $_SESSION['productItemIds'] = [];
 }
 
+// Function to get UoM ratio by unit_id
+function getUomRatio($conn, $unit_id) {
+    $query = "SELECT ratio FROM units_of_measure WHERE id = ?";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("i", $unit_id);
+    $stmt->execute();
+    $result = $stmt->get_result()->fetch_assoc();
+    return $result ? $result['ratio'] : null; // Return the ratio or null
+}
+
+// Function to update ingredient inventory
+function updateIngredientInventory($conn, $productId, $orderQuantity) {
+    // Get the recipe ID for the product
+    $recipeQuery = "SELECT id FROM recipes WHERE product_id = ?";
+    $stmt = $conn->prepare($recipeQuery);
+    $stmt->bind_param("i", $productId);
+    $stmt->execute();
+    $recipeResult = $stmt->get_result();
+    
+    if ($recipeRow = $recipeResult->fetch_assoc()) {
+        $recipeId = $recipeRow['id'];
+
+        // Get the ingredients required for the recipe
+        $ingredientQuery = "SELECT ingredient_id, quantity, unit_id FROM recipe_ingredients WHERE recipe_id = ?";
+        $ingredientStmt = $conn->prepare($ingredientQuery);
+        $ingredientStmt->bind_param("i", $recipeId);
+        $ingredientStmt->execute();
+        $ingredientResult = $ingredientStmt->get_result();
+
+        while ($ingredientRow = $ingredientResult->fetch_assoc()) {
+            $ingredientId = $ingredientRow['ingredient_id'];
+            $quantityRequired = $ingredientRow['quantity'] * $orderQuantity; // Total required for the order
+            
+            // Get the unit ratio for the ingredient
+            $unitId = $ingredientRow['unit_id'];
+            $unitQuery = "SELECT ratio FROM units_of_measure WHERE id = ?";
+            $unitStmt = $conn->prepare($unitQuery);
+            $unitStmt->bind_param("i", $unitId);
+            $unitStmt->execute();
+            $unitResult = $unitStmt->get_result()->fetch_assoc();
+            
+            if ($unitResult) {
+                $ratio = $unitResult['ratio'];
+
+                // Convert the required quantity to the base unit (assuming base unit is grams or similar)
+                $quantityRequiredInBase = $quantityRequired * $ratio;
+
+                // Deduct the ingredient quantity
+                $currentQuantityQuery = "SELECT quantity FROM ingredients WHERE id = ?";
+                $currentStmt = $conn->prepare($currentQuantityQuery);
+                $currentStmt->bind_param("i", $ingredientId);
+                $currentStmt->execute();
+                $currentQuantityResult = $currentStmt->get_result()->fetch_assoc();
+
+                if ($currentQuantityResult) {
+                    $currentQuantity = $currentQuantityResult['quantity'];
+
+                    if ($currentQuantity >= $quantityRequiredInBase) {
+                        // Update the inventory
+                        $updateInventoryQuery = "UPDATE ingredients SET quantity = quantity - ? WHERE id = ?";
+                        $updateStmt = $conn->prepare($updateInventoryQuery);
+                        $updateStmt->bind_param("di", $quantityRequiredInBase, $ingredientId);
+                        $updateStmt->execute();
+                    } else {
+                        // Handle insufficient stock (optional)
+                        $_SESSION['error'] = "Insufficient stock for ingredient ID: $ingredientId";
+                    }
+                }
+            }
+        }
+    } else {
+        $_SESSION['error'] = "Recipe not found for product ID: $productId";
+    }
+}
+
+
 if(isset($_POST['addItem'])){
     $productId = validate($_POST['product_id']);
     $quantity = validate($_POST['quantity']);
@@ -317,16 +393,19 @@ if (isset($_POST['saveOrder'])) {
 
             $orderItemQuery = insert('order_items', $dataOrderItem);
 
-            // // Update product quantities
-            // $checkProductQuantityQuery = mysqli_query($conn, "SELECT * FROM products WHERE id='$productId'");
-            // $productQtyData = mysqli_fetch_assoc($checkProductQuantityQuery);
-            // $totalProductsQuantity = $productQtyData['quantity'] - $quantity;
+            // Update product quantities
+            $checkProductQuantityQuery = mysqli_query($conn, "SELECT * FROM products WHERE id='$productId'");
+            $productQtyData = mysqli_fetch_assoc($checkProductQuantityQuery);
+            $totalProductsQuantity = $productQtyData['quantity'] - $quantity;
 
-            // $dataUpdate = [
-            //     'quantity' => $totalProductsQuantity
-            // ];
+            $dataUpdate = [
+                'quantity' => $totalProductsQuantity
+            ];
 
-            // $updateProductQty = update('products', $productId, $dataUpdate);
+            $updateProductQty = update('products', $productId, $dataUpdate);
+
+            // Update ingredient inventory based on the recipe
+            updateIngredientInventory($conn, $productId, $quantity); // Call the function here
         }
 
         unset($_SESSION['productItemIds'], $_SESSION['productItems'], $_SESSION['payment_mode'], $_SESSION['invoice_no']);
@@ -336,6 +415,4 @@ if (isset($_POST['saveOrder'])) {
     }
 }
 
-
 ?>
-
