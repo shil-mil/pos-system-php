@@ -183,23 +183,142 @@ if (isset($_POST['updateSupplier'])) {
 }
 
 
+// suppliers + ingredients
+if (isset($_POST['saveSupplierIngredient'])) {
+    $supplier_id = $_POST['supplier_id'];
+
+    if (isset($_POST['ingredient_id']) && isset($_POST['price']) && isset($_POST['unit_id'])) {
+        $ingredient_ids = $_POST['ingredient_id'];
+        $prices = $_POST['price'];
+        $unit_ids = $_POST['unit_id'];
+
+        for ($i = 0; $i < count($ingredient_ids); $i++) {
+            $ingredient_id = $ingredient_ids[$i];
+            $price = $prices[$i];
+            $unit_id = $unit_ids[$i];
+
+            // Prepare SQL statement to prevent SQL injection
+            $stmt = $conn->prepare("INSERT INTO supplier_ingredients (supplier_id, ingredient_id, price, unit_id) VALUES (?, ?, ?, ?)");
+            $stmt->bind_param("iidi",$supplier_id, $ingredient_id, $price, $unit_id);
+
+            // Execute the statement
+            if (!$stmt->execute()) {
+                echo "Error: " . $stmt->error;
+            } 
+        }
+
+        $stmt->close();
+
+        // Set success message in session
+        $_SESSION['message'] = "Supplier ingredients added successfully!";
+        
+        // Redirect back to suppliers page
+        header("Location: suppliers.php");
+        exit();
+    } else {
+        $_SESSION['message'] = "No ingredients were selected.";
+        header("Location: suppliers.php");
+        exit();
+    }
+}
+
+
+// Update Supplier Ingredients
+if (isset($_POST['updateSupplierIngredient'])) {
+    $supplier_id = $_POST['supplier_id'];
+
+    // Remove any ingredients that were marked for deletion
+    if (isset($_POST['remove_recipe_ingredient_id'])) {
+        $removeIngredientIds = $_POST['remove_recipe_ingredient_id'];
+        foreach ($removeIngredientIds as $removeId) {
+            if (!empty($removeId)) {
+                $deleteQuery = "DELETE FROM supplier_ingredients WHERE id = ?";
+                $stmt = mysqli_prepare($conn, $deleteQuery);
+                mysqli_stmt_bind_param($stmt, 'i', $removeId);
+                mysqli_stmt_execute($stmt);
+            }
+        }
+    }
+
+    // Update existing supplier ingredients
+    if (isset($_POST['ingredient_id']) && isset($_POST['price']) && isset($_POST['unit_id'])) {
+        $ingredient_ids = $_POST['ingredient_id'];
+        $prices = $_POST['price'];
+        $unit_ids = $_POST['unit_id'];
+
+        mysqli_begin_transaction($conn);
+        try {
+            for ($i = 0; $i < count($ingredient_ids); $i++) {
+                $ingredient_id = $ingredient_ids[$i];
+                $price = $prices[$i];
+                $unit_id = $unit_ids[$i];
+
+                if (!empty($ingredient_id) && !empty($price) && !empty($unit_id)) {
+                    $stmt = $conn->prepare("
+                        UPDATE supplier_ingredients 
+                        SET price = ?, unit_id = ? 
+                        WHERE id = ? AND supplier_id = ?");
+                    $stmt->bind_param("diii", $price, $unit_id, $ingredient_id, $supplier_id);
+
+                    if (!$stmt->execute()) {
+                        throw new Exception($stmt->error);
+                    }
+                }
+            }
+
+            mysqli_commit($conn);
+            $_SESSION['message'] = "Supplier ingredients updated successfully.";
+            header("Location: suppliers.php");
+            exit();
+        } catch (Exception $e) {
+            mysqli_rollback($conn);
+            $_SESSION['message'] = "Error updating supplier ingredients: " . $e->getMessage();
+            header("Location: suppliers.php");
+            exit();
+        }
+    } else {
+        $_SESSION['message'] = "No ingredients were selected for update.";
+        header("Location: suppliers.php");
+        exit();
+    }
+}
+
+
 // Save Ingredient
 if (isset($_POST['saveIngredient'])) {
-    $name = $_POST['name'];
-    $unit_id = $_POST['unit_id'];
-    $category = $_POST['category'];
-    $sub_category = $_POST['sub_category'];
-    $price = $_POST['price'];
+    $name = trim($_POST['name']);
+    $category = trim($_POST['category']);
+    // Set price to 0.00 if it's not provided
+    $price = isset($_POST['price']) && trim($_POST['price']) !== '' ? trim($_POST['price']) : 0.00;
+    $quantity = isset($_POST['quantity']) && trim($_POST['quantity']) !== '' ? trim($_POST['quantity']) : 0;
 
-    $query = "INSERT INTO ingredients (name, unit_id, category, sub_category, price) 
-              VALUES ('$name', '$unit_id', '$category', '$sub_category', '$price ')";
-    
-    if (mysqli_query($conn, $query)) {
-        $_SESSION['message'] = "Ingredient added successfully";
-        header('Location: ingredients-view.php');
-        exit(0);
+    // Allow unit_id to be nullable
+    $unit_id = isset($_POST['unit_id']) && !empty($_POST['unit_id']) ? trim($_POST['unit_id']) : null;
+
+    // Prepare the SQL query with placeholders
+    $query = "INSERT INTO ingredients (name, unit_id, category, price, quantity) 
+              VALUES (?, ?, ?, ?, ?)";
+
+    // Initialize the prepared statement
+    if ($stmt = mysqli_prepare($conn, $query)) {
+        // Bind parameters to the placeholders (types: s = string, i = integer, d = double)
+        mysqli_stmt_bind_param($stmt, "sissd", $name, $unit_id, $category, $price, $quantity);
+
+        // Execute the statement
+        if (mysqli_stmt_execute($stmt)) {
+            $_SESSION['message'] = "Ingredient added successfully";
+            header('Location: ingredients-view.php');
+            exit(0);
+        } else {
+            $_SESSION['message'] = "Failed to save ingredient";
+            header('Location: ingredients-add.php');
+            exit(0);
+        }
+
+        // Close the prepared statement
+        mysqli_stmt_close($stmt);
     } else {
-        $_SESSION['message'] = "Failed to add ingredient";
+        $_SESSION['message'] = "Database error: Unable to prepare statement";
         header('Location: ingredients-add.php');
         exit(0);
     }
@@ -207,28 +326,44 @@ if (isset($_POST['saveIngredient'])) {
 
 // Update Ingredient
 if (isset($_POST['updateIngredient'])) {
-    $ingredientId = $_POST['ingredientId'];
-    $name = $_POST['name'];
-    
-    $unit_id = $_POST['unit_id'];
-    $category = $_POST['category'];
-    $sub_category = $_POST['sub_category'];
-    $price = $_POST['price'];
+    $ingredientId = trim($_POST['ingredientId']);
+    $name = trim($_POST['name']);
+    $category = trim($_POST['category']);
+    // Set price to 0.00 if it's not provided
+    $price = isset($_POST['price']) && trim($_POST['price']) !== '' ? trim($_POST['price']) : 0.00;
+    $quantity = isset($_POST['quantity']) && trim($_POST['quantity']) !== '' ? trim($_POST['quantity']) : 0;
 
+    // Allow unit_id to be nullable
+    $unit_id = isset($_POST['unit_id']) && !empty($_POST['unit_id']) ? trim($_POST['unit_id']) : null;
 
-    $query = "UPDATE ingredients SET name='$name',  unit_id='$unit_id', 
-              category='$category', sub_category='$sub_category', price='$price' WHERE id='$ingredientId'";
-    
-    if (mysqli_query($conn, $query)) {
-        $_SESSION['message'] = "Ingredient updated successfully!";
-        header('Location: ingredients-view.php');
-        exit(0);
+    // Prepare the SQL query with placeholders
+    $query = "UPDATE ingredients SET name=?, unit_id=?, category=?, price=?, quantity=? WHERE id=?";
+
+    // Initialize the prepared statement
+    if ($stmt = mysqli_prepare($conn, $query)) {
+        // Bind parameters to the placeholders
+        mysqli_stmt_bind_param($stmt, "sissdi", $name, $unit_id, $category, $price, $quantity, $ingredientId);
+
+        // Execute the statement
+        if (mysqli_stmt_execute($stmt)) {
+            $_SESSION['message'] = "Ingredient updated successfully";
+            header('Location: ingredients-view.php');
+            exit(0);
+        } else {
+            $_SESSION['message'] = "Failed to update ingredient";
+            header('Location: ingredients-edit.php?id=' . $ingredientId);
+            exit(0);
+        }
+
+        // Close the prepared statement
+        mysqli_stmt_close($stmt);
     } else {
-        $_SESSION['message'] = "Failed to update ingredient.";
-        header('Location: ingredients-edit.php?id='.$ingredientId);
+        $_SESSION['message'] = "Database error: Unable to prepare statement";
+        header('Location: ingredients-edit.php?id=' . $ingredientId);
         exit(0);
     }
 }
+
 
 
 // Save Category
@@ -410,73 +545,131 @@ if (isset($_POST['updateProduct'])) {
 }
 
 
+// Save Unit of Measurement Category
+if (isset($_POST['saveUnitCategory'])) {
+    $category_unit_name = $_POST['category_unit_name'];
 
-// Save Unit
-if (isset($_POST['saveUnit'])) {
-    $name = validate($_POST['name']);
-    $status = isset($_POST['status']) ? 1 : 0;
+    if (!empty($category_unit_name)) {
+        // Insert into database
+        $stmt = $conn->prepare("INSERT INTO unit_categories (category_unit_name) VALUES (?)");
+        $stmt->bind_param("s", $category_unit_name);
+        $stmt->execute();
+        $stmt->close();
 
-    $data = [
-        'name' => $name,
-        'status' => $status
-    ];
-
-    $result = insert('units', $data);
-
-    if ($result) {
-        $_SESSION['message'] = 'Unit created successfully!';
+        // Redirect with success message
+        $_SESSION['message'] = "Unit category created successfully!";
+        $_SESSION['msg_type'] = "success";
         header('Location: units.php');
-        exit();
+        exit;
     } else {
-        $_SESSION['message'] = 'Something went wrong.';
-        header('Location: units-create.php');
-        exit();
+        // Redirect with error message
+        $_SESSION['message'] = "Please fill all required fields!";
+        $_SESSION['msg_type'] = "danger";
+        header('Location: units-category.php');
+        exit;
     }
 }
 
+// Save UoMs
+if (isset($_POST['save_uom'])) {
+    $category_id = $_POST['category_id'];
 
-// Update Unit
-if (isset($_POST['updateUnit'])) {
-    $unitId = validate($_POST['unitId']);
-    
-    if (empty($unitId)) {
-        $_SESSION['message'] = 'No ID provided.';
-        header('Location: units-edit.php?id=' . $unitId);
-        exit();
-    }
+    // Process existing UoMs
+    if (!empty($_POST['uom_id'])) {
+        foreach ($_POST['uom_id'] as $index => $uom_id) {
+            $new_type = $_POST['uom_type'][$index];
+            $new_ratio = $_POST['ratio'][$index];
+            $new_active = isset($_POST['active'][$index]) ? 1 : 0;
+            $new_rounding_precision = $_POST['rounding_precision'][$index];
 
-    $unitData = getById('units', $unitId);
-
-    if ($unitData['status'] != 200) {
-        $_SESSION['message'] = 'Unit not found.';
-        header('Location: units-edit.php?id=' . $unitId);
-        exit();
-    }
-
-    $name = validate($_POST['name']);
-    $status = isset($_POST['status']) ? 1 : 0;
-
-    if (!empty($name)) {
-        $data = [
-            'name' => $name,
-            'status' => $status
-        ];
-        $result = update('units', $unitId, $data);
-
-        if ($result) {
-            $_SESSION['message'] = 'Unit updated successfully!';
-            header('Location: units.php');
-            exit();
-        } else {
-            $_SESSION['message'] = 'Something went wrong.';
-            header('Location: units.php');
-            exit();
+            $stmt = $conn->prepare("UPDATE units_of_measure SET type=?, ratio=?, active=?, rounding_precision=? WHERE id=?");
+            $stmt->bind_param("sdsdi", $new_type, $new_ratio, $new_active, $new_rounding_precision, $uom_id);
+            $stmt->execute();
+            $stmt->close();
         }
-    } else {
-        $_SESSION['message'] = 'Please fill required fields.';
-        header('Location: units-edit.php?id=' . $unitId);
-        exit();
     }
+
+    if (!empty($_POST['new_uom_name'])) {
+        $new_uom_name = $_POST['new_uom_name'];
+        $new_uom_type = $_POST['new_uom_type'];
+        $new_ratio = $_POST['new_ratio'];
+        $new_active = isset($_POST['new_active']) ? 1 : 0;
+        $new_rounding_precision = $_POST['new_rounding_precision'];
+
+        $stmt = $conn->prepare("INSERT INTO units_of_measure (category_id, uom_name, type, ratio, active, rounding_precision) VALUES (?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("issdii", $category_id, $new_uom_name, $new_uom_type, $new_ratio, $new_active, $new_rounding_precision);
+        $stmt->execute();
+        $stmt->close();
+    }
+
+    $_SESSION['message'] = "Units of Measure updated successfully!";
+    header("Location: units-view-category.php?id=$category_id");
+    exit;
+}
+
+// Delete UoM
+if (isset($_GET['delete_uom'])) {
+    $uom_id = $_GET['delete_uom'];
+    $stmt = $conn->prepare("DELETE FROM units_of_measure WHERE id = ?");
+    $stmt->bind_param("i", $uom_id);
+    $stmt->execute();
+    $stmt->close();
+
+    $_SESSION['message'] = "Unit of Measure deleted successfully!";
+    header("Location: " . $_SERVER['HTTP_REFERER']);
+    exit;
+}
+
+
+// Handle update category
+if (isset($_POST['updateUnitCategory'])) {
+    // Handle the update of the unit category
+    $category_id = $_POST['category_id'];
+    $category_unit_name = $_POST['category_unit_name'];
+
+    $sql = "UPDATE unit_categories SET category_unit_name = ? WHERE id = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("si", $category_unit_name, $category_id);
+
+    if ($stmt->execute()) {
+        // Success message
+        $_SESSION['message'] = "Unit category updated successfully.";
+    } else {
+        // Error message
+        $_SESSION['message'] = "Error updating unit category.";
+    }
+    $stmt->close();
+    header("Location: units.php");
+    exit();
+}
+
+// Delete UoM category
+if (isset($_GET['delete'])) {
+    // Handle the deletion of the unit category
+    $category_id = $_GET['delete'];
+
+    // Optionally, check for UoMs in this category and delete them if necessary
+    $deleteUoMsSql = "DELETE FROM units_of_measure WHERE category_id = ?";
+    $stmt = $conn->prepare($deleteUoMsSql);
+    $stmt->bind_param("i", $category_id);
+    $stmt->execute();
+    $stmt->close();
+
+    // Now delete the category
+    $sql = "DELETE FROM unit_categories WHERE id = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $category_id);
+
+    if ($stmt->execute()) {
+        // Success message
+        $_SESSION['message'] = "Unit category deleted successfully.";
+    } else {
+        // Error message
+        $_SESSION['message'] = "Error deleting unit category.";
+    }
+    $stmt->close();
+    header("Location: units.php");
+    exit();
 }
 
 // Save Customer
@@ -543,6 +736,142 @@ if (isset($_POST['updateCustomer'])) {
     }
 }
 
+// Save Recipe
+if (isset($_POST['saveRecipe'])) {
+    // Retrieve form data
+    $product_id = $_POST['product_id']; 
+    $ingredient_ids = $_POST['ingredient_id']; 
+    $units = $_POST['unit_id']; 
+    $ingredient_quantities = $_POST['quantity']; 
+
+    // Validate inputs
+    if (empty($product_id) || empty($ingredient_ids) || empty($units) || empty($ingredient_quantities)) {
+        $_SESSION['message'] = "All fields are required.";
+        header("Location: recipes-add.php");
+        exit();
+    }
+
+    // Check if a recipe already exists for the selected product
+    $check_recipe_query = "SELECT * FROM recipes WHERE product_id = ?";
+    $check_stmt = mysqli_prepare($conn, $check_recipe_query);
+    mysqli_stmt_bind_param($check_stmt, 'i', $product_id);
+    mysqli_stmt_execute($check_stmt);
+    $check_result = mysqli_stmt_get_result($check_stmt);
+
+    if (mysqli_num_rows($check_result) > 0) {
+        // A recipe already exists for this product
+        $_SESSION['message'] = "A recipe for this product already exists.";
+        header("Location: recipes-add.php");
+        exit();
+    }
+
+    // Begin transaction
+    mysqli_begin_transaction($conn);
+    try {
+        // Insert into recipes table
+        $recipe_query = "INSERT INTO recipes (product_id) VALUES (?)";
+        $stmt = mysqli_prepare($conn, $recipe_query);
+        mysqli_stmt_bind_param($stmt, 'i', $product_id); 
+        mysqli_stmt_execute($stmt);
+        
+        // Get the last inserted recipe ID
+        $recipe_id = mysqli_insert_id($conn);
+
+        // Prepare to insert into recipe_ingredients table
+        $ingredient_query = "INSERT INTO recipe_ingredients (recipe_id, ingredient_id, unit_id, quantity) VALUES (?, ?, ?, ?)";
+        $ingredient_stmt = mysqli_prepare($conn, $ingredient_query);
+
+        // Loop through each ingredient and insert into recipe_ingredients table
+        for ($i = 0; $i < count($ingredient_ids); $i++) {
+            $ingredient_id = $ingredient_ids[$i];
+            $unit_id = $units[$i];
+            $quantity = $ingredient_quantities[$i];
+
+            mysqli_stmt_bind_param($ingredient_stmt, 'iiid', $recipe_id, $ingredient_id, $unit_id, $quantity);
+            mysqli_stmt_execute($ingredient_stmt);
+        }
+
+        // Commit the transaction
+        mysqli_commit($conn);
+
+        // Set success message and redirect
+        $_SESSION['message'] = "Recipe saved successfully!";
+        header("Location: recipe-view.php?id=$product_id"); // Redirect to recipe-view instead of products
+        exit();
+    } catch (Exception $e) {
+        // Rollback transaction in case of error
+        mysqli_rollback($conn);
+        $_SESSION['message'] = "Error saving recipe: " . mysqli_error($conn);
+        header("Location: recipes-add.php");
+        exit();
+    }
+}
+
+// Update Recipe
+if (isset($_POST['updateRecipe'])) {
+    $recipeId = $_POST['recipe_id'];
+    $productId = $_POST['product_id'];
+
+    // Arrays from the form
+    $recipeIngredientIds = $_POST['recipe_ingredient_id'];
+    $ingredientIds = $_POST['ingredient_id'];
+    $unitIds = $_POST['unit_id'];
+    $quantities = $_POST['quantity'];
+
+    // Begin transaction for updating
+    mysqli_begin_transaction($conn);
+    try {
+        // Handle updating and inserting ingredients
+        for ($i = 0; $i < count($ingredientIds); $i++) {
+            $recipeIngredientId = $recipeIngredientIds[$i];
+            $ingredientId = $ingredientIds[$i];
+            $unitId = $unitIds[$i];
+            $quantity = $quantities[$i];
+
+            if (!empty($recipeIngredientId)) {
+                // Update existing ingredient
+                $updateQuery = "UPDATE recipe_ingredients SET ingredient_id = ?, unit_id = ?, quantity = ? WHERE id = ?";
+                $stmt = mysqli_prepare($conn, $updateQuery);
+                mysqli_stmt_bind_param($stmt, 'iiid', $ingredientId, $unitId, $quantity, $recipeIngredientId);
+                mysqli_stmt_execute($stmt);
+            } else {
+                // Insert new ingredient entry
+                $insertQuery = "INSERT INTO recipe_ingredients (recipe_id, ingredient_id, unit_id, quantity) VALUES (?, ?, ?, ?)";
+                $stmt = mysqli_prepare($conn, $insertQuery);
+                mysqli_stmt_bind_param($stmt, 'iiid', $recipeId, $ingredientId, $unitId, $quantity);
+                mysqli_stmt_execute($stmt);
+            }
+        }
+
+        // Handle removing ingredients
+        if (isset($_POST['remove_recipe_ingredient_id'])) {
+            $removeIngredientIds = $_POST['remove_recipe_ingredient_id'];
+            foreach ($removeIngredientIds as $removeId) {
+                $deleteQuery = "DELETE FROM recipe_ingredients WHERE id = ?";
+                $stmt = mysqli_prepare($conn, $deleteQuery);
+                mysqli_stmt_bind_param($stmt, 'i', $removeId);
+                mysqli_stmt_execute($stmt);
+            }
+        }
+
+        // Commit transaction
+        mysqli_commit($conn);
+
+        // Store success message in session
+        $_SESSION['message'] = "Recipe updated successfully!";
+
+        // Redirect to recipe-view.php with the product ID
+        header("Location: recipe-view.php?id=$productId");
+        exit();
+    } catch (Exception $e) {
+        // Rollback transaction in case of error
+        mysqli_rollback($conn);
+        $_SESSION['message'] = "Error updating recipe: " . mysqli_error($conn);
+        header("Location: recipe-edit.php?id=$recipeId");
+        exit();
+    }
+}
+
 if(isset($_POST['soIncDec'])) {
     $ingId = validate($_POST['ingredient_id']);
     $quantity = validate($_POST['quantity']);
@@ -582,15 +911,37 @@ if(isset($_POST['soIncDec'])) {
     }
 }
 
+if (isset($_POST['proceedToPlaceSoBtn'])) {
+    $reason = validate($_POST['reason']);
+
+    $checkCustomer = mysqli_query($conn, "SELECT * FROM customers WHERE name='$name' LIMIT 1");
+
+    if ($checkCustomer) {
+        if (mysqli_num_rows($checkCustomer) > 0) {
+            $_SESSION['invoice_no'] = "INV-" .rand(111111, 999999);
+            $_SESSION['cname'] = $name;
+            $_SESSION['payment_mode'] = $payment_mode;
+            $_SESSION['order_status'] = $order_status;
+
+            jsonResponse(200, 'success', 'Customer found');
+        } else {
+            $_SESSION['cname'] = $name;
+            jsonResponse(404, 'warning', 'Customer not found');
+        }
+    } else {
+        jsonResponse(500, 'error', 'Something Went Wrong');
+    }
+}
+
 if(isset($_POST['addIngredient'])){
     $ingredientId = validate($_POST['ingredient_id']);
     $quantity = validate($_POST['quantity']);
 
     // Updated query to join the units table
     $checkIngredient = mysqli_query($conn, "
-        SELECT i.*, u.name AS unit_name 
+        SELECT i.*, name AS unit_name 
         FROM ingredients i
-        LEFT JOIN units u ON i.unit_id = u.id 
+        LEFT JOIN units_of_measure u ON i.unit_id = u.id 
         WHERE i.id='$ingredientId' LIMIT 1
     ");
 
@@ -647,23 +998,139 @@ if(isset($_POST['addIngredient'])){
 }
 
 if (isset($_POST['proceedToPlaceSoBtn'])) {
-    $adminName = validate($_POST['adminName']);
     $reason = validate($_POST['reason']);
 
-    $checkAdmin = mysqli_query($conn, "SELECT * FROM admins WHERE firstname='$adminName' LIMIT 1");
+    $checkCustomer = mysqli_query($conn, "SELECT * FROM customers WHERE name='$name' LIMIT 1");
 
-    if ($checkAdmin) {
-        if (mysqli_num_rows($checkAdmin) > 0) {
+    if ($checkCustomer) {
+        if (mysqli_num_rows($checkCustomer) > 0) {
             $_SESSION['invoice_no'] = "INV-" .rand(111111, 999999);
-            $_SESSION['adminName'] = $adminName;
-            jsonResponse(200, 'success', 'Admin found');
+            $_SESSION['cname'] = $name;
+            $_SESSION['payment_mode'] = $payment_mode;
+            $_SESSION['order_status'] = $order_status;
+
+            jsonResponse(200, 'success', 'Customer found');
         } else {
             $_SESSION['cname'] = $name;
-            jsonResponse(404, 'warning', 'Admin not found');
+            jsonResponse(404, 'warning', 'Customer not found');
         }
     } else {
         jsonResponse(500, 'error', 'Something Went Wrong');
     }
 }
+
+// // Function to get UoM ratio by unit_id
+// function getUomRatio($conn, $unit_id) {
+//     $query = "SELECT ratio FROM units_of_measure WHERE id = ?";
+//     $stmt = $conn->prepare($query);
+//     $stmt->bind_param("i", $unit_id);
+//     $stmt->execute();
+//     $result = $stmt->get_result()->fetch_assoc();
+//     return $result ? $result['ratio'] : null; // Return the ratio or null
+// }
+
+// Update Ingredient Inventory Function
+// function updateIngredientInventory($conn, $productId, $quantity) {
+//     // Fetch the recipe's ingredient details
+//     $recipeQuery = "SELECT ri.ingredient_id, ri.unit_id, ri.quantity as recipe_quantity, i.unit_id as ingredient_unit_id 
+//                     FROM recipe_ingredients ri 
+//                     JOIN ingredients i ON ri.ingredient_id = i.id 
+//                     WHERE ri.recipe_id = ?";
+    
+//     $stmt = $conn->prepare($recipeQuery);
+//     $stmt->bind_param("i", $productId);
+//     $stmt->execute();
+//     $ingredients = $stmt->get_result();
+
+//     // Loop through each ingredient and adjust the inventory
+//     while ($ingredient = $ingredients->fetch_assoc()) {
+//         $ingredientId = $ingredient['ingredient_id'];
+//         $ingredientUomId = $ingredient['ingredient_unit_id'];
+//         $recipeUomId = $ingredient['unit_id'];
+//         $recipeQuantity = $ingredient['recipe_quantity'];
+
+//         // Get the ratios
+//         $ingredientRatio = getUomRatio($conn, $ingredientUomId);
+//         $recipeRatio = getUomRatio($conn, $recipeUomId);
+
+//         if ($ingredientRatio && $recipeRatio) {
+//             // Convert the recipe quantity to the ingredient's base unit
+//             $convertedQuantity = ($recipeQuantity * $recipeRatio) / $ingredientRatio;
+
+//             // Update the inventory
+//             $updateQuery = "UPDATE ingredients SET quantity = quantity - ? WHERE id = ?";
+//             $updateStmt = $conn->prepare($updateQuery);
+//             $updateStmt->bind_param("di", $convertedQuantity, $ingredientId);
+//             $updateStmt->execute();
+//         }
+//     }
+// }
+
+// Check if the addItem button was clicked
+// if (isset($_POST['addItem'])) {
+//     $productId = $_POST['product_id'];
+//     $quantity = $_POST['quantity'];
+
+//     // Fetch product details
+//     $productQuery = "SELECT * FROM products WHERE id = ?";
+//     $stmt = $conn->prepare($productQuery);
+//     $stmt->bind_param("i", $productId);
+//     $stmt->execute();
+//     $product = $stmt->get_result()->fetch_assoc();
+
+//     if ($product) {
+//         $item = [
+//             'product_id' => $product['id'],
+//             'name' => $product['productname'],
+//             'price' => $product['price'],
+//             'quantity' => $quantity
+//         ];
+
+//         // Store the item in the session
+//         $_SESSION['productItems'][] = $item;
+
+//         // Update inventory based on ingredients
+//         updateIngredientInventory($conn, $productId, $quantity);
+
+//         $_SESSION['message'] = "Item added successfully!";
+//     } else {
+//         $_SESSION['error'] = "Product not found!";
+//     }
+
+//     header("Location: order-create.php");
+//     exit();
+// }
+
+// // Place the order
+// if (isset($_POST['placeOrder'])) {
+//     $customerName = $_POST['cname'];
+//     $paymentMode = $_POST['payment_mode'];
+//     $orderStatus = $_POST['order_status'];
+
+//     // Insert order into the database
+//     $orderQuery = "INSERT INTO orders (customer_name, payment_mode, order_status) VALUES (?, ?, ?)";
+//     $stmt = $conn->prepare($orderQuery);
+//     $stmt->bind_param("sss", $customerName, $paymentMode, $orderStatus);
+//     $stmt->execute();
+//     $orderId = $stmt->insert_id; // Get the last inserted order ID
+
+//     // Loop through items and add them to the order_items table
+//     foreach ($_SESSION['productItems'] as $item) {
+//         $orderItemQuery = "INSERT INTO order_items (order_id, product_id, quantity) VALUES (?, ?, ?)";
+//         $orderItemStmt = $conn->prepare($orderItemQuery);
+//         $orderItemStmt->bind_param("iii", $orderId, $item['product_id'], $item['quantity']);
+//         $orderItemStmt->execute();
+
+//         // Update ingredient inventory based on the recipe
+//         updateIngredientInventory($conn, $item['product_id'], $item['quantity']);
+//     }
+
+//     // Clear the session after placing the order
+//     unset($_SESSION['productItems']);
+
+//     $_SESSION['message'] = "Order placed successfully!";
+//     header("Location: orders.php");
+//     exit();
+// }
 
 ?>

@@ -292,6 +292,7 @@ function soIncDec(ingId, qty) {
 
     // Save Order
     $(document).on('click', '#saveOrder', function() {
+        console.log("Saving order...");  // Add this to verify the button click
         $.ajax({
             type: "POST",
             url: "orders-code.php",
