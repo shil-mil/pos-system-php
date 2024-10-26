@@ -473,9 +473,10 @@ $(document).on('click', '.ing-decrement', function(){
 
      // Proceed to Place Order
      $(document).on('click', '.proceedToPlaceSo', function(){
+        var adminName = $('#adminName').val();
         var reason = $('#reason').val();
 
-        // Validate Payment Method and Customer Name
+        // Validate reason
         if (reason === '') {
             swal("Select Reason", "Select reason for stock out", "warning");
             return false;
@@ -484,6 +485,7 @@ $(document).on('click', '.ing-decrement', function(){
         // Place Order via AJAX
         var data = {
             'proceedToPlaceSoBtn': true,
+            'adminName': adminName,
             'reason': reason
         };
 
