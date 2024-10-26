@@ -2,6 +2,10 @@
 include('includes/header.php');
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
+
+
+// unset($_SESSION['ingredientItems']);
+// unset($_SESSION['ingredientItemIds']);
 ?>
 
 <div class="container-fluid px-4">
@@ -81,7 +85,6 @@ ini_set('display_errors', 1);
                                     <th>Product Name</th>
                                     <th>UoM</th> <!-- Update header for UoM -->
                                     <th>Category</th>
-                                    <th>Sub Category</th>
                                     <th>Price</th>
                                     <th>Quantity</th>
                                     <th>Total Price</th> 
@@ -96,7 +99,6 @@ ini_set('display_errors', 1);
                                         <td><?= $item['name']; ?></td>
                                         <td><?= $item['unit_name']; ?></td> <!-- Updated to display UoM name -->
                                         <td><?= $item['category']; ?></td>
-                                        <td><?= $item['sub_category']; ?></td>
                                         <td>Php <?= $item['price']; ?></td>
                                         <td>
                                             <div class="input-group qtyBox">
