@@ -11,23 +11,25 @@ ini_set('display_errors', 1);
 <div class="container-fluid px-4">
     <div class="card mt-4 shadow-sm">
         <div class="card-header">
-            <h4 class="mb-0">Create Purchase Order
-                <a href="#" class="btn btn-outline-danger float-end">Back</a> 
+            <h4 class="mb-0">Create Purchase Order</strong>
+                <a href="purchase-order-select-supplier.php" class="btn btn-outline-danger float-end">Back</a> 
             </h4>
         </div>
         <div class="card-body">
             <?php alertMessage(); ?>
             <form action="purchase-orders-code.php" method="POST">
+                <div class="mb-3">
+                <h4 class="mb-0">Supplier: <strong><?= $supplier_name; ?></strong></h4>
+                </div>
                 <div class="row">
                     <div class="col-md-3 mb-3">
                         <label for="">Select Ingredients</label>
                         <select name="ingredient_id" class="form-select mySelect2">
                             <option value="">-- Select Ingredient --</option>
                             <?php
-                                $ingredients = getAll('ingredients');
-                                if($ingredients) {
-                                    if(mysqli_num_rows($ingredients) > 0) {
-                                        foreach($ingredients as $ingItem) {
+                                if($ingredient_result) {
+                                    if(mysqli_num_rows($ingredient_result) > 0) {
+                                        while ($ingItem = mysqli_fetch_assoc($ingredient_result)) {
                                             ?>
                                                 <option value="<?= $ingItem['id']; ?>"><?= $ingItem['name']; ?></option>
                                             <?php
@@ -48,7 +50,7 @@ ini_set('display_errors', 1);
                     </div>
                     <div class="col-md-3 mb-3">
                         <br/>
-                        <button type="submit" name="addIngredient" class="btn btn-outline-primary">Add Ingredient</button>
+                        <button type="submit" name="addIngredientTest" class="btn btn-outline-primary">Add Ingredient</button>
                     </div>
                     <div class="col-md-3 mb-3">
                         <input type="hidden" id="order_status" name="order_status" value="Placed">
