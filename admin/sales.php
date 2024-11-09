@@ -157,7 +157,7 @@
                                     $totalPurchaseOrders = $totalPurchaseRow['total_purchase'] ? (float)$totalPurchaseRow['total_purchase'] : 0;
                                 }
                                 ?>
-                                <h5>Total Sales: <?= number_format($totalPurchaseOrders, 2); ?></h5>
+                                <h5>Total Expenses: <?= number_format($totalPurchaseOrders, 2); ?></h5>
                             </div>
                             <?php
                         } else {
@@ -182,7 +182,7 @@
 <script>
     const ctx = document.getElementById('salesChart').getContext('2d');
     const salesChart = new Chart(ctx, {
-        type: 'line', // You can change this to 'bar', 'pie', etc.
+        type: 'bar', // You can change this to 'bar', 'pie', etc.
         data: {
             labels: <?= json_encode($labels); ?>,
             datasets: [
