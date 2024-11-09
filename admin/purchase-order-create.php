@@ -183,5 +183,4 @@ if (isset($_GET['track'])) {
         </div>
     </div>
 
-<?php include('includes/footer.php'); ?><?php include('includes/footer.php'); ?>
-    <?php include('includes/footer.php'); ?>
+<?php include('includes/footer.php'); ?>
