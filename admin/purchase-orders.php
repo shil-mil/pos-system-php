@@ -114,7 +114,7 @@
                                 <?php foreach($pendingPurchaseOrders as $ingredientItem): ?>
                                     <tr>
                                         <td class="fw-bold"><?= $ingredientItem['tracking_no']; ?></td>
-                                        <td><?= $ingredientItem['firstname']; ?></td>
+                                        <td><?= $ingredientItem['supplierName']; ?></td>
                                         <td><?= $ingredientItem['order_date']; ?></td>
                                         <td><?= $ingredientItem['order_status']; ?></td>
                                         <td><?= $ingredientItem['ingPayment_mode']; ?></td>
@@ -147,7 +147,7 @@
                                 <?php foreach($deliveredPurchaseOrders as $ingredientItem): ?>
                                     <tr>
                                         <td class="fw-bold"><?= $ingredientItem['tracking_no']; ?></td>
-                                        <td><?= $ingredientItem['firstname']; ?></td>
+                                        <td><?= $ingredientItem['supplierName']; ?></td>
                                         <td><?= $ingredientItem['order_date']; ?></td>
                                         <td><?= $ingredientItem['order_status']; ?></td>
                                         <td><?= $ingredientItem['ingPayment_mode']; ?></td>
@@ -178,7 +178,7 @@
                                 <?php foreach($cancelledPurchaseOrders as $ingredientItem): ?>
                                     <tr>
                                         <td class="fw-bold"><?= $ingredientItem['tracking_no']; ?></td>
-                                        <td><?= $ingredientItem['firstname']; ?></td>
+                                        <td><?= $ingredientItem['supplierName']; ?></td>
                                         <td><?= $ingredientItem['order_date']; ?></td>
                                         <td><?= $ingredientItem['order_status']; ?></td>
                                         <td><?= $ingredientItem['ingPayment_mode']; ?></td>
