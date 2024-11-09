@@ -8,8 +8,15 @@
         <div class="card-body">
 
         <?php
-            $query = "SELECT po.*, a.* FROM purchaseOrders po, admins a WHERE a.id = po.customer_id ORDER BY po.order_date DESC";
+            $query = "
+                SELECT po.*, a.*, s.firstname AS supplierName 
+                FROM purchaseOrders po
+                JOIN admins a ON a.id = po.customer_id
+                JOIN suppliers s ON s.id = po.supplierName
+                ORDER BY po.order_date ASC
+            ";
             $purchaseOrders = mysqli_query($conn, $query);
+        
 
             if($purchaseOrders){
                 if(mysqli_num_rows($purchaseOrders) > 0){
@@ -63,7 +70,7 @@
                                 <thead>
                                     <tr>
                                         <th>Purchase Order No.</th>
-                                        <th>Name</th>
+                                        <th>Supplier</th>
                                         <th>Order Date</th>
                                         <th>Order Status</th>
                                         <th>Payment Method</th>
@@ -74,7 +81,7 @@
                                     <?php foreach($placedPurchaseOrders as $ingredientItem): ?>
                                         <tr>
                                             <td class="fw-bold"><?= $ingredientItem['tracking_no']; ?></td>
-                                            <td><?= $ingredientItem['firstname']; ?></td>
+                                            <td><?= $ingredientItem['supplierName']; ?></td>
                                             <td><?= $ingredientItem['order_date']; ?></td>
                                             <td><?= $ingredientItem['order_status']; ?></td>
                                             <td><?= $ingredientItem['ingPayment_mode']; ?></td>
@@ -96,7 +103,7 @@
                             <thead>
                                 <tr>
                                     <th>Purchase Order No.</th>
-                                    <th>Name</th>
+                                    <th>Supplier</th>
                                     <th>Order Date</th>
                                     <th>Order Status</th>
                                     <th>Payment Method</th>
@@ -112,8 +119,8 @@
                                         <td><?= $ingredientItem['order_status']; ?></td>
                                         <td><?= $ingredientItem['ingPayment_mode']; ?></td>
                                         <td style="display: flex; justify-content: space-evenly; gap: 5px;">
-                                            <input type="hidden" name="order_track" value="<?= $ingredientItem['tracking_no']; ?>">
-                                            <button class="btn btn-warning btn-sm complete-btn w-100 proceedToDeliveredIng">Delivered</button>
+                                            <input type="hidden" name="order_track" id="order_track" value="<?= $ingredientItem['tracking_no']; ?>">
+                                            <button class="btn btn-warning btn-sm complete-btn w-100 stockInBtn">Delivered</button>
                                             <a href="purchase-orders-view.php?track=<?= $ingredientItem['tracking_no']; ?>" class="btn btn-info mb-0 px-2 btn-sm w-100">View</a>
                                         </td>
                                     </tr>
@@ -129,7 +136,7 @@
                             <thead>
                                 <tr>
                                     <th>Purchase Order No.</th>
-                                    <th>Name</th>
+                                    <th>Supplier</th>
                                     <th>Order Date</th>
                                     <th>Order Status</th>
                                     <th>Payment Method</th>
@@ -160,7 +167,7 @@
                             <thead>
                                 <tr>
                                     <th>Purchase Order No.</th>
-                                    <th>Name</th>
+                                    <th>Supplier</th>
                                     <th>Order Date</th>
                                     <th>Order Status</th>
                                     <th>Payment Method</th>
@@ -196,5 +203,16 @@
         </div>
     </div>
 </div>
+
+<script>
+    document.getElementById('stockInBtn').addEventListener('click', function() {
+        var order_track = document.getElementById('order_track').value;
+        if (order_track) {
+            window.location.href = 'stock-in.php?track=' + order_track;
+        } else {
+            alert('Error!');
+        }
+    });
+</script>
 
 <?php include('includes/footer.php'); ?>
