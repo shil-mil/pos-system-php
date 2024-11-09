@@ -86,7 +86,7 @@ if (isset($_GET['track'])) {
                         <input type="hidden" id="order_status" name="order_status" value="Placed">
                         <input type="hidden" value="<?= $_SESSION['loggedInUser']['firstname'] ?>" id="adminName" name="adminName">
                         <input type="hidden" name="unit_id" value="<?= $ingItem['unit_id']; ?>">
-                        <input type="hidden" name="supplier_id" id="supplier_id" value="<?= $supplier_id?>">
+                        <input type="hidden" name="supplierName" id="supplierName" value="<?= $supplier_id?>">
 
                     </div>
                 </div>
