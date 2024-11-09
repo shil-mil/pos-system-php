@@ -76,10 +76,10 @@ include('includes/header.php');
                                 </div>
                                 <div class="col-md-3">
                                     <label>Select Order Status</label>
-                                    <select id="order_status" class="form-select">
-                                    <option value="Placed" <?= $orderData['order_status'] == 'Placed' ? 'selected' : ''; ?>>Placed</option>
-                                    <option value="Preparing" <?= $orderData['order_status'] == 'Preparing' ? 'selected' : ''; ?>>Preparing</option>
-                                    <option value="Cancelled" <?= $orderData['order_status'] == 'Cancelled' ? 'selected' : ''; ?>>Cancelled</option>
+                                    <select id="order_status" class="form-select" name="order_status">
+                                        <option value="Placed" <?= $orderData['order_status'] == 'Placed' ? 'selected' : ''; ?>>Placed</option>
+                                        <option value="Preparing" <?= $orderData['order_status'] == 'Preparing' ? 'selected' : ''; ?>>Preparing</option>
+                                        <option value="Cancelled" <?= $orderData['order_status'] == 'Cancelled' ? 'selected' : ''; ?>>Cancelled</option>
                                     </select>
                                 </div>
                             </div>
