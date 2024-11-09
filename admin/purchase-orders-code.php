@@ -15,45 +15,49 @@ if(!isset($_SESSION['ingredientItems'])) {
 if(!isset($_SESSION['ingredientItemIds'])) {
     $_SESSION['ingredientItemIds'] = [];
 }
-
-if(isset($_POST['addIngredient'])){
+if (isset($_POST['addIngredient'])) {
     $ingredientId = validate($_POST['ingredient_id']);
     $quantity = validate($_POST['quantity']);
-
+    $unit_id = $_POST['unit_id']; // Retrieve unit_id from the form
+    $supplier_id = validate($_POST['supplier_id']);
+    
     // Updated query to join the units table
     $checkIngredient = mysqli_query($conn, "
-        SELECT i.*, u.name AS unit_name 
-        FROM ingredients i
-        LEFT JOIN units u ON i.unit_id = u.id 
-        WHERE i.id='$ingredientId' LIMIT 1
+        SELECT si.*, i.name AS ingredient_name, i.category AS ingredient_category, u.uom_name AS unit_name
+        FROM supplier_ingredients si
+        LEFT JOIN ingredients i ON si.ingredient_id = i.id
+        LEFT JOIN units_of_measure u ON si.unit_id = u.id
+        WHERE si.ingredient_id='$ingredientId' LIMIT 1
     ");
 
-    if($checkIngredient){
-        if(mysqli_num_rows($checkIngredient) > 0){
+    if ($checkIngredient) {
+        if (mysqli_num_rows($checkIngredient) > 0) {
             $row = mysqli_fetch_assoc($checkIngredient); // Fetch the ingredient details
 
+            // Prepare the ingredient data to be saved
             $ingredientData = [
                 'ingredient_id' => $row['id'],
-                'name' => $row['name'],
-                'unit_id' => $row['unit_id'],
-                'unit_name' => $row['unit_name'], // Added UoM name
-                'category' => $row['category'],
+                'name' => $row['ingredient_name'], // Correct the reference to ingredient name
+                'unit_id' => $row['unit_id'], // UoM ID
+                'unit_name' => $row['unit_name'], // UoM name
+                'category' => $row['ingredient_category'],
                 'sub_category' => $row['sub_category'],
                 'price' => $row['price'],
                 'quantity' => $quantity,
             ];
 
-            if(!in_array($row['id'], $_SESSION['ingredientItemIds'])){
+            // Check if ingredient is already in session, then update or add
+            if (!in_array($row['id'], $_SESSION['ingredientItemIds'])) {
                 array_push($_SESSION['ingredientItemIds'], $row['id']);
                 array_push($_SESSION['ingredientItems'], $ingredientData);
             } else {
-                foreach($_SESSION['ingredientItems'] as $key => $ingSessionItem) {
-                    if($ingSessionItem['ingredient_id'] == $row['id']){
+                foreach ($_SESSION['ingredientItems'] as $key => $ingSessionItem) {
+                    if ($ingSessionItem['ingredient_id'] == $row['id']) {
                         $newQuantity = $ingSessionItem['quantity'] + $quantity;
 
                         $ingredientData = [
                             'ingredient_id' => $row['id'],
-                            'name' => $row['name'],
+                            'name' => $row['ingredient_name'], // Correct reference here as well
                             'unit_id' => $row['unit_id'], // Store UoM ID
                             'unit_name' => $row['unit_name'], // Store UoM name
                             'category' => $row['category'],
@@ -66,14 +70,17 @@ if(isset($_POST['addIngredient'])){
                     }
                 }
             }
-            redirect('purchase-order-create.php', 'Ingredient added: ' .$quantity. ' ' .$row['name']);
+
+            // Redirect with the supplier ID in the URL
+            redirect("purchase-order-create.php?track=$supplier_id", 'Ingredient added: ' . $quantity . ' ' . $row['ingredient_name']);
         } else {
-            redirect('purchase-order-create.php', 'No such ingredient found!');
+            redirect("purchase-order-create.php?track=$supplier_id", 'No such ingredient found!');
         }
     } else {
-        redirect('purchase-order-create.php', 'Something went wrong!');
+        redirect("purchase-order-create.php?track=$supplier_id", 'Something went wrong!');
     }
 }
+
 
 if (isset($_POST['ingredientIncDec'])) {
     $ingredientId = validate($_POST['ingredient_id']);

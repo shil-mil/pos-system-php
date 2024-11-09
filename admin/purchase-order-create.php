@@ -131,7 +131,7 @@ if (isset($_GET['track'])) {
                                     ?>
                                         <tr>
                                             <td><?= $item['name']; ?></td>
-                                            <td><?= $item['uom_name']; ?></td> <!-- Updated to display UoM name -->
+                                            <td><?= $item['unit_name']; ?></td> <!-- Updated to display UoM name -->
                                             <td><?= $item['category']; ?></td>
                                             <td>Php <?= $item['price']; ?></td>
                                             <td>
