@@ -21,13 +21,13 @@ if(is_numeric($paramResult)){
         if ($supplier_id) {
             redirect("purchase-order-create.php?track=$supplier_id", 'Item Removed!');
         } else {
-            redirect("purchase-order-create.php", 'Item Removed!');
+            redirect("purchase-order-create.php?track=$supplier_id", 'Item Removed!');
         }
     } else {
-        redirect('purchase-order-create.php', 'There is no item.');
+        redirect("purchase-order-create.php?track=$supplier_id", 'There is no item.');
     }
 
 } else {
-    redirect('purchase-order-create.php', 'param not numeric');
+    redirect("purchase-order-create.php?track=$supplier_id", 'param not numeric');
 }
 ?>
