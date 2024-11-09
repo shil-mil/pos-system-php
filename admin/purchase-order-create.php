@@ -87,7 +87,7 @@ if (isset($_GET['track'])) {
                         <input type="hidden" value="<?= $_SESSION['loggedInUser']['firstname'] ?>" id="adminName" name="adminName">
                         <input type="hidden" name="unit_id" value="<?= $ingItem['unit_id']; ?>">
                         <input type="hidden" name="supplierName" id="supplierName" value="<?= $supplier_id?>">
-
+                        <input type="hidden" name="supplier_id" id="supplier_id" value="<?= $supplier_id?>">
                     </div>
                 </div>
             </form>
@@ -118,9 +118,9 @@ if (isset($_GET['track'])) {
                                 <thead>
                                     <tr>
                                         <th>Product Name</th>
-                                        <th>UoM</th> <!-- Update header for UoM -->
                                         <th>Category</th>
                                         <th>Price</th>
+                                        <th>UoM</th> <!-- Update header for UoM -->
                                         <th>Quantity</th>
                                         <th>Total Price</th> 
                                         <th>Remove</th>
@@ -132,9 +132,9 @@ if (isset($_GET['track'])) {
                                     ?>
                                         <tr>
                                             <td><?= $item['name']; ?></td>
-                                            <td><?= $item['unit_name']; ?></td> <!-- Updated to display UoM name -->
                                             <td><?= $item['category']; ?></td>
                                             <td>Php <?= $item['price']; ?></td>
+                                            <td><?= $item['unit_name']; ?></td> <!-- Updated to display UoM name -->
                                             <td>
                                                 <div class="input-group qtyBox">
                                                     <input type="hidden" value="<?= $item['ingredient_id'];?>" class="ingId">
