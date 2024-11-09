@@ -29,6 +29,46 @@
                     </select>
                 </div>
 
+
+                <!-- Unit Selection -->
+                <!-- <div class="mb-3">
+                    <label for="unit_id">Select Unit:</label>
+                    <select id="unit_id" name="unit_id" class="form-select" required>
+                        <option value="">Select Unit</option>
+                        <?php
+                        // Fetch all active units from the database
+                        $unitResult = getAll('units_of_measure'); // Adjust this function as needed
+                        if ($unitResult && mysqli_num_rows($unitResult) > 0) {
+                            while ($uItem = mysqli_fetch_assoc($unitResult)) {
+                                echo '<option value="'.htmlspecialchars($uItem['id']).'">'.htmlspecialchars($uItem['uom_name']).'</option>';
+                            }
+                        } else {
+                            echo '<option value="">No units found!</option>';
+                        }
+                        ?>
+                    </select>
+                </div> -->
+                
+                <!-- Unit Selection -->
+                <div class="mb-3">
+                    <label for="unit_id">Select Unit:</label>
+                    <select id="unit_id" name="unit_id" class="form-select" required>
+                        <option value="">Select Unit</option>
+                        <?php
+                        // Fetch all active units with type 'reference' from the database
+                        $unitResult = mysqli_query($conn, "SELECT id, uom_name FROM units_of_measure WHERE type = 'reference' AND active = 1");
+                        if ($unitResult && mysqli_num_rows($unitResult) > 0) {
+                            while ($uItem = mysqli_fetch_assoc($unitResult)) {
+                                echo '<option value="'.htmlspecialchars($uItem['id']).'">'.htmlspecialchars($uItem['uom_name']).'</option>';
+                            }
+                        } else {
+                            echo '<option value="">No reference units found!</option>';
+                        }
+                        ?>
+                    </select>
+                </div>
+
+
                 <!-- Submit Button -->
                 <button type="submit" name="saveIngredient" class="btn btn-outline-primary">Save Ingredient</button>
             </form>

@@ -1,4 +1,4 @@
-<?php 
+<?php  
 require '../config/function.php';
 
 // Start session if not already started
@@ -15,15 +15,24 @@ if (is_numeric($paramResultId)) {
     $ingredient = getById('ingredients', $ingredientId);
 
     if ($ingredient['status'] == 200) {
-        // Correct table name 'ingredients'
-        $ingredientDeleteRes = delete('ingredients', $ingredientId);
+        // First, delete related rows from supplier_ingredients
+        $deleteSupplierIngredients = mysqli_query($conn, "DELETE FROM supplier_ingredients WHERE ingredient_id = $ingredientId");
 
-        if ($ingredientDeleteRes) {
-            $_SESSION['message'] = 'Ingredient deleted successfully!';
-            header('Location: ingredients-view.php');
-            exit();
+        if ($deleteSupplierIngredients) {
+            // Then, delete the ingredient from the ingredients table
+            $ingredientDeleteRes = delete('ingredients', $ingredientId);
+
+            if ($ingredientDeleteRes) {
+                $_SESSION['message'] = 'Ingredient deleted successfully!';
+                header('Location: ingredients-view.php');
+                exit();
+            } else {
+                $_SESSION['message'] = 'Failed to delete ingredient from ingredients table.';
+                header('Location: ingredients-view.php');
+                exit();
+            }
         } else {
-            $_SESSION['message'] = 'Something went wrong.';
+            $_SESSION['message'] = 'Failed to delete related records from supplier_ingredients.';
             header('Location: ingredients-view.php');
             exit();
         }
