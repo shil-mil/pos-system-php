@@ -106,6 +106,7 @@ if(!isset($_SESSION['ingredientItems'])){
                                             <th align="start" style="border-bottom: 1px solid #ccc;" width="5%">ID</th> 
                                             <th align="start" style="border-bottom: 1px solid #ccc;">Ingredient Name</th>
                                             <th align="start" style="border-bottom: 1px solid #ccc;" width="10%">Price</th>
+                                            <th align="start" style="border-bottom: 1px solid #ccc;" width="10%">Unit</th>
                                             <th align="start" style="border-bottom: 1px solid #ccc;" width="10%">Quantity</th>
                                             <th align="start" style="border-bottom: 1px solid #ccc;" width="15%">Total Price</th>
                                         </tr>
@@ -125,6 +126,7 @@ if(!isset($_SESSION['ingredientItems'])){
                                             <td style="border-bottom: 1px solid #ccc;"><?= $i++; ?></td>
                                             <td style="border-bottom: 1px solid #ccc;"><?= $row['name']; ?></td>
                                             <td style="border-bottom: 1px solid #ccc;">Php <?= number_format($row['price'], 2); ?></td>
+                                            <td style="border-bottom: 1px solid #ccc;"><?= $row['unit_name']; ?></td>
                                             <td style="border-bottom: 1px solid #ccc;"><?= $row['quantity']; ?></td>
                                             <td style="border-bottom: 1px solid #ccc;" class="fw-bold">
                                                 Php <?= number_format($row['price'] * $row['quantity'], 2); ?>
