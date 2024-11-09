@@ -1,13 +1,13 @@
 <?php include('includes/header.php'); ?>
 
-<div class="container-fluid px-4">
-<div class="pt-4">
-    <?php alertMessage(); ?>
-</div>
-    <h1 class="mt-4">Dashboard</h1>
-    <ol class="breadcrumb mb-4">
-        <li class="breadcrumb-item active">Dashboard</li>
-    </ol>
+<div class="container-fluid px-4 pb-4">
+    <div class="pt-4">
+        <?php alertMessage(); ?>
+    </div>
+        <h1 class="mt-4">Dashboard</h1>
+        <ol class="breadcrumb mb-4">
+            <li class="breadcrumb-item active">Dashboard</li>
+        </ol>
 
     <div class="row">
         <!-- Menu Products Section -->

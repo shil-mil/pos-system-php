@@ -24,9 +24,13 @@
                         <div class="sb-nav-link-icon"><i class="fas fa-bell"></i></div>
                         Create Purchase Order
                     </a>
+                    <a class="nav-link" href="purchase-order-select-supplier.php">
+                        <div class="sb-nav-link-icon"><i class="fas fa-bell"></i></div>
+                        Create Purchase Order
+                    </a>
                     <a class="nav-link" href="purchase-orders.php">
                         <div class="sb-nav-link-icon"><i class="fas fa-list"></i></div>
-                        Purchase Orders
+                        Purchase Management
                     </a>
                 <?php endif; ?>
                 <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseInventory" aria-expanded="false" aria-controls="collapseInventory">
@@ -115,7 +119,7 @@
                     <div class="collapse" id="collapseAdmins" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                         <nav class="sb-sidenav-menu-nested nav">
                             <a class="nav-link" href="admins-create.php">Add Admin</a>
-                            <a class="nav-link" href="admins.php">View Admin</a>
+                            <a class="nav-link" href="admins.php">View Admins</a>
                         </nav>
                     </div>
                 <?php endif; ?>
