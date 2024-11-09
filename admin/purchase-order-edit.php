@@ -146,8 +146,8 @@
                                             <?php endwhile; ?>
 
                                             <tr>
-                                                <td class="text-end fw-bold">Total Price: </td>
-                                                <td colspan="3" class="text-end fw-bold">Php <?= number_format($totalAmount, 2); ?></td>
+                                                <td colspan="3" class="text-end fw-bold">Total Price: </td>
+                                                <td class="text-end fw-bold">Php <?= number_format($totalAmount, 2); ?></td>
                                             </tr>
                                         </tbody>
 
