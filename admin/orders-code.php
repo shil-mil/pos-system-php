@@ -181,7 +181,6 @@ if(isset($_POST['productIncDec'])) {
     }
 }
 
-
 if (isset($_POST['proceedToPlaceBtn'])) {
     $name = validate($_POST['cname']);
     $payment_mode = validate($_POST['payment_mode']);
@@ -206,7 +205,6 @@ if (isset($_POST['proceedToPlaceBtn'])) {
     }
 }
 
-
 if (isset($_POST['proceedToUpdateBtn'])) {
     $order_status = validate($_POST['order_status']);
     $order_id = validate($_POST['order_id']);
@@ -221,60 +219,19 @@ if (isset($_POST['proceedToUpdateBtn'])) {
         exit();
     }
 
-    // Update order status
     if ($order_status != '') {
         $data = ['order_status' => $order_status];
         $updateResult = update('orders', $order_id, $data);
 
-        if (!$updateResult) {
-            jsonResponse(500, 'error', 'Failed to update order status');
-            exit();
-        }
-
-        // Deduct product quantity if the order is being prepared
-        if ($order_status == 'Preparing') {
-            $orderItemQuery = "SELECT oi.quantity as orderItemQuantity, oi.product_id, p.quantity as productQuantity 
-                               FROM order_items as oi 
-                               JOIN products as p ON oi.product_id = p.id 
-                               WHERE oi.order_id = '$order_id'";
-
-            $orderItemsRes = mysqli_query($conn, $orderItemQuery);
-
-            if ($orderItemsRes && mysqli_num_rows($orderItemsRes) > 0) {
-                while ($orderItemRow = mysqli_fetch_assoc($orderItemsRes)) {
-                    $productId = $orderItemRow['product_id'];
-                    $orderItemQuantity = $orderItemRow['orderItemQuantity'];
-                    $productQuantity = $orderItemRow['productQuantity'];
-
-                    // Ensure there is enough stock before deducting
-                    if ($productQuantity >= $orderItemQuantity) {
-                        $newQuantity = $productQuantity - $orderItemQuantity;
-
-                        $updateProductQtyQuery = "UPDATE products SET quantity='$newQuantity' WHERE id='$productId'";
-                        $updateProductQtyResult = mysqli_query($conn, $updateProductQtyQuery);
-
-                        if (!$updateProductQtyResult) {
-                            jsonResponse(500, 'error', 'Failed to update product quantity for product ID: ' . $productId);
-                            exit();
-                        }
-                    } else {
-                        jsonResponse(400, 'error', 'Insufficient stock for product ID: ' . $productId);
-                        exit();
-                    }
-                }
-
-                jsonResponse(200, 'success', 'Order updated and product quantities deducted successfully');
-            } else {
-                jsonResponse(404, 'error', 'No order items found');
-            }
-        } else {
+        if ($updateResult) {
             jsonResponse(200, 'success', 'Order updated successfully');
+        } else {
+            jsonResponse(500, 'error', 'Failed to update order status');
         }
     } else {
-        jsonResponse(400, 'error', 'Invalid order status');
+        jsonResponse(400, 'error', 'Invalid order ID or status');
     }
 }
-
 
 if (isset($_POST['proceedToCompleteBtn'])) {
     // Check what POST data is received
@@ -381,6 +338,9 @@ if (isset($_POST['saveOrder'])) {
 
         $result = insert('orders', $data);
         $lastOrderId = mysqli_insert_id($conn);
+
+        // Call the updateIngredientInventory function here
+        // updateIngredientInventory($conn, $productId, $quantity); // Pass the necessary product ID and quantity
 
         foreach ($sessionProducts as $prodItem) {
             $productId = $prodItem['product_id'];
