@@ -10,7 +10,7 @@
 
         <?php
             // Query to fetch all orders
-            $query = "SELECT o.*, c.* FROM orders o, customers c WHERE c.id = o.customer_id ORDER BY o.order_date DESC";
+            $query = "SELECT o.*, c.* FROM orders o, customers c WHERE c.id = o.customer_id ORDER BY o.order_date ASC";
             $orders = mysqli_query($conn, $query);
 
             if ($orders) {
@@ -40,8 +40,8 @@
                     }
 
                     // Separate queries for "Placed Orders" and "Preparing Orders" in DESCending order
-                    $placedOrdersQuery = "SELECT o.*, c.* FROM orders o, customers c WHERE c.id = o.customer_id AND o.order_status = 'Placed' ORDER BY o.order_date DESC";
-                    $preparingOrdersQuery = "SELECT o.*, c.* FROM orders o, customers c WHERE c.id = o.customer_id AND o.order_status = 'Preparing' ORDER BY o.order_date DESC";
+                    $placedOrdersQuery = "SELECT o.*, c.* FROM orders o, customers c WHERE c.id = o.customer_id AND o.order_status = 'Placed' ORDER BY o.order_date ASC";
+                    $preparingOrdersQuery = "SELECT o.*, c.* FROM orders o, customers c WHERE c.id = o.customer_id AND o.order_status = 'Preparing' ORDER BY o.order_date ASC";
 
 
                     $placedOrdersResult = mysqli_query($conn, $placedOrdersQuery);
