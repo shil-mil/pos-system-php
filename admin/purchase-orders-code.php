@@ -27,7 +27,7 @@ if (isset($_POST['addIngredient'])) {
         FROM supplier_ingredients si
         LEFT JOIN ingredients i ON si.ingredient_id = i.id
         LEFT JOIN units_of_measure u ON si.unit_id = u.id
-        WHERE si.ingredient_id='$ingredientId' LIMIT 1
+        WHERE  si.supplier_id = '$supplier_id' AND si.ingredient_id='$ingredientId' LIMIT 1
     ");
 
     if ($checkIngredient) {
