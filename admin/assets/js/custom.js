@@ -60,83 +60,6 @@ function quantityIncDec(prodId, qty) {
     });
 }
 
-// Increment Ingredient Quantity
-$(document).on('click', '.so-increment', function() {
-    var $quantityInput = $(this).closest('.qtyBox').find('.qty');
-    var ingId = $(this).closest('.qtyBox').find('.ingId').val();
-    var currentValue = parseInt($quantityInput.val());
-
-    if (!isNaN(currentValue)) {
-        var qtyVal = currentValue + 1;
-        $quantityInput.val(qtyVal);
-        soIncDec(ingId, qtyVal); // Call the ingredient increment function
-    }
-});
-
-// Decrement Ingredient Quantity
-$(document).on('click', '.so-decrement', function() {
-    var $quantityInput = $(this).closest('.qtyBox').find('.qty');
-    var ingId = $(this).closest('.qtyBox').find('.ingId').val();
-    var currentValue = parseInt($quantityInput.val());
-
-    if (!isNaN(currentValue) && currentValue > 1) {
-        var qtyVal = currentValue - 1;
-        $quantityInput.val(qtyVal);
-        soIncDec(ingId, qtyVal); // Call the ingredient decrement function
-    }
-});
-
-// Quantity Increment/Decrement with AJAX for Ingredients
-function soIncDec(ingId, qty) {
-    $.ajax({
-        type: "POST",
-        url: "code.php", // Ensure this is the correct file for ingredients
-        data: {
-            'soIncDec': true,
-            'ingredient_id': ingId,
-            'quantity': qty
-        },
-        success: function(response) {
-            var res = JSON.parse(response);
-        
-            // Get the specific row for the ingredient
-            var $row = $('.qtyBox').find('.ingId[value="' + ingId + '"]').closest('tr');
-            var pricePerUnit = parseFloat($row.find('td:eq(4)').text().replace('Php ', '')); // Extract the price per unit
-            
-            if (res.status == 200) {
-                alertify.success(res.message);
-        
-                // Update the total price for the specific ingredient
-                var totalPrice = pricePerUnit * qty;
-        
-                // Update the total price column
-                $row.find('td:eq(6)').text('Php ' + totalPrice.toFixed(2)); // Column 6 contains the total price
-        
-                // Re-enable the increment button since quantity is valid
-                var $incrementBtn = $('.qtyBox').find('.ingId[value="' + ingId + '"]').closest('.qtyBox').find('.so-increment');
-                $incrementBtn.prop('disabled', false);
-        
-            } else if (res.status == 500) {
-                alertify.error(res.message);
-        
-                // Calculate the total price based on the maximum allowed quantity
-                var maxQuantity = qty; // This should be the maximum available quantity
-                var totalPrice = pricePerUnit * maxQuantity;
-        
-                // Update the total price column
-                $row.find('td:eq(6)').text('Php ' + totalPrice.toFixed(2)); // Column 6 contains the total price
-        
-                // Disable the increment button since the maximum quantity is reached
-                var $incrementBtn = $('.qtyBox').find('.ingId[value="' + ingId + '"]').closest('.qtyBox').find('.so-increment');
-                $incrementBtn.prop('disabled', true);
-            }
-        }
-        
-        
-    });
-}
-
-
     // Proceed to Place Order
     $(document).on('click', '.proceedToPlace', function(){
         var cname = $('#cname').val();
@@ -258,7 +181,35 @@ function soIncDec(ingId, qty) {
     });
     
     
+    $(document).on('click', '.selectSupplier', function() {
+        var supplierName = $('#supplierName').val(); // Fetch the hidden order_id
     
+        // Prepare data to send via AJAX
+        var data = {
+            'selectSupplierBtn': true,
+            'supplierName': supplierName
+        };
+    
+        $.ajax({
+            type: "POST",
+            url: "purchase-orders-code.php",
+            data: data,
+            success: function(response) {
+                console.log(response); // Log response for debugging
+                try {
+                    var res = JSON.parse(response);
+                    if (res.status == 200) {
+                        window.location.href = "purchase-order-create.php"; // Redirect on success
+                    } else {
+                        swal(res.message, res.message, res.status_type); // Display error
+                    }
+                } catch (e) {
+                    console.error('Error parsing JSON:', e, response);
+                    swal('Error', 'Failed to process the response', 'error');
+                }
+            }
+        });
+    });
     
     
     
@@ -472,6 +423,106 @@ $(document).on('click', '.ing-decrement', function(){
         });
     });
 
+    // Save Purchase Order
+    $(document).on('click', '#savePurchaseOrder', function() {
+        $.ajax({
+            type: "POST",
+            url: "purchase-orders-code.php",
+            data: { 'savePurchaseOrder': true },
+            success: function(response){
+                var res = JSON.parse(response);
+                if (res.status == 200) {
+                    swal(res.message, res.message, res.status_type);
+                    $('#orderPlaceSuccessMessage').text(res.message);
+                    $('#orderSuccessModal').modal('show');
+                } else {
+                    swal(res.message, res.message, res.status_type);
+                }
+            },
+            error: function() {
+                swal("Error", "Failed to process order", "error");
+            }
+        });
+    });
+
+    
+// Increment Ingredient Quantity
+$(document).on('click', '.so-increment', function() {
+    var $quantityInput = $(this).closest('.qtyBox').find('.qty');
+    var ingId = $(this).closest('.qtyBox').find('.ingId').val();
+    var currentValue = parseInt($quantityInput.val());
+
+    if (!isNaN(currentValue)) {
+        var qtyVal = currentValue + 1;
+        $quantityInput.val(qtyVal);
+        soIncDec(ingId, qtyVal); // Call the ingredient increment function
+    }
+});
+
+// Decrement Ingredient Quantity
+$(document).on('click', '.so-decrement', function() {
+    var $quantityInput = $(this).closest('.qtyBox').find('.qty');
+    var ingId = $(this).closest('.qtyBox').find('.ingId').val();
+    var currentValue = parseInt($quantityInput.val());
+
+    if (!isNaN(currentValue) && currentValue > 1) {
+        var qtyVal = currentValue - 1;
+        $quantityInput.val(qtyVal);
+        soIncDec(ingId, qtyVal); // Call the ingredient decrement function
+    }
+});
+
+// Quantity Increment/Decrement with AJAX for Ingredients
+function soIncDec(ingId, qty) {
+    $.ajax({
+        type: "POST",
+        url: "code.php", // Ensure this is the correct file for ingredients
+        data: {
+            'soIncDec': true,
+            'ingredient_id': ingId,
+            'quantity': qty
+        },
+        success: function(response) {
+            var res = JSON.parse(response);
+        
+            // Get the specific row for the ingredient
+            var $row = $('.qtyBox').find('.ingId[value="' + ingId + '"]').closest('tr');
+            var pricePerUnit = parseFloat($row.find('td:eq(4)').text().replace('Php ', '')); // Extract the price per unit
+            
+            if (res.status == 200) {
+                alertify.success(res.message);
+        
+                // Update the total price for the specific ingredient
+                var totalPrice = pricePerUnit * qty;
+        
+                // Update the total price column
+                $row.find('td:eq(6)').text('Php ' + totalPrice.toFixed(2)); // Column 6 contains the total price
+        
+                // Re-enable the increment button since quantity is valid
+                var $incrementBtn = $('.qtyBox').find('.ingId[value="' + ingId + '"]').closest('.qtyBox').find('.so-increment');
+                $incrementBtn.prop('disabled', false);
+        
+            } else if (res.status == 500) {
+                alertify.error(res.message);
+        
+                // Calculate the total price based on the maximum allowed quantity
+                var maxQuantity = qty; // This should be the maximum available quantity
+                var totalPrice = pricePerUnit * maxQuantity;
+        
+                // Update the total price column
+                $row.find('td:eq(6)').text('Php ' + totalPrice.toFixed(2)); // Column 6 contains the total price
+        
+                // Disable the increment button since the maximum quantity is reached
+                var $incrementBtn = $('.qtyBox').find('.ingId[value="' + ingId + '"]').closest('.qtyBox').find('.so-increment');
+                $incrementBtn.prop('disabled', true);
+            }
+        }
+        
+        
+    });
+}
+
+
      // Proceed to Place Order
      $(document).on('click', '.proceedToPlaceSo', function(){
         var adminName = $('#adminName').val();
@@ -507,27 +558,9 @@ $(document).on('click', '.ing-decrement', function(){
         });
     });
 
-    // Save Purchase Order
-    $(document).on('click', '#savePurchaseOrder', function() {
-        $.ajax({
-            type: "POST",
-            url: "purchase-orders-code.php",
-            data: { 'savePurchaseOrder': true },
-            success: function(response){
-                var res = JSON.parse(response);
-                if (res.status == 200) {
-                    swal(res.message, res.message, res.status_type);
-                    $('#orderPlaceSuccessMessage').text(res.message);
-                    $('#orderSuccessModal').modal('show');
-                } else {
-                    swal(res.message, res.message, res.status_type);
-                }
-            },
-            error: function() {
-                swal("Error", "Failed to process order", "error");
-            }
-        });
-    });
+    
+
+
 
 });
 
