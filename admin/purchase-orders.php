@@ -205,14 +205,18 @@
 </div>
 
 <script>
-    document.getElementById('stockInBtn').addEventListener('click', function() {
-        var order_track = document.getElementById('order_track').value;
+    document.querySelectorAll('.stockInBtn').forEach(button => {
+    button.addEventListener('click', function() {
+        const orderTrackInput = this.closest('td').querySelector('#order_track');
+        const order_track = orderTrackInput ? orderTrackInput.value : null;
+        
         if (order_track) {
             window.location.href = 'stock-in.php?track=' + order_track;
         } else {
             alert('Error!');
         }
     });
+});
 </script>
 
 <?php include('includes/footer.php'); ?>
