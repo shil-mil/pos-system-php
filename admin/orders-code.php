@@ -211,8 +211,11 @@ if (isset($_POST['proceedToUpdateBtn'])) {
     $order_status = validate($_POST['order_status']);
     $order_id = validate($_POST['order_id']);
 
-    // Fetch order details
+    // Debugging: print the order ID and the order data
+    error_log("Order ID: " . $order_id);
     $orderData = getByID('orders', $order_id);
+    error_log(print_r($orderData, true));
+
     if ($orderData['status'] != 200) {
         jsonResponse(404, 'error', 'Order not found');
         exit();
