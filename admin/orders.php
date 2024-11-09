@@ -1,6 +1,6 @@
 <?php include('includes/header.php'); ?>
 
-<div class="container-fluid px-4">
+<div class="container-fluid px-4 pb-4">
     <div class="card mt-4 shadow-sm">
         <div class="card-header">
             <h4 class="mb-0">Orders</h4>
