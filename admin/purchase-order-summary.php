@@ -132,7 +132,7 @@ $supplier_id = isset($_SESSION['supplier_id']) ? $_SESSION['supplier_id'] : null
                                         </tr>
                                         <?php endforeach; ?>
                                         <tr>
-                                            <td colspan="4" align="end" style="font-weight: bold;">Grand Total: </td> 
+                                            <td colspan="5" align="end" style="font-weight: bold;">Grand Total: </td> 
                                             <td colspan="1" style="font-weight: bold;">Php <?= number_format($totalAmount, 2); ?></td>
                                         </tr>
                                         <tr>
