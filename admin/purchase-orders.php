@@ -211,7 +211,7 @@
         const order_track = orderTrackInput ? orderTrackInput.value : null;
         
         if (order_track) {
-            window.location.href = 'stock-in.php?track=' + order_track;
+            window.location.href = 'purchase-order-stock-in.php?track=' + order_track;
         } else {
             alert('Error!');
         }
