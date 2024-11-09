@@ -36,32 +36,30 @@ if (isset($_POST['addIngredient'])) {
 
             // Prepare the ingredient data to be saved
             $ingredientData = [
-                'ingredient_id' => $row['id'],
+                'ingredient_id' => $row['ingredient_id'],
                 'name' => $row['ingredient_name'], // Correct the reference to ingredient name
                 'unit_id' => $row['unit_id'], // UoM ID
                 'unit_name' => $row['unit_name'], // UoM name
                 'category' => $row['ingredient_category'],
-                'sub_category' => $row['sub_category'],
                 'price' => $row['price'],
                 'quantity' => $quantity,
             ];
 
             // Check if ingredient is already in session, then update or add
-            if (!in_array($row['id'], $_SESSION['ingredientItemIds'])) {
-                array_push($_SESSION['ingredientItemIds'], $row['id']);
+            if (!in_array($row['ingredient_id'], $_SESSION['ingredientItemIds'])) {
+                array_push($_SESSION['ingredientItemIds'], $row['ingredient_id']);
                 array_push($_SESSION['ingredientItems'], $ingredientData);
             } else {
                 foreach ($_SESSION['ingredientItems'] as $key => $ingSessionItem) {
-                    if ($ingSessionItem['ingredient_id'] == $row['id']) {
+                    if ($ingSessionItem['ingredient_id'] == $row['ingredient_id']) {
                         $newQuantity = $ingSessionItem['quantity'] + $quantity;
 
                         $ingredientData = [
-                            'ingredient_id' => $row['id'],
+                            'ingredient_id' => $row['ingredient_id'],
                             'name' => $row['ingredient_name'], // Correct reference here as well
                             'unit_id' => $row['unit_id'], // Store UoM ID
                             'unit_name' => $row['unit_name'], // Store UoM name
-                            'category' => $row['category'],
-                            'sub_category' => $row['sub_category'],
+                            'category' => $row['ingredient_category'],
                             'price' => $row['price'],
                             'quantity' => $newQuantity,
                         ];
@@ -311,12 +309,14 @@ if (isset($_POST['savePurchaseOrder'])) {
 
         foreach ($sessionIngredients as $ingItem) {
             $ingredientId = $ingItem['ingredient_id'];
+            $unitId = $ingItem['unit_id'];
             $price = $ingItem['price'];
             $quantity = $ingItem['quantity'];
 
             $dataIngredientItem = [
                 'order_id' => $lastOrderId,
                 'ingredient_id' => $ingredientId,
+                'unit_id' => $unitId,
                 'price' => $price,
                 'quantity' => $quantity,
             ];
