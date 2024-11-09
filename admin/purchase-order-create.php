@@ -6,6 +6,7 @@ ini_set('display_errors', 1);
 // Retrieve the supplier ID from the URL
 if (isset($_GET['track'])) {
     $supplier_id = $_GET['track'];
+    $_SESSION['supplier_id'] = $supplier_id;  // Store supplier_id in the session
 
     // Fetch supplier details from the database
     $supplier_query = "SELECT firstname, lastname FROM suppliers WHERE id = $supplier_id LIMIT 1";

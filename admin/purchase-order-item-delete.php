@@ -1,6 +1,12 @@
 <?php
 require '../config/function.php';
 
+// Start the session to access session variables
+session_start();
+
+// Retrieve supplier_id from session
+$supplier_id = isset($_SESSION['supplier_id']) ? $_SESSION['supplier_id'] : null;
+
 $paramResult = checkParam('index');
 
 if(is_numeric($paramResult)){
@@ -11,12 +17,17 @@ if(is_numeric($paramResult)){
         unset($_SESSION['ingredientItems'][$indexValue]);
         unset($_SESSION['ingredientItemIds'][$indexValue]);
 
-        redirect('purchase-order-create.php', 'Item Removed!');
-    }else{
+        // If supplier_id exists, pass it to the redirect URL
+        if ($supplier_id) {
+            redirect("purchase-order-create.php?track=$supplier_id", 'Item Removed!');
+        } else {
+            redirect("purchase-order-create.php", 'Item Removed!');
+        }
+    } else {
         redirect('purchase-order-create.php', 'There is no item.');
     }
 
-}else{
+} else {
     redirect('purchase-order-create.php', 'param not numeric');
 }
 ?>
