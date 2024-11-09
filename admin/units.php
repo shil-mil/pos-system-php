@@ -3,45 +3,65 @@
 <div class="container-fluid px-4">
     <div class="card mt-4 shadow-sm">
         <div class="card-header">
-            <h4 class="mb-0">Edit Unit
-                <a href="units.php" class="btn btn-outline-danger float-end">Back</a> 
+            <h4 class="mb-0">Units of Measurement Categories
+                <a href="units-category.php" class="btn btn-outline-primary float-end">Create New Unit Category</a>
             </h4>
         </div>
         <div class="card-body">
             <?php alertMessage(); ?>
-            <form action="code.php" method="POST">
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <th>Unit of Measurement Category</th>
+                            <th>UoM</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php
+                        // Connect to the database
+                        // $conn = new mysqli('localhost', 'root', '', 'units_db');
+                        $sql = "SELECT * FROM unit_categories";
+                        $result = $conn->query($sql);
 
-            <?php
-            $paramValue = checkParam('id');
-            if (!is_numeric($paramValue)) {
-                echo '<h5>' . htmlspecialchars($paramValue) . '</h5>';
-                return false;
-            }
-            $unit = getById('units', $paramValue);
-            if ($unit['status'] == 200) {
-            ?>
-            <input type="hidden" name="unitId" value="<?= htmlspecialchars($unit['data']['id']); ?>">
-                <div class="row">
-                    <div class="col-md-12 mb-3">
-                        <label for="">Name *</label>
-                        <input type="text" name="name" value="<?= htmlspecialchars($unit['data']['name']); ?>" required class="form-control" />
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label for="">Status (Unchecked=Visible, Checked=Hidden)</label>
-                        <br />
-                        <input type="checkbox" style="width:30px;height:30px;" name="status" <?= $unit['data']['status'] ? 'checked' : ''; ?>>
-                    </div>
-                    <div class="col-md-6 mb-3 text-end">
-                        <br />
-                        <button type="submit" name="updateUnit" class="btn btn-outline-primary">Update</button>
-                    </div>
-                </div>
-                <?php
-                } else {
-                    echo '<h5>' . htmlspecialchars($unit['message']) . '</h5>';
-                }
-                ?>
-            </form>
+                        if ($result->num_rows > 0) {
+                            while($row = $result->fetch_assoc()) {
+                                echo "<tr>";
+                                echo "<td>" . htmlspecialchars($row['category_unit_name']) . "</td>";
+
+                                // Fetch only active UoMs for the category
+                                $category_id = $row['id'];
+                                $uom_sql = "SELECT * FROM units_of_measure WHERE category_id = $category_id AND active = 1"; // Only active UoMs
+                                $uom_result = $conn->query($uom_sql);
+                                $uoms = [];
+                                if ($uom_result->num_rows > 0) {
+                                    while ($uom_row = $uom_result->fetch_assoc()) {
+                                        // Check if the UoM is the reference unit
+                                        if ($uom_row['type'] == 'reference') {
+                                            $uoms[] = "<strong>" . htmlspecialchars($uom_row['uom_name']) . "</strong>"; // Bold reference UoM
+                                        } else {
+                                            $uoms[] = htmlspecialchars($uom_row['uom_name']); // Regular UoM
+                                        }
+                                    }
+                                }
+                                echo "<td>" . implode(', ', $uoms) . "</td>";
+
+                                echo "<td>
+                                    <a href='units-view-category.php?id=" . $row['id'] . "' class='btn btn-sm btn-outline-info'>View</a>
+                                    <a href='units-edit-category.php?id=" . $row['id'] . "' class='btn btn-sm btn-outline-warning'>Edit</a>
+                                    <a href='code.php?delete=" . $row['id'] . "' class='btn btn-sm btn-outline-danger' onclick='return confirm(\"Are you sure you want to delete this category?\");'>Delete</a>                                </td>";
+                                echo "</tr>";
+                            }
+                        } else {
+                            echo "<tr><td colspan='3'>No categories found</td></tr>";
+                        }
+
+                        $conn->close();
+                        ?>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
