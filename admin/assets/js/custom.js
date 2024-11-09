@@ -248,25 +248,29 @@ function quantityIncDec(prodId, qty) {
             type: "POST",
             url: "orders-code.php",
             data: { 'saveOrder': true },
-            success: function(response){
-                var res = JSON.parse(response);
-                if (res.status == 200) {
-                    swal(res.message, res.message, res.status_type);
-                    $('#orderPlaceSuccessMessage').text(res.message);
-                    $('#orderSuccessModal').modal('show');
-                } else {
-                    swal(res.message, res.message, res.status_type);
+            success: function(response) {
+                console.log("AJAX success response: ", response);  // Debug the response
+                try {
+                    var res = JSON.parse(response);
+                    if (res.status == 200) {
+                        swal(res.message, res.message, res.status_type);
+                        $('#orderPlaceSuccessMessage').text(res.message);
+                        $('#orderSuccessModal').modal('show');
+                    } else {
+                        swal(res.message, res.message, res.status_type);
+                    }
+                } catch (error) {
+                    console.error("Failed to parse JSON:", error, response);  // Add error handling
                 }
             },
-            error: function() {
+            error: function(xhr, status, error) {
+                console.log("AJAX error: ", status, error);  // More detailed error logging
                 swal("Error", "Failed to process order", "error");
             }
         });
     });
 
-    
-
-    // Increment Ingredient Quantity
+// Increment Ingredient Quantity
 $(document).on('click', '.ing-increment', function(){
     var $quantityInput = $(this).closest('.qtyBox').find('.qty');
     var ingredientId = $(this).closest('.qtyBox').find('.ingId').val();
@@ -315,7 +319,7 @@ $(document).on('click', '.ing-decrement', function(){
             }
         });
     }
-
+    
     $(document).on('click', '.proceedToPlaceIng', function() {
         var adminName = $('#adminName').val();
         var ingPayment_mode = $('#ingPayment_mode').val();
@@ -445,7 +449,6 @@ $(document).on('click', '.ing-decrement', function(){
         });
     });
 
-    
 // Increment Ingredient Quantity
 $(document).on('click', '.so-increment', function() {
     var $quantityInput = $(this).closest('.qtyBox').find('.qty');
@@ -522,11 +525,9 @@ function soIncDec(ingId, qty) {
     });
 }
 
-
-     // Proceed to Place Order
-     $(document).on('click', '.proceedToPlaceSo', function(){
-        var adminName = $('#adminName').val();
-        var reason = $('#reason').val();
+// Proceed to Place Order
+$(document).on('click', '.proceedToPlaceSo', function(){
+    var reason = $('#reason').val();
 
         // Validate reason
         if (reason === '') {
@@ -534,29 +535,28 @@ function soIncDec(ingId, qty) {
             return false;
         }
 
-        // Place Order via AJAX
-        var data = {
-            'proceedToPlaceSoBtn': true,
-            'adminName': adminName,
-            'reason': reason
-        };
+    // Place Order via AJAX
+    var data = {
+        'proceedToPlaceSoBtn': true,
+        'reason': reason
+    };
 
-        $.ajax({
-            type: "POST",
-            url: "code.php",
-            data: data,
-            success: function(response) {
-                if (response.status == 200) {
-                    window.location.href = "stock-out-summary.php";
-                } else {
-                    swal(response.message, response.message, response.status_type);
-                }
-            },
-            error: function() {
-                swal('Error', 'Failed to process the request', 'error');
+    $.ajax({
+        type: "POST",
+        url: "code.php",
+        data: data,
+        success: function(response) {
+            if (response.status == 200) {
+                window.location.href = "stock-out-summary.php";
+            } else {
+                swal(response.message, response.message, response.status_type);
             }
-        });
+        },
+        error: function() {
+            swal('Error', 'Failed to process the request', 'error');
+        }
     });
+});
 
     
 
