@@ -1,7 +1,5 @@
 <?php include('includes/header.php'); 
-if(!isset($_SESSION['ingredientItems'])){
-    echo '<script> window.location.href="purchase-order-create.php"</script>';
-}
+$supplier_id = isset($_SESSION['supplier_id']) ? $_SESSION['supplier_id'] : null;
 ?>
 
 <div class="modal fade" id="orderSuccessModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -25,8 +23,8 @@ if(!isset($_SESSION['ingredientItems'])){
         <div class="col-md-12">
             <div class="card mt-4 mb-4">
                 <div class="card-header">
-                    <h4 class="mb-0"> Purchase Order Summary
-                        <a href="purchase-order-create.php" class= "btn btn-danger float-end">Back</a>
+                    <h4 class="mb-0">Purchase Order Summary
+                        <a href="purchase-order-create.php?track=<?= $supplier_id; ?>" class="btn btn-danger float-end">Back</a>
                     </h4>
                 </div>
                 <div class="card-body">
@@ -103,7 +101,7 @@ if(!isset($_SESSION['ingredientItems'])){
                                 <table style="width:100%;" cellpadding="5">
                                     <thead>
                                         <tr>
-                                            <th align="start" style="border-bottom: 1px solid #ccc;" width="5%">ID</th> 
+                                            <th align="start" style="border-bottom: 1px solid #ccc;" width="10%">Item No.</th> 
                                             <th align="start" style="border-bottom: 1px solid #ccc;">Ingredient Name</th>
                                             <th align="start" style="border-bottom: 1px solid #ccc;" width="10%">Price</th>
                                             <th align="start" style="border-bottom: 1px solid #ccc;" width="10%">Unit</th>
