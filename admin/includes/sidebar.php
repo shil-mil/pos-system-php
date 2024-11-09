@@ -20,10 +20,6 @@
                 <!-- Inventory -->
                 <div class="sb-sidenav-menu-heading">Inventory</div>
                 <?php if ($_SESSION['loggedInUser']['position'] == 1): ?>
-                    <a class="nav-link" href="purchase-order-create.php">
-                        <div class="sb-nav-link-icon"><i class="fas fa-bell"></i></div>
-                        Create Purchase Order
-                    </a>
                     <a class="nav-link" href="purchase-order-select-supplier.php">
                         <div class="sb-nav-link-icon"><i class="fas fa-bell"></i></div>
                         Create Purchase Order
