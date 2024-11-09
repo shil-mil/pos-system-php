@@ -18,8 +18,9 @@ if (isset($_GET['track'])) {
     FROM supplier_ingredients si
     JOIN ingredients i ON si.ingredient_id = i.id
     JOIN units_of_measure u ON si.unit_id = u.id
-    WHERE si.supplier_id = $supplier_id
-    ";
+    WHERE si.supplier_id = $supplier_id AND si.ingredient_id = i.id
+";
+
     $ingredient_result = mysqli_query($conn, $ingredient_query);
 
     // Check if supplier details were found
