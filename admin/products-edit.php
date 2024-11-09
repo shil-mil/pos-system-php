@@ -1,20 +1,20 @@
 <?php include('includes/header.php'); ?>
 
-<div class="container-fluid px-4">
+<div class="container-fluid px-4 pb-4">
     <div class="card mt-4 shadow-sm">
         <div class="card-header">
             <h4 class="mb-0">Edit Menu Product
-                <a href="products.php" class = "btn btn-danger float-end">Back</a> 
+                <a href="products.php" class = "btn btn-outline-danger float-end">Back</a> 
             </h4>
         </div>
         <div class="card-body">
-        <?php alertMessage();?>
+        <?php  alertMessage(); ?>
             <form action="code.php" method="POST" enctype="multipart/form-data">
 
             <?php 
                 $paramValue = checkParam('id');
                 if(!is_numeric($paramValue)){
-                    echo '<5>ID is not an integer.</h5>';
+                    echo '<h5>ID is not an integer.</h5>';
                     return false;
                 }
 
@@ -68,7 +68,7 @@
                             </div>
                             <div class="col-md-4 mb-3 text-end">
                                 <br />
-                                <button type="submit" name="updateProduct" class="btn btn-primary">Update</button>
+                                <button type="submit" name="updateProduct" class="btn btn-outline-primary">Update</button>
                             </div>
                         </div>
                         <?php
