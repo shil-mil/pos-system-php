@@ -284,41 +284,22 @@ if (isset($_POST['updateSupplierIngredient'])) {
 }
 
 
-// Save Ingredient
+//Save Ingredient
 if (isset($_POST['saveIngredient'])) {
-    $name = trim($_POST['name']);
-    $category = trim($_POST['category']);
-    // Set price to 0.00 if it's not provided
-    $price = isset($_POST['price']) && trim($_POST['price']) !== '' ? trim($_POST['price']) : 0.00;
-    $quantity = isset($_POST['quantity']) && trim($_POST['quantity']) !== '' ? trim($_POST['quantity']) : 0;
+    $name = $_POST['name'];
+    $unit_id = $_POST['unit_id'];
+    $category = $_POST['category'];
+    $price = $_POST['price'];
 
-    // Allow unit_id to be nullable
-    $unit_id = isset($_POST['unit_id']) && !empty($_POST['unit_id']) ? trim($_POST['unit_id']) : null;
-
-    // Prepare the SQL query with placeholders
-    $query = "INSERT INTO ingredients (name, unit_id, category, price, quantity) 
-              VALUES (?, ?, ?, ?, ?)";
-
-    // Initialize the prepared statement
-    if ($stmt = mysqli_prepare($conn, $query)) {
-        // Bind parameters to the placeholders (types: s = string, i = integer, d = double)
-        mysqli_stmt_bind_param($stmt, "sissd", $name, $unit_id, $category, $price, $quantity);
-
-        // Execute the statement
-        if (mysqli_stmt_execute($stmt)) {
-            $_SESSION['message'] = "Ingredient added successfully";
-            header('Location: ingredients-view.php');
-            exit(0);
-        } else {
-            $_SESSION['message'] = "Failed to save ingredient";
-            header('Location: ingredients-add.php');
-            exit(0);
-        }
-
-        // Close the prepared statement
-        mysqli_stmt_close($stmt);
+    $query = "INSERT INTO ingredients (name, unit_id, category, price) 
+              VALUES ('$name', '$unit_id', '$category', '$price')";
+    
+    if (mysqli_query($conn, $query)) {
+        $_SESSION['message'] = "Ingredient added successfully";
+        header('Location: ingredients-view.php');
+        exit(0);
     } else {
-        $_SESSION['message'] = "Database error: Unable to prepare statement";
+        $_SESSION['message'] = "Failed to add ingredient";
         header('Location: ingredients-add.php');
         exit(0);
     }
@@ -441,35 +422,36 @@ if (isset($_POST['saveProduct'])) {
     $category_id = validate($_POST['category_id']);
     $productname = validate($_POST['productname']);
     $description = validate($_POST['description']);
-    $quantity = validate($_POST['quantity']);  // Corrected quantity validation
-    $price = validate($_POST['price']);
 
-    if ($_FILES['image']['size'] > 0) {
-        $path = "../assets/uploads/products";
-        $image_ext = pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION);
+    $quantity = 0; 
+    if ($productname && $category_id) {
+        $price = validate($_POST['price']);
 
-        $filename = time() . '.' . $image_ext;
+        if ($_FILES['image']['size'] > 0) {
+            $path = "../pics/uploads/products";
+            $image_ext = pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION);
+            $filename = time() . '.' . $image_ext;
+            move_uploaded_file($_FILES['image']['tmp_name'], $path . "/" . $filename);
+            $finalImage = "pics/uploads/products/" . $filename;
+        } else {
+            $finalImage = ''; // Default image if none provided
+        }
 
-        move_uploaded_file($_FILES['image']['tmp_name'], $path . "/" . $filename);
-        $finalImage = "assets/uploads/products/" . $filename;
-    } else {
-        $finalImage = '';
-    }
+        $data = [
+            'category_id' => $category_id,
+            'productname' => $productname,
+            'description' => $description,
+            'quantity' => $quantity,  // Default or calculated quantity
+            'price' => $price,
+            'image' => $finalImage
+        ];
 
-    $data = [
-        'category_id' => $category_id,
-        'productname' => $productname,
-        'description' => $description,
-        'quantity' => $quantity,  // Added quantity to the data array
-        'price' => $price,
-        'image' => $finalImage
-    ];
-
-    $result = insert('products', $data);
-    if ($result) {
-        redirect('products.php', 'Menu product created successfully!');
-    } else {
-        redirect('products-create.php', 'Something went wrong.');
+        $result = insert('products', $data);
+        if ($result) {
+            redirect('products.php', 'Menu product created successfully!');
+        } else {
+            redirect('products-create.php', 'Something went wrong.');
+        }
     }
 }
 
@@ -488,11 +470,13 @@ if (isset($_POST['updateProduct'])) {
     $category_id = validate($_POST['category_id']);
     $productname = validate($_POST['productname']);
     $description = validate($_POST['description']);
-    $quantity = validate($_POST['quantity']);  // Corrected quantity validation for update
+    
+    // Calculate available quantity based on ingredients and recipe
+    $quantity = calculateProductQuantity($product_id);  // Automatically calculated quantity
     $price = validate($_POST['price']);
 
     if ($_FILES['image']['size'] > 0) {
-        $path = "../assets/uploads/products";
+        $path = "../pics/uploads/products";
         $image_ext = strtolower(pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION));
         $allowed_ext = ['jpg', 'jpeg', 'png', 'gif'];
 
@@ -506,7 +490,7 @@ if (isset($_POST['updateProduct'])) {
         $destination = $path . "/" . $filename;
 
         if (move_uploaded_file($_FILES['image']['tmp_name'], $destination)) {
-            $finalImage = "assets/uploads/products/" . $filename;
+            $finalImage = "pics/uploads/products/" . $filename;
 
             $deleteImage = "../" . $productData['data']['image'];
             if (file_exists($deleteImage)) {
@@ -526,7 +510,7 @@ if (isset($_POST['updateProduct'])) {
         'category_id' => $category_id,
         'productname' => $productname,
         'description' => $description,
-        'quantity' => $quantity,  // Added quantity to the update array
+        'quantity' => $quantity,  // Set calculated quantity
         'price' => $price,
         'image' => $finalImage
     ];
@@ -994,28 +978,6 @@ if(isset($_POST['addIngredient'])){
         }
     } else {
         redirect('stock-out-create.php', 'Something went wrong!');
-    }
-}
-
-if (isset($_POST['proceedToPlaceSoBtn'])) {
-    $reason = validate($_POST['reason']);
-
-    $checkCustomer = mysqli_query($conn, "SELECT * FROM customers WHERE name='$name' LIMIT 1");
-
-    if ($checkCustomer) {
-        if (mysqli_num_rows($checkCustomer) > 0) {
-            $_SESSION['invoice_no'] = "INV-" .rand(111111, 999999);
-            $_SESSION['cname'] = $name;
-            $_SESSION['payment_mode'] = $payment_mode;
-            $_SESSION['order_status'] = $order_status;
-
-            jsonResponse(200, 'success', 'Customer found');
-        } else {
-            $_SESSION['cname'] = $name;
-            jsonResponse(404, 'warning', 'Customer not found');
-        }
-    } else {
-        jsonResponse(500, 'error', 'Something Went Wrong');
     }
 }
 
