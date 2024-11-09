@@ -112,7 +112,7 @@
     
 
                         $orderItemsRes = mysqli_query($conn, $orderItemQuery);
-
+                        $i = 1;
                         if($orderItemsRes){
                             if(mysqli_num_rows($orderItemsRes) > 0){
                                 $totalAmount = 0;
@@ -121,6 +121,7 @@
                                     <table class="table table-bordered table-striped">
                                         <thead>
                                             <tr>
+                                                <th>Item No. </th>
                                                 <th>Ingredient</th>
                                                 <th>Price</th>
                                                 <th>Quantity</th>
@@ -130,17 +131,19 @@
                                         <tbody>
                                             <?php while($orderItemRow = mysqli_fetch_assoc($orderItemsRes)): ?>
                                                 <tr>
-                                                    <td width="15%" class="fw-bold text-center">
-                                                    <?= $orderItemRow['ingredientName'];?>
+                                                    <td width="5%" class=" text-center">
+                                                        <?= $i++; ?>
                                                     </td>
-                                                    
-                                                    <td width="15%" class="fw-bold text-center">
+                                                    <td width="15%" class=" text-center">
+                                                        <?= $orderItemRow['ingredientName'];?>
+                                                    </td>
+                                                    <td width="15%" class="text-center">
                                                         Php <?= number_format($orderItemRow['orderItemPrice'], 2); ?>
                                                     </td>
-                                                    <td width="15%" class="fw-bold text-center">
+                                                    <td width="15%" class="text-center">
                                                         <?= $orderItemRow['orderItemQuantity']; ?>
                                                     </td>
-                                                    <td width="15%" class="fw-bold text-center">
+                                                    <td width="15%" class="text-center">
                                                         Php <?= number_format($orderItemRow['orderItemPrice'] * $orderItemRow['orderItemQuantity'], 2); ?>
                                                     </td> 
                                                 </tr>
@@ -148,8 +151,8 @@
                                             <?php endwhile; ?>
 
                                             <tr>
-                                                <td class="text-end fw-bold">Total Price: </td>
-                                                <td colspan="3" class="text-end fw-bold">Php <?= number_format($totalAmount, 2); ?></td>
+                                                <td colspan="4"class="text-end fw-bold">Total Price: </td>
+                                                <td colspan="1" class="text-end fw-bold">Php <?= number_format($totalAmount, 2); ?></td>
                                             </tr>
                                         </tbody>
 
