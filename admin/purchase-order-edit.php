@@ -85,7 +85,7 @@
                                 <label class="mb-1">
                                     Position: 
                                     <span class="fw-bold">
-                                        <?= $customerData['position']?>
+                                        <?= $customerData['position'] == 1 ? 'Owner' : 'Employee'?>
                                     </span>
                                 </label>
                                 <br />
