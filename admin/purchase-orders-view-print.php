@@ -91,11 +91,18 @@
                             return false;
                         }
 
-                        $orderItemQuery = "SELECT ii.quantity as orderItemQuantity, ii.price as orderItemPrice, i.name as ingredientName 
+                        $orderItemQuery = "
+                       SELECT 
+                           ii.quantity as orderItemQuantity, 
+                           ii.price as orderItemPrice, 
+                           i.name as ingredientName,
+                           uom.uom_name as unit_name
                        FROM purchaseOrders po 
                        JOIN ingredients_items ii ON ii.order_id = po.id 
                        JOIN ingredients i ON i.id = ii.ingredient_id 
-                       WHERE po.tracking_no='$trackingNo' ";
+                       JOIN units_of_measure uom ON uom.id = ii.unit_id
+                       WHERE po.tracking_no = '$trackingNo'
+                        ";   
 
                         $orderItemQueryRes = mysqli_query($conn, $orderItemQuery);
                         if($orderItemQueryRes)
@@ -107,9 +114,10 @@
                                     <table style="width:100%;" cellpadding="5">
                                         <thead>
                                             <tr>
-                                                <th align="start" style="border-bottom: 1px solid #ccc;" width="5%">ID</th> 
+                                                <th align="start" style="border-bottom: 1px solid #ccc;" width="10%">Item No.</th> 
                                                 <th align="start" style="border-bottom: 1px solid #ccc;">Product Name</th>
                                                 <th align="start" style="border-bottom: 1px solid #ccc;" width="10%">Price</th>
+                                                <th align="start" style="border-bottom: 1px solid #ccc;" width="10%">Unit</th>
                                                 <th align="start" style="border-bottom: 1px solid #ccc;" width="10%">Quantity</th>
                                                 <th align="start" style="border-bottom: 1px solid #ccc;" width="15%">Total Price</th>
                                             </tr>
@@ -127,6 +135,7 @@
                                                 <td style="border-bottom: 1px solid #ccc;"><?= $i++; ?></td>
                                                 <td style="border-bottom: 1px solid #ccc;"><?= $row['ingredientName']; ?></td>
                                                 <td style="border-bottom: 1px solid #ccc;">Php <?= number_format($row['orderItemPrice'], 2); ?></td>
+                                                <td style="border-bottom: 1px solid #ccc;"><?= $row['unit_name']; ?></td>
                                                 <td style="border-bottom: 1px solid #ccc;"><?= $row['orderItemQuantity']; ?></td>
                                                 <td style="border-bottom: 1px solid #ccc;" class="fw-bold">
                                                     Php <?= number_format($row['orderItemPrice'] * $row['orderItemQuantity'], 2); ?>
@@ -135,7 +144,7 @@
                                             <?php endforeach; ?>
 
                                             <tr>
-                                                <td colspan="4" align="end" style="font-weight: bold;">Grand Total: </td> 
+                                                <td colspan="5" align="end" style="font-weight: bold;">Grand Total: </td> 
                                                 <td colspan="1" style="font-weight: bold;">Php <?= number_format($orderDataRow['total_amount'], 2); ?></td>
                                                 
                                             </tr>
