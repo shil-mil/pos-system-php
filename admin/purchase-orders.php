@@ -1,4 +1,9 @@
-<?php include('includes/header.php'); ?>
+<?php include('includes/header.php');
+
+unset($_SESSION['siItems']);
+unset($_SESSION['siItemIds']);
+
+?>
 
 <div class="container-fluid px-4 pb-4">
     <div class="card mt-4 shadow-sm">
