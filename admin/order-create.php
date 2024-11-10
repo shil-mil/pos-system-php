@@ -80,7 +80,8 @@ include('includes/header.php');
         <div class="card-header">
              <h4 class="mb-0">Products</h4>
         </div>
-        <div class="card-body" id="productArea">
+        <div class="card-body">
+        <div class="mb-3" id="productArea">
              <?php
               if (isset($_SESSION['productItems']) && !empty($_SESSION['productItems'])) {
                 $sessionProducts = $_SESSION['productItems'];
@@ -119,33 +120,33 @@ include('includes/header.php');
                                 <?php endforeach; ?>
                         </tbody>
                     </table>
-
-                    <div class="mt-2">
-                    <hr>
-                    <div class="row">
-                        <div class="col-md-4">
-                            <label>Select Payment Method</label>
-                            <select id="payment_mode" class="form-select" name="payment_mode">
-                                <option value="">-- Select Payment --</option>
-                                <option value="Cash Payment">Cash Payment</option>
-                                <option value="Online Payment">Online Payment</option>
-                            </select>
-                        </div>
-                        <div class="col-md-4">
-                            <label>Enter Customer Name</label>
-                            <input type="text" id="cname" class="form-control" name="cname" value="" />
-                        </div>
-                        <div class="col-md-4">
-                            <br/>
-                            <button type="submit" class="btn btn-warning w-100 proceedToPlace" form="orderForm">Proceed to place order</button>
-                        </div>
-                    </div>
                 </div>
                 <?php
               } else {
                  echo '<h5>No items added</h5>';
               }
              ?>
+        </div>
+        <div class="mt-2">
+            <hr>
+            <div class="row">
+                <div class="col-md-4">
+                    <label>Select Payment Method</label>
+                    <select id="payment_mode" class="form-select" name="payment_mode">
+                        <option value="">-- Select Payment --</option>
+                        <option value="Cash Payment">Cash Payment</option>
+                        <option value="Online Payment">Online Payment</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label>Enter Customer Name</label>
+                    <input type="text" id="cname" class="form-control" name="cname" value="" />
+                </div>
+                <div class="col-md-4">
+                    <br/>
+                    <button type="submit" class="btn btn-warning w-100 proceedToPlace" form="orderForm">Proceed to place order</button>
+                </div>
+        </div>
         </div>
     </div>
 </div>
