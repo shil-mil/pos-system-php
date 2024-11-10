@@ -26,7 +26,7 @@ if(!isset($_SESSION['productItems'])){
             <div class="card mt-4">
                 <div class="card-header">
                     <h4 class="mb-0">Order Summary
-                        <a href="order-create.php" class= "btn btn-danger float-end">Back to create order</a>
+                        <a href="order-create.php" class= "btn btn-danger float-end">Back</a>
                     </h4>
                 </div>
                 <div class="card-body">
