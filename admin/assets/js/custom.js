@@ -449,7 +449,7 @@ $(document).on('click', '.si-decrement', function(){
     });
     
 
-    $(document).on('click', '.proceedToDeliveredIng', function() {
+    $(document).on('click', '.stockInBtn', function() {
         var order_track = $(this).closest('tr').find('input[name="order_track"]').val(); // Get the tracking number from the current row
         var order_status = 'Delivered';
     
@@ -457,7 +457,7 @@ $(document).on('click', '.si-decrement', function(){
     
         // Prepare data to send via AJAX
         var data = {
-            'proceedToDeliveredIng': true,
+            'stockInBtn': true,
             'order_track': order_track,
             'order_status': order_status
         };
