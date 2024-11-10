@@ -319,6 +319,62 @@ $(document).on('click', '.ing-decrement', function(){
             }
         });
     }
+
+    // Increment Ingredient Quantity
+$(document).on('click', '.si-increment', function(){
+    var $quantityInput = $(this).closest('.qtyBox').find('.qty');
+    var ingredientId = $(this).closest('.qtyBox').find('.ingId').val();
+    var currentValue = parseInt($quantityInput.val());
+
+    if(!isNaN(currentValue)){
+        var qtyVal = currentValue + 1;
+        $quantityInput.val(qtyVal);
+        siIncDec(ingredientId, qtyVal);
+    }
+});
+
+// Decrement Ingredient Quantity
+$(document).on('click', '.si-decrement', function(){
+    var $quantityInput = $(this).closest('.qtyBox').find('.qty');
+    var ingredientId = $(this).closest('.qtyBox').find('.ingId').val();
+    var currentValue = parseInt($quantityInput.val());
+
+    if(!isNaN(currentValue) && currentValue > 0){
+        var qtyVal = currentValue - 1;
+        $quantityInput.val(qtyVal);
+        siIncDec(ingredientId, qtyVal);
+    }
+});
+
+
+    // Ingredient Increment/Decrement AJAX
+    function siIncDec(ingId, qty) {
+        $.ajax({
+            type: "POST",
+            url: "purchase-orders-code.php",
+            data: {
+                'siIncDec': true,
+                'ingredient_id': ingId,
+                'quantity': qty
+            },
+            success: function(response) {
+                console.log(response);
+                try {
+                    var res = JSON.parse(response);
+                    if (res.status == 200) {
+                        $('#siArea').load(' #siContent');
+                        alertify.success(res.message);
+                    } else if (res.status == 500) {
+                        alertify.error(res.message);
+                        $('.si-increment').prop('disabled', true);
+                    }
+                } catch (e) {
+                    console.error('Error parsing JSON:', e, response);
+                    swal('Error', 'Failed to process the response', 'error');
+                }
+            }
+        });
+    }
     
     $(document).on('click', '.proceedToPlaceIng', function() {
         var adminName = $('#adminName').val();
