@@ -170,12 +170,12 @@ if (isset($_POST['proceedToUpdateIng'])) {
     }
 }
 
-if (isset($_POST['proceedToDeliveredIng'])) {
+if (isset($_POST['stockInBtn'])) {
     // Log the POST data for debugging
     error_log(print_r($_POST, true));
 
-    $order_status = validate($_POST['order_status'] ?? ''); 
-    $order_track = validate($_POST['order_track'] ?? ''); 
+    $order_status = validate($_POST['order_status']); 
+    $order_track = validate($_POST['order_track']); 
 
     if (empty($order_track)) {
         jsonResponse(400, 'error', 'Invalid order tracking number');
@@ -202,10 +202,11 @@ if (isset($_POST['proceedToDeliveredIng'])) {
         if ($updateResult) {
             if ($order_status == 'Delivered') {
                 // Use your provided query to fetch the ordered ingredients
-                $orderItemQuery = "SELECT ii.quantity as orderItemQuantity, ii.price as orderItemPrice, i.name as ingredientName, i.id as ingredientId, i.quantity as current_quantity
+                $orderItemQuery = "SELECT ii.quantity as orderItemQuantity, ii.price as orderItemPrice, i.name as ingredientName, i.id as ingredientId, i.quantity as current_quantity, uom.uom_name as unit_name
                                    FROM purchaseOrders po 
                                    JOIN ingredients_items ii ON ii.order_id = po.id 
                                    JOIN ingredients i ON i.id = ii.ingredient_id 
+                                   JOIN units_of_measure uom ON uom.id = ii.unit_id
                                    WHERE po.tracking_no='$order_track'";
 
                 $orderItemsRes = mysqli_query($conn, $orderItemQuery);
