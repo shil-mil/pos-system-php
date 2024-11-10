@@ -102,15 +102,22 @@
 
 
                     <?php
-                       $orderItemQuery = "SELECT ii.quantity as orderItemQuantity, ii.price as orderItemPrice, i.name as ingredientName 
-                       FROM purchaseOrders po 
-                       JOIN ingredients_items ii ON ii.order_id = po.id 
-                       JOIN ingredients i ON i.id = ii.ingredient_id 
-                       WHERE po.tracking_no='$trackingNo'";
+                       $orderItemQuery = "
+                        SELECT 
+                            ii.quantity as orderItemQuantity, 
+                            ii.price as orderItemPrice, 
+                            i.name as ingredientName,
+                            uom.uom_name as unit_name
+                        FROM purchaseOrders po 
+                        JOIN ingredients_items ii ON ii.order_id = po.id 
+                        JOIN ingredients i ON i.id = ii.ingredient_id 
+                        JOIN units_of_measure uom ON uom.id = ii.unit_id
+                        WHERE po.tracking_no = '$trackingNo'
+                            ";   
     
 
                         $orderItemsRes = mysqli_query($conn, $orderItemQuery);
-
+                        $i = 1;
                         if($orderItemsRes){
                             if(mysqli_num_rows($orderItemsRes) > 0){
                                 $totalAmount = 0;
@@ -119,8 +126,10 @@
                                     <table class="table table-bordered table-striped">
                                         <thead>
                                             <tr>
+                                                <th>Item No. </th>
                                                 <th>Ingredient</th>
                                                 <th>Price</th>
+                                                <th>Unit</th>
                                                 <th>Quantity</th>
                                                 <th>Total</th>
                                             </tr>
@@ -128,12 +137,18 @@
                                         <tbody>
                                             <?php while($orderItemRow = mysqli_fetch_assoc($orderItemsRes)): ?>
                                                 <tr>
+                                                    <td width="5%" class=" text-center">
+                                                        <?= $i++; ?>
+                                                    </td>
                                                     <td width="15%" class="fw-bold text-center">
                                                     <?= $orderItemRow['ingredientName'];?>
                                                     </td>
                                                     
                                                     <td width="15%" class="fw-bold text-center">
                                                         Php <?= number_format($orderItemRow['orderItemPrice'], 2); ?>
+                                                    </td>
+                                                    <td width="15%" class=" text-center">
+                                                        <?= $orderItemRow['unit_name'];?>
                                                     </td>
                                                     <td width="15%" class="fw-bold text-center">
                                                         <?= $orderItemRow['orderItemQuantity']; ?>
@@ -146,8 +161,8 @@
                                             <?php endwhile; ?>
 
                                             <tr>
-                                                <td colspan="3" class="text-end fw-bold">Total Price: </td>
-                                                <td class="text-end fw-bold">Php <?= number_format($totalAmount, 2); ?></td>
+                                                <td colspan="5" class="text-end fw-bold">Total Price: </td>
+                                                <td colspan="1" class="text-end fw-bold">Php <?= number_format($totalAmount, 2); ?></td>
                                             </tr>
                                         </tbody>
 
