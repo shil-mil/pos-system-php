@@ -155,16 +155,6 @@ if (isset($_GET['track'])) {
                                 </table>
                             </div>
                         </div>
-                    <?php
-                    } else {
-                        // If no ingredients are left, show the "No items added" message
-                        echo '<h5>No items added</h5>';
-                    }
-                } else {
-                    // If no ingredients have been added to the session
-                    echo '<h5>No items added</h5>';
-                }
-                ?>
                 <div class="mt-2 mb-2">
                     <hr>
                     <div class="row">
@@ -182,6 +172,16 @@ if (isset($_GET['track'])) {
                             </div>
                     </div>
                 </div>
+                <?php
+                    } else {
+                        // If no ingredients are left, show the "No items added" message
+                        echo '<h5>No items added</h5>';
+                    }
+                } else {
+                    // If no ingredients have been added to the session
+                    echo '<h5>No items added</h5>';
+                }
+                ?>
             </div>
         </div>
     </div>

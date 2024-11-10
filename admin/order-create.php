@@ -121,11 +121,6 @@ include('includes/header.php');
                         </tbody>
                     </table>
                 </div>
-                <?php
-              } else {
-                 echo '<h5>No items added</h5>';
-              }
-             ?>
         </div>
         <div class="mt-2">
             <hr>
@@ -146,8 +141,13 @@ include('includes/header.php');
                     <br/>
                     <button type="submit" class="btn btn-warning w-100 proceedToPlace" form="orderForm">Proceed to place order</button>
                 </div>
+            </div>
         </div>
-        </div>
+        <?php
+              } else {
+                 echo '<h5>No items added</h5>';
+              }
+             ?>
     </div>
 </div>
 
