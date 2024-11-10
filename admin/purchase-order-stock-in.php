@@ -16,9 +16,9 @@ if (!isset($_SESSION['siItems']) || empty($_SESSION['siItems'])) {
     // Retrieve purchase order details along with associated ingredients
     $query = "SELECT po.*, ii.ingredient_id, ii.quantity, ii.price, i.name AS ingredient_name, u.uom_name as unit_name
               FROM purchaseOrders po
-              LEFT JOIN ingredients_Items ii ON po.id = ii.order_id
-              LEFT JOIN ingredients i ON ii.ingredient_id = i.id
-              LEFT JOIN units_of_measure u ON ii.unit_id = u.id
+              JOIN ingredients_Items ii ON po.id = ii.order_id
+              JOIN ingredients i ON ii.ingredient_id = i.id
+              JOIN units_of_measure u ON ii.unit_id = u.id
               WHERE po.tracking_no = '$order_track'";
 
     $orders = mysqli_query($conn, $query);
