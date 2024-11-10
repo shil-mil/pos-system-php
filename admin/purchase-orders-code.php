@@ -330,4 +330,38 @@ if (isset($_POST['savePurchaseOrder'])) {
         jsonResponse(404, 'warning', 'No Admin or Supplier found');
     }
 }
+
+if (isset($_POST['siIncDec'])) {
+    $ingredientId = validate($_POST['ingredient_id']);
+    $quantity = validate($_POST['quantity']);
+
+    // Fetch product details from the database
+    $checkIngredient = mysqli_query($conn, "SELECT * FROM ingredients WHERE id='$ingredientId' LIMIT 1");
+
+    // Initialize a flag
+    $flag = false;
+
+    // Check if product exists
+    if (mysqli_num_rows($checkIngredient) > 0) {
+        $row = mysqli_fetch_assoc($checkIngredient);
+
+        // Loop through session items and update the quantity
+        foreach ($_SESSION['siItems'] as $key => $item) {
+            if ($item['ingredient_id'] == $ingredientId) {
+                // Update the quantity
+                $_SESSION['siItems'][$key]['quantity'] = $quantity;
+                $flag = true; // Quantity changed
+                break; // Exit the loop once the item is found and updated
+            }
+        }
+    }
+
+    // Prepare JSON response based on the flag
+    if ($flag) {
+        jsonResponse(200, 'success', "Quantity changed.");
+    } else {
+        jsonResponse(500, 'error', "Something went wrong!");
+    }
+}
+
 ?>
