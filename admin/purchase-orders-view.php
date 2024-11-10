@@ -104,11 +104,18 @@
 
 
                     <?php
-                       $orderItemQuery = "SELECT ii.quantity as orderItemQuantity, ii.price as orderItemPrice, i.name as ingredientName 
+                       $orderItemQuery = "
+                       SELECT 
+                           ii.quantity as orderItemQuantity, 
+                           ii.price as orderItemPrice, 
+                           i.name as ingredientName,
+                           uom.uom_name as unit_name
                        FROM purchaseOrders po 
                        JOIN ingredients_items ii ON ii.order_id = po.id 
                        JOIN ingredients i ON i.id = ii.ingredient_id 
-                       WHERE po.tracking_no='$trackingNo'";
+                       JOIN units_of_measure uom ON uom.id = ii.unit_id
+                       WHERE po.tracking_no = '$trackingNo'
+                        ";                   
     
 
                         $orderItemsRes = mysqli_query($conn, $orderItemQuery);
@@ -124,6 +131,7 @@
                                                 <th>Item No. </th>
                                                 <th>Ingredient</th>
                                                 <th>Price</th>
+                                                <th>Unit</th>
                                                 <th>Quantity</th>
                                                 <th>Total</th>
                                             </tr>
@@ -140,6 +148,9 @@
                                                     <td width="15%" class="text-center">
                                                         Php <?= number_format($orderItemRow['orderItemPrice'], 2); ?>
                                                     </td>
+                                                    <td width="15%" class=" text-center">
+                                                        <?= $orderItemRow['unit_name'];?>
+                                                    </td>
                                                     <td width="15%" class="text-center">
                                                         <?= $orderItemRow['orderItemQuantity']; ?>
                                                     </td>
@@ -151,7 +162,7 @@
                                             <?php endwhile; ?>
 
                                             <tr>
-                                                <td colspan="4"class="text-end fw-bold">Total Price: </td>
+                                                <td colspan="5" class="text-end fw-bold">Total Price: </td>
                                                 <td colspan="1" class="text-end fw-bold">Php <?= number_format($totalAmount, 2); ?></td>
                                             </tr>
                                         </tbody>
