@@ -14,7 +14,7 @@ if (!isset($_SESSION['siItems']) || empty($_SESSION['siItems'])) {
     $_SESSION['siItemIds'] = [];
 
     // Retrieve purchase order details along with associated ingredients
-    $query = "SELECT po.*, ii.ingredient_id, ii.quantity, ii.price, i.name AS ingredient_name, u.uom_name as unit_name
+    $query = "SELECT po.*, ii.ingredient_id, ii.quantity, ii.price, i.name AS ingredient_name, u.uom_name as unit_name, u.id as unit_id
               FROM purchaseOrders po
               JOIN ingredients_Items ii ON po.id = ii.order_id
               JOIN ingredients i ON ii.ingredient_id = i.id
@@ -32,7 +32,8 @@ if (!isset($_SESSION['siItems']) || empty($_SESSION['siItems'])) {
                 'name' => $orderData['ingredient_name'],
                 'quantity' => $orderData['quantity'],
                 'price' => $orderData['price'],
-                'unit_name' => $orderData['unit_name']
+                'unit_name' => $orderData['unit_name'],
+                'unit_id' => $orderData['unit_id']
             ];
 
             // Add to sessions
