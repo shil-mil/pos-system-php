@@ -451,7 +451,7 @@ $(document).on('click', '.si-decrement', function(){
 
     $(document).on('click', '.proceedToDeliveredIng', function() {
         var order_track = $(this).closest('tr').find('input[name="order_track"]').val(); // Get the tracking number from the current row
-        var order_status = 'Delivered'; // Set the status directly to 'Completed'
+        var order_status = 'Delivered';
     
         console.log('Order Track:', order_track); // Log for debugging
     
