@@ -236,7 +236,13 @@ if (!isset($_SESSION['siItems']) || empty($_SESSION['siItems'])) {
                             </tr>
                         </thead>
                         <tbody>
-                            <?php foreach ($sessionIngredients as $key => $item) : ?>
+                            <?php 
+                            if (isset($_SESSION['error_message'])) {
+                                echo "<div class='alert alert-danger'>" . $_SESSION['error_message'] . "</div>";
+                                unset($_SESSION['error_message']); // Clear the message after displaying it
+                            }
+                            
+                            foreach ($sessionIngredients as $key => $item) : ?>
                                 <tr>
                                     <td><?= $i++ ?></td>
                                     <td><?= $item['name']; ?></td>
