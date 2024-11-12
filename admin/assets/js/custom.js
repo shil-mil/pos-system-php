@@ -450,7 +450,7 @@ $(document).on('click', '.si-decrement', function(){
     
 
     $(document).on('click', '.stockInBtn', function() {
-        var order_track = $(this).closest('tr').find('input[name="order_track"]').val(); // Get the tracking number from the current row
+        var order_track = $('#order_track').val()
         var order_status = 'Delivered';
     
         console.log('Order Track:', order_track); // Log for debugging
@@ -467,20 +467,20 @@ $(document).on('click', '.si-decrement', function(){
             url: "purchase-orders-code.php",
             data: data,
             success: function(response) {
-                console.log(response); // Log response for debugging
+                console.log("Raw response:", response);  // Log the raw response to the console
                 try {
-                    var res = JSON.parse(response);
+                    var res = JSON.parse(response);  // Try parsing JSON
                     if (res.status == 200) {
-                        window.location.href = "purchase-orders.php"; // Redirect on success
+                        window.location.href = "purchase-orders.php";  // Redirect on success
                     } else {
-                        swal(res.message, res.message, res.status_type); // Display error
+                        swal(res.message, res.message, res.status_type);  // Display error
                     }
                 } catch (e) {
                     console.error('Error parsing JSON:', e, response);
                     swal('Error', 'Failed to process the response', 'error');
                 }
             }
-        });
+        });        
     });
 
     // Save Purchase Order
