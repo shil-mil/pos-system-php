@@ -319,6 +319,18 @@ if (isset($_POST['saveOrder'])) {
             exit;
         }
 
+        // Get the last tracking number from the purchaseOrders table
+        $lastTrackingQuery = mysqli_query($conn, "SELECT tracking_no FROM orders ORDER BY id DESC LIMIT 1");
+        $lastTrackingNumber = 0;
+
+        if ($lastTrackingQuery && mysqli_num_rows($lastTrackingQuery) > 0) {
+            $lastTracking = mysqli_fetch_assoc($lastTrackingQuery);
+            $lastTrackingNumber = (int) $lastTracking['tracking_no'];
+        }
+
+        // Increment the tracking number
+        $newTrackingNumber = str_pad($lastTrackingNumber + 1, 6, '0', STR_PAD_LEFT);
+
         $totalAmount = 0;
         $sessionProducts = $_SESSION['productItems'];  // Make sure this exists
         foreach ($sessionProducts as $amtItem) {
@@ -327,7 +339,7 @@ if (isset($_POST['saveOrder'])) {
 
         $data = [
             'customer_id' => $customerData['id'],
-            'tracking_no' => rand(111111, 999999),
+            'tracking_no' => $newTrackingNumber,
             'invoice_no' => $invoice_no,
             'total_amount' => $totalAmount,
             'order_date' => date('Y-m-d H:i:s'),
