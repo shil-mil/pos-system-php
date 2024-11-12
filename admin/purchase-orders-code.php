@@ -302,7 +302,7 @@ if (isset($_POST['savePurchaseOrder'])) {
             'order_status' => $order_status,
             'ingPayment_mode' => $ingPayment_mode,
             'order_placed_by_id' => $order_placed_by_id,
-            'supplierName' => $supplierName
+            'supplierName' => $supplierName //id sa supplier ang masave ani, dili supplierName
         ];
 
         $result = insert('purchaseOrders', $data);
