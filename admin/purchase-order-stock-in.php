@@ -230,39 +230,48 @@ if (!isset($_SESSION['siItems']) || empty($_SESSION['siItems'])) {
                                 <th>Ingredient</th>
                                 <th>Price</th>
                                 <th>Unit</th>
+                                <th>Expiry Date</th>
                                 <th>Quantity</th>
                                 <th>Total Price</th>
-                                <th>Expiry Date</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <?php 
-                            if (isset($_SESSION['error_message'])) {
-                                echo "<div class='alert alert-danger'>" . $_SESSION['error_message'] . "</div>";
-                                unset($_SESSION['error_message']); // Clear the message after displaying it
-                            }
-                            
-                            foreach ($sessionIngredients as $key => $item) : ?>
-                                <tr>
-                                    <td><?= $i++ ?></td>
-                                    <td><?= $item['name']; ?></td>
-                                    <td>Php <?= $item['price']; ?></td>
-                                    <td><?= $item['unit_name']; ?></td>
-                                    <td>
-                                        <div class="input-group qtyBox">
-                                            <input type="hidden" value="<?= $item['ingredient_id'];?>" class="ingId">
-                                            <button class="input-group-text si-decrement">-</button>
-                                            <input type="text" min="0" value="<?= $item['quantity']; ?>" class="qty quantityInput" />
-                                            <button class="input-group-text si-increment">+</button>
-                                        </div> 
-                                    </td>
-                                    <td>Php <?= number_format($item['price'] * $item['quantity'], 2); ?></td>
-                                    <td>
-                                        <input type="date" id="expiry_date" name="expiry_date[<?= $key; ?>]" class="form-control" required>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                        </tbody>
+                        <?php 
+                        if (isset($_SESSION['error_message'])) {
+                            echo "<div class='alert alert-danger'>" . $_SESSION['error_message'] . "</div>";
+                            unset($_SESSION['error_message']); // Clear the message after displaying it
+                        }
+
+                        $totalAmount = 0; // Initialize the total amount
+
+                        foreach ($sessionIngredients as $key => $item) : 
+                            $itemTotal = $item['price'] * $item['quantity']; // Calculate total for each item
+                            $totalAmount += $itemTotal; // Add to the cumulative total
+                        ?>
+                            <tr>
+                                <td><?= $i++ ?></td>
+                                <td><?= $item['name']; ?></td>
+                                <td>Php <?= $item['price']; ?></td>
+                                <td><?= $item['unit_name']; ?></td>
+                                <td> 
+                                    <input type="date" id="expiry_date" name="expiry_date[<?= $key; ?>]" class="form-control" required>
+                                </td>
+                                <td>
+                                    <div class="input-group qtyBox">
+                                        <input type="hidden" value="<?= $item['ingredient_id'];?>" class="ingId">
+                                        <button class="input-group-text si-decrement">-</button>
+                                        <input type="text" min="0" value="<?= $item['quantity']; ?>" class="qty quantityInput" />
+                                        <button class="input-group-text si-increment">+</button>
+                                    </div> 
+                                </td>
+                                <td>Php <?= number_format($itemTotal, 2); ?></td>
+                            </tr>
+                        <?php endforeach; ?>
+                            <tr>
+                                <td colspan="6" class="text-end fw-bold">Total Price: </td>
+                                <td colspan="1" class="text-end fw-bold">Php <?= number_format($totalAmount, 2); ?></td>
+                            </tr>
+                    </tbody>
                     </table>
 
                     <div>
@@ -272,6 +281,7 @@ if (!isset($_SESSION['siItems']) || empty($_SESSION['siItems'])) {
                             </div>
                             <div class="col-md-4">
                                 <br/>
+                                <input type="hidden" name="order_track" id="order_track" value="<?= $order_track; ?>">
                                 <button type="button" class="btn btn-warning w-100 stockInBtn">Stock In</button>
                             </div>
                         </div>
