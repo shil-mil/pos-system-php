@@ -170,10 +170,7 @@ if (isset($_POST['proceedToUpdateIng'])) {
     }
 }
 
-if (isset($_POST['stockInBtn'])) {
-    // Log the POST data for debugging
-    error_log(print_r($_POST, true));
-
+if(isset($_POST['stockInBtn'])) {
     $order_status = validate($_POST['order_status']); 
     $order_track = validate($_POST['order_track']); 
 
@@ -185,66 +182,80 @@ if (isset($_POST['stockInBtn'])) {
     // Fetch the order ID based on the tracking number
     $query = "SELECT id FROM purchaseorders WHERE tracking_no = '$order_track' LIMIT 1";
     $result = mysqli_query($conn, $query);
-
-    if (!$result) {
-        jsonResponse(500, 'error', 'Database query failed: ' . mysqli_error($conn));
-        exit();
-    }
-
     $orderData = mysqli_fetch_assoc($result);
 
     if ($orderData) {
         $order_id = $orderData['id'];
-
         $data = ['order_status' => $order_status];
         $updateResult = update('purchaseorders', $order_id, $data);
 
-        if ($updateResult) {
-            if ($order_status == 'Delivered') {
-                // Use your provided query to fetch the ordered ingredients
-                $orderItemQuery = "SELECT ii.quantity as orderItemQuantity, ii.price as orderItemPrice, i.name as ingredientName, i.id as ingredientId, i.quantity as current_quantity, uom.uom_name as unit_name
-                                   FROM purchaseOrders po 
-                                   JOIN ingredients_items ii ON ii.order_id = po.id 
-                                   JOIN ingredients i ON i.id = ii.ingredient_id 
-                                   JOIN units_of_measure uom ON uom.id = ii.unit_id
-                                   WHERE po.tracking_no='$order_track'";
+        if ($updateResult && $order_status == 'Delivered') {
+            // Query to fetch ordered ingredients
+            $orderItemQuery = "SELECT ii.quantity as orderItemQuantity, i.id as ingredientId, ii.unit_id 
+                               FROM purchaseOrders po 
+                               JOIN ingredients_items ii ON ii.order_id = po.id 
+                               JOIN ingredients i ON i.id = ii.ingredient_id 
+                               WHERE po.tracking_no='$order_track'";
 
-                $orderItemsRes = mysqli_query($conn, $orderItemQuery);
+            $orderItemsRes = mysqli_query($conn, $orderItemQuery);
 
-                if ($orderItemsRes && mysqli_num_rows($orderItemsRes) > 0) {
-                    // Loop through each ordered ingredient and update its quantity
-                    while ($orderItemRow = mysqli_fetch_assoc($orderItemsRes)) {
-                        $ingredientId = $orderItemRow['ingredientId'];
-                        $orderQuantity = $orderItemRow['orderItemQuantity'];
-                        $currentQuantity = $orderItemRow['current_quantity'];
-
-                        // Add the delivered quantity to the available stock
-                        $newQuantity = $currentQuantity + $orderQuantity;
-
-                        // Update the ingredient's quantity in the database
-                        $updateIngredientQtyQuery = "UPDATE ingredients SET quantity='$newQuantity' WHERE id='$ingredientId'";
-                        $updateIngredientQtyResult = mysqli_query($conn, $updateIngredientQtyQuery);
-
-                        if (!$updateIngredientQtyResult) {
-                            jsonResponse(500, 'error', 'Failed to update ingredient quantity for ingredient ID: ' . $ingredientId);
+            if ($orderItemsRes && mysqli_num_rows($orderItemsRes) > 0) {
+                foreach ($_SESSION['siItems'] as $ingItem) {
+                    $ingredientId = $ingItem['ingredient_id'];
+                    $quantity = $ingItem['quantity'];
+                    $unit_id = $ingItem['unit_id'];
+                
+                    // Get the unit ratio to calculate the effective quantity
+                    $checkUnitRatio = mysqli_query($conn, "SELECT ratio FROM units_of_measure WHERE id='$unit_id'");
+                    $ingQtyData = mysqli_fetch_assoc($checkUnitRatio);
+                    
+                    if ($ingQtyData) {
+                        $ratio = (float)$ingQtyData['ratio'];
+                        $totalIngQuantity = $ratio * $quantity;
+                
+                        // Fetch current quantity for the ingredient
+                        $selectIngredientQtyQuery = mysqli_query($conn, "SELECT quantity FROM ingredients WHERE id='$ingredientId'");
+                        $selectIngredientQtyResult = mysqli_fetch_assoc($selectIngredientQtyQuery);
+                
+                        if ($selectIngredientQtyResult) {
+                            $currentQuantity = (float)$selectIngredientQtyResult['quantity'];
+                            $newQuantity = $currentQuantity + $totalIngQuantity;
+                
+                            // Log the variables to PHP error log for server-side debugging
+                            error_log("Debug Info - Ingredient ID: $ingredientId, Ratio: $ratio, Quantity: $quantity, Current Quantity: $currentQuantity, New Quantity: $newQuantity, TotalIngQuantity: $totalIngQuantity");
+                
+                            // Send the values to the browser console
+                            echo "<script>console.log('Debug Info - Ingredient ID: $ingredientId, Ratio: $ratio, Quantity: $quantity, Current Quantity: $currentQuantity, New Quantity: $newQuantity , TotalIngQuantity: $totalIngQuantity');</script>";
+                
+                            // Update the ingredient's quantity in the database
+                            $updateQuantityQuery = mysqli_query($conn, "UPDATE ingredients SET quantity = '$newQuantity' WHERE id = '$ingredientId'");
+                
+                            if (!$updateQuantityQuery) {
+                                jsonResponse(500, 'error', 'Failed to update ingredient quantity for ingredient ID: ' . $ingredientId);
+                                exit();
+                            }
+                        } else {
+                            jsonResponse(500, 'error', 'Ingredient not found for ID: ' . $ingredientId);
                             exit();
                         }
+                    } else {
+                        $_SESSION['error_message'] = "Error: no ratio for unit found.";
+                        header("Location: purchase-order-stock-in.php?track=$order_track");
+                        exit();
                     }
-
-                    jsonResponse(200, 'success', 'Order delivered and ingredient quantities updated successfully');
-                } else {
-                    jsonResponse(404, 'error', 'No ingredients found for this order');
                 }
+                jsonResponse(200, 'success', 'Order delivered and ingredient quantities updated successfully');
             } else {
-                jsonResponse(200, 'success', 'Order status updated successfully');
+                jsonResponse(404, 'error', 'No ingredients found for this order');
             }
         } else {
-            jsonResponse(500, 'error', 'Failed to update order status');
+            jsonResponse(200, 'success', 'Order status updated successfully');
         }
     } else {
         jsonResponse(404, 'error', 'Order not found');
     }
 }
+
 
 
 
