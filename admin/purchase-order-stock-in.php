@@ -33,7 +33,8 @@ if (!isset($_SESSION['siItems']) || empty($_SESSION['siItems'])) {
                 'quantity' => $orderData['quantity'],
                 'price' => $orderData['price'],
                 'unit_name' => $orderData['unit_name'],
-                'unit_id' => $orderData['unit_id']
+                'unit_id' => $orderData['unit_id'],
+                'expiryDate' => date('Y-m-d')
             ];
 
             // Add to sessions
@@ -254,7 +255,11 @@ if (!isset($_SESSION['siItems']) || empty($_SESSION['siItems'])) {
                                 <td>Php <?= $item['price']; ?></td>
                                 <td><?= $item['unit_name']; ?></td>
                                 <td> 
-                                    <input type="date" id="expiry_date" name="expiry_date[<?= $key; ?>]" class="form-control" required>
+                                    <input type="date" id="expiry_date_<?= $item['ingredient_id']; ?>" 
+                                        name="expiry_date[<?= $item['ingredient_id']; ?>]" 
+                                        value="<?= $item['expiryDate']; ?>"  
+                                        class="form-control" required
+                                        onchange="updateExpiryDate(<?= $item['ingredient_id']; ?>)">
                                 </td>
                                 <td>
                                     <div class="input-group qtyBox">
@@ -298,5 +303,28 @@ if (!isset($_SESSION['siItems']) || empty($_SESSION['siItems'])) {
         </div>
     </div>
 </div>
+
+<script>
+    function updateExpiryDate(ingredientId) {
+    const expiryDate = document.getElementById(`expiry_date_${ingredientId}`).value;
+    
+    // Send an AJAX request to the server to update the session with the new expiry date
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', 'purchase-order-update-expiry-date.php', true);
+    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+
+    // Send the ingredient ID and the new expiry date to the server
+    xhr.send(`ingredient_id=${ingredientId}&expiry_date=${expiryDate}`);
+
+    // Optionally, you can show some confirmation message or handle the response here
+    xhr.onload = function() {
+        if (xhr.status === 200) {
+            console.log('Expiry date updated successfully.');
+        } else {
+            console.error('Error updating expiry date.');
+        }
+    };
+}
+</script>
 
 <?php include('includes/footer.php'); ?>

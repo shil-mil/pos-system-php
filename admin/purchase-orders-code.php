@@ -219,6 +219,19 @@ if(isset($_POST['stockInBtn'])) {
                     $quantity = $ingItem['quantity'];
                     $unit_id = $ingItem['unit_id'];
                     $price = $ingItem['price'];
+                    $expiryDate = $ingItem['expiryDate'];
+
+                    if (strtotime($expiryDate) < strtotime(date('Y-m-d'))) {
+                        $_SESSION['message'] = "Error: Expiry date cannot be in the past for ingredient ID: $ingredientId.";
+                        header("Location: purchase-order-stock-in.php?track=$order_track");
+                        exit();
+                    }
+                    
+                    if (empty($expiryDate)) {
+                        $_SESSION['message'] = "Error: Expiry date is required for ingredient ID: $ingredientId.";
+                        header("Location: purchase-order-stock-in.php?track=$order_track");
+                        exit();
+                    }                    
                 
                     // Get the unit ratio to calculate the effective quantity
                     $checkUnitRatio = mysqli_query($conn, "SELECT ratio FROM units_of_measure WHERE id='$unit_id'");
@@ -243,7 +256,8 @@ if(isset($_POST['stockInBtn'])) {
                                 'ingredient_id' => $ingredientId,
                                 'quantity' => $quantity,
                                 'unit_id' => $unit_id,
-                                'totalPrice' => $price * $quantity
+                                'totalPrice' => $price * $quantity,
+                                'expiryDate' => $expiryDate,
                             ];
                 
                             $orderItemQuery = insert('stockin_ingredients', $dataOrderItem);
@@ -252,12 +266,17 @@ if(isset($_POST['stockInBtn'])) {
                                 jsonResponse(500, 'error', 'Failed to update ingredient quantity for ingredient ID: ' . $ingredientId);
                                 exit();
                             }
+
+                            if (!$orderItemQuery) {
+                                jsonResponse(500, 'error', "Failed to insert ingredient data for ingredient ID: $ingredientId.");
+                                exit();
+                            }
                         } else {
                             jsonResponse(500, 'error', 'Ingredient not found for ID: ' . $ingredientId);
                             exit();
                         }
                     } else {
-                        $_SESSION['error_message'] = "Error: no ratio for unit found.";
+                        $_SESSION['message'] = "Error: no ratio for unit found.";
                         header("Location: purchase-order-stock-in.php?track=$order_track");
                         exit();
                     }
