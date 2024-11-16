@@ -11,7 +11,7 @@ unset($_SESSION['siItemIds']);
             <h4 class="mb-0">Purchase Orders</h4>
         </div>
         <div class="card-body">
-
+        <?php alertMessage(); ?>
         <?php
             $query = "
                 SELECT po.*, a.*, s.firstname AS supplierName 
@@ -125,7 +125,7 @@ unset($_SESSION['siItemIds']);
                                         <td><?= $ingredientItem['ingPayment_mode']; ?></td>
                                         <td style="display: flex; justify-content: space-evenly; gap: 5px;">
                                             <input type="hidden" name="order_track" id="order_track" value="<?= $ingredientItem['tracking_no']; ?>">
-                                            <button class="btn btn-warning btn-sm complete-btn w-100 stockInBtn">Delivered</button>
+                                            <a href="purchase-order-stock-in.php?track=<?= $ingredientItem['tracking_no']; ?>" class="btn btn-warning btn-sm complete-btn w-100">Delivered</a>
                                             <a href="purchase-orders-view.php?track=<?= $ingredientItem['tracking_no']; ?>" class="btn btn-info mb-0 px-2 btn-sm w-100">View</a>
                                         </td>
                                     </tr>
@@ -143,17 +143,29 @@ unset($_SESSION['siItemIds']);
                                     <th>Purchase Order No.</th>
                                     <th>Supplier</th>
                                     <th>Order Date</th>
+                                    <th>Order Delivered</th>
                                     <th>Order Status</th>
                                     <th>Payment Method</th>
                                     <th style="width: 250px;">Action</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <?php foreach($deliveredPurchaseOrders as $ingredientItem): ?>
+                                <tbody>
+                                <?php foreach($deliveredPurchaseOrders as $ingredientItem): 
+                                    // Fetch the purchase order ID using the tracking number
+                                    $tracking_no = $ingredientItem['tracking_no'];
+                                    $poQuery = mysqli_query($conn, "SELECT id FROM purchaseorders WHERE tracking_no='$tracking_no'");
+                                    $poResult = mysqli_fetch_assoc($poQuery);
+                                    $purchaseOrderId = $poResult['id']; // This is the actual purchase order ID
+                                    
+                                    // Now fetch the stockin_date using the purchase order ID
+                                    $stockInQuery = mysqli_query($conn, "SELECT stockin_date FROM stockin WHERE purchaseorder_id='$purchaseOrderId'");
+                                    $stockInResult = mysqli_fetch_assoc($stockInQuery);
+                                ?>
                                     <tr>
                                         <td class="fw-bold"><?= $ingredientItem['tracking_no']; ?></td>
                                         <td><?= $ingredientItem['supplierName']; ?></td>
                                         <td><?= $ingredientItem['order_date']; ?></td>
+                                        <td><?= $stockInResult['stockin_date'] ?? 'N/A'; ?></td> <!-- Display stockin_date or 'N/A' if not found -->
                                         <td><?= $ingredientItem['order_status']; ?></td>
                                         <td><?= $ingredientItem['ingPayment_mode']; ?></td>
                                         <td>
