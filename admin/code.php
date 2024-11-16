@@ -289,10 +289,10 @@ if (isset($_POST['saveIngredient'])) {
     $name = $_POST['name'];
     $unit_id = $_POST['unit_id'];
     $category = $_POST['category'];
-    $price = $_POST['price'];
+    $reorder_point = $_POST['reorder_point'];
 
-    $query = "INSERT INTO ingredients (name, unit_id, category, price) 
-              VALUES ('$name', '$unit_id', '$category', '$price')";
+    $query = "INSERT INTO ingredients (name, unit_id, category, price, reorder_point) 
+              VALUES ('$name', '$unit_id', '$category', '$price', '$reorder_point')";
     
     if (mysqli_query($conn, $query)) {
         $_SESSION['message'] = "Ingredient added successfully";
@@ -310,20 +310,21 @@ if (isset($_POST['updateIngredient'])) {
     $ingredientId = trim($_POST['ingredientId']);
     $name = trim($_POST['name']);
     $category = trim($_POST['category']);
-    // Set price to 0.00 if it's not provided
-    $price = isset($_POST['price']) && trim($_POST['price']) !== '' ? trim($_POST['price']) : 0.00;
+
     $quantity = isset($_POST['quantity']) && trim($_POST['quantity']) !== '' ? trim($_POST['quantity']) : 0;
+    
+    $reorder_point = isset($_POST['reorder_point']) && trim($_POST['reorder_point']) !== '' ? trim($_POST['reorder_point']) : 0;
 
     // Allow unit_id to be nullable
     $unit_id = isset($_POST['unit_id']) && !empty($_POST['unit_id']) ? trim($_POST['unit_id']) : null;
 
     // Prepare the SQL query with placeholders
-    $query = "UPDATE ingredients SET name=?, unit_id=?, category=?, price=?, quantity=? WHERE id=?";
+    $query = "UPDATE ingredients SET name=?, unit_id=?, category=?, reorder_point=? WHERE id=?";
 
     // Initialize the prepared statement
     if ($stmt = mysqli_prepare($conn, $query)) {
         // Bind parameters to the placeholders
-        mysqli_stmt_bind_param($stmt, "sissdi", $name, $unit_id, $category, $price, $quantity, $ingredientId);
+        mysqli_stmt_bind_param($stmt, "sisdi", $name, $unit_id, $category, $reorder_point, $ingredientId);
 
         // Execute the statement
         if (mysqli_stmt_execute($stmt)) {

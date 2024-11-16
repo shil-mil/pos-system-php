@@ -68,6 +68,10 @@
                     </select>
                 </div>
 
+                <div class="mb-3">
+                    <label for="reorder_point">Reorder Point:</label>
+                    <input type="decimal" id="reorder_point" name="reorder_point" class="form-control" required>
+                </div>
 
                 <!-- Submit Button -->
                 <button type="submit" name="saveIngredient" class="btn btn-outline-primary">Save Ingredient</button>
