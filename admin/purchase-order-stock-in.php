@@ -230,7 +230,7 @@ if (!isset($_SESSION['siItems']) || empty($_SESSION['siItems'])) {
                                 <th>Ingredient</th>
                                 <th>Price</th>
                                 <th>Unit</th>
-                                <!-- <th>Expiry Date</th> -->
+                                <th>Expiry Date</th>
                                 <th>Quantity</th>
                                 <th>Total Price</th>
                             </tr>
@@ -253,14 +253,14 @@ if (!isset($_SESSION['siItems']) || empty($_SESSION['siItems'])) {
                                 <td><?= $item['name']; ?></td>
                                 <td>Php <?= $item['price']; ?></td>
                                 <td><?= $item['unit_name']; ?></td>
-                                <!-- <td> 
+                                <td> 
                                     <input type="date" id="expiry_date" name="expiry_date[<?= $key; ?>]" class="form-control" required>
-                                </td> -->
+                                </td>
                                 <td>
                                     <div class="input-group qtyBox">
                                         <input type="hidden" value="<?= $item['ingredient_id'];?>" class="ingId">
                                         <button class="input-group-text si-decrement">-</button>
-                                        <input type="text" min="0" value="<?= $item['quantity']; ?>" class="qty quantityInput" />
+                                        <input type="decimal" min="0" value="<?= $item['quantity']; ?>" class="qty quantityInput" />
                                         <button class="input-group-text si-increment">+</button>
                                     </div> 
                                 </td>
@@ -268,7 +268,7 @@ if (!isset($_SESSION['siItems']) || empty($_SESSION['siItems'])) {
                             </tr>
                         <?php endforeach; ?>
                             <tr>
-                                <td colspan="5" class="text-end fw-bold">Total Price: </td>
+                                <td colspan="6" class="text-end fw-bold">Total Price: </td>
                                 <td colspan="1" class="text-end fw-bold">Php <?= number_format($totalAmount, 2); ?></td>
                             </tr>
                     </tbody>
