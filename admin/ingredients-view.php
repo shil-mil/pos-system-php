@@ -24,8 +24,8 @@ $result = mysqli_query($conn, $query);
                         <th>Unit</th>
                         <th>Category</th>
                         <th>Quantity</th>
-                        <th>Price</th>
                         <th>Actions</th>
+                        <th>Remarks</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -39,7 +39,6 @@ $result = mysqli_query($conn, $query);
                             <td><?php echo htmlspecialchars($row['unit_name'] ? $row['unit_name'] : 'N/A'); ?></td> <!-- Display unit name or 'N/A' -->
                             <td><?php echo htmlspecialchars($row['category']); ?></td>
                             <td><?php echo htmlspecialchars($row['quantity']); ?></td>
-                            <td><?php echo htmlspecialchars($row['price']); ?></td>
                             <td>
                                 <a href="ingredients-edit.php?id=<?php echo $row['id']; ?>" class="btn btn-outline-success btn-sm" style="margin: 0; padding: 0.25rem 0.5rem;">Edit</a>
                                 <a href="ingredients-delete.php?id=<?php echo $row['id']; ?>" class="btn btn-outline-danger btn-sm" style="margin: 0; padding: 0.25rem 0.5rem;">Delete</a>
