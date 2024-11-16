@@ -119,6 +119,7 @@ if (isset($_GET['track'])) {
                                 <table class="table table-bordered table-striped">
                                     <thead>
                                         <tr>
+                                            <th>Item No.</th>
                                             <th>Product Name</th>
                                             <th>Category</th>
                                             <th>Price</th>
@@ -130,9 +131,11 @@ if (isset($_GET['track'])) {
                                     </thead>
                                     <tbody>
                                         <?php 
+                                        $i = 1;
                                         foreach ($sessionIngredients as $key => $item) : 
                                         ?>
                                             <tr>
+                                                <td><?= $i++; ?></td>
                                                 <td><?= $item['name']; ?></td>
                                                 <td><?= $item['category']; ?></td>
                                                 <td>Php <?= $item['price']; ?></td>
