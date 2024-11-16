@@ -29,7 +29,7 @@
             </div>
         </div>
 
-        <!-- Total Sales for the Month Section -->
+        <!-- Total Sales for the Month Section
         <div class="col-xl-3 col-md-6">
             <div class="card bg-warning text-white mb-4">
                 <div class="card-body">
@@ -55,7 +55,7 @@
                     <div class="small text-white"><i class="fas fa-angle-right"></i></div>
                 </div>
             </div>
-        </div>
+        </div> -->
 
         <!-- Ingredients Section -->
         <div class="col-xl-3 col-md-6">
