@@ -191,19 +191,34 @@ if(isset($_POST['stockInBtn'])) {
 
         if ($updateResult && $order_status == 'Delivered') {
             // Query to fetch ordered ingredients
-            $orderItemQuery = "SELECT ii.quantity as orderItemQuantity, i.id as ingredientId, ii.unit_id 
+            $orderItemQuery = "SELECT ii.quantity as orderItemQuantity, i.id as ingredientId, ii.unit_id,
+                                po.id as purchaseorder_id, po.customer_id as admin_id, po.invoice_no as invoice_no, po.supplierName as supplier_id
                                FROM purchaseOrders po 
                                JOIN ingredients_items ii ON ii.order_id = po.id 
                                JOIN ingredients i ON i.id = ii.ingredient_id 
                                WHERE po.tracking_no='$order_track'";
 
             $orderItemsRes = mysqli_query($conn, $orderItemQuery);
+            $orderItemRow = mysqli_fetch_assoc($orderItemsRes);
+
+            $orderData = [
+                'admin_id' => $orderItemRow['admin_id'],
+                'purchaseorder_id' => $orderItemRow['purchaseorder_id'],
+                'invoice_no' => $orderItemRow['invoice_no'],
+                'supplier_id' => $orderItemRow['supplier_id'],
+                'stockin_date' => date('Y-m-d H:i:s')
+            ];
+
+            $orderResult = insert('stockin', $orderData);
+            $lastOrderId = mysqli_insert_id($conn);
+
 
             if ($orderItemsRes && mysqli_num_rows($orderItemsRes) > 0) {
                 foreach ($_SESSION['siItems'] as $ingItem) {
                     $ingredientId = $ingItem['ingredient_id'];
                     $quantity = $ingItem['quantity'];
                     $unit_id = $ingItem['unit_id'];
+                    $price = $ingItem['price'];
                 
                     // Get the unit ratio to calculate the effective quantity
                     $checkUnitRatio = mysqli_query($conn, "SELECT ratio FROM units_of_measure WHERE id='$unit_id'");
@@ -220,15 +235,18 @@ if(isset($_POST['stockInBtn'])) {
                         if ($selectIngredientQtyResult) {
                             $currentQuantity = (float)$selectIngredientQtyResult['quantity'];
                             $newQuantity = $currentQuantity + $totalIngQuantity;
-                
-                            // Log the variables to PHP error log for server-side debugging
-                            error_log("Debug Info - Ingredient ID: $ingredientId, Ratio: $ratio, Quantity: $quantity, Current Quantity: $currentQuantity, New Quantity: $newQuantity, TotalIngQuantity: $totalIngQuantity");
-                
-                            // Send the values to the browser console
-                            echo "<script>console.log('Debug Info - Ingredient ID: $ingredientId, Ratio: $ratio, Quantity: $quantity, Current Quantity: $currentQuantity, New Quantity: $newQuantity , TotalIngQuantity: $totalIngQuantity');</script>";
-                
-                            // Update the ingredient's quantity in the database
+                            
                             $updateQuantityQuery = mysqli_query($conn, "UPDATE ingredients SET quantity = '$newQuantity' WHERE id = '$ingredientId'");
+
+                            $dataOrderItem = [
+                                'stockin_id' => $lastOrderId,
+                                'ingredient_id' => $ingredientId,
+                                'quantity' => $quantity,
+                                'unit_id' => $unit_id,
+                                'totalPrice' => $price * $quantity
+                            ];
+                
+                            $orderItemQuery = insert('stockin_ingredients', $dataOrderItem);
                 
                             if (!$updateQuantityQuery) {
                                 jsonResponse(500, 'error', 'Failed to update ingredient quantity for ingredient ID: ' . $ingredientId);
@@ -266,7 +284,7 @@ if (isset($_POST['savePurchaseOrder'])) {
     $order_status = validate($_SESSION['order_status']);
     $ingPayment_mode = validate($_SESSION['ingPayment_mode']);
     $supplierName = validate($_SESSION['supplierName']);
-    $order_placed_by_id = "Admin";
+    $order_placed_by_id = ($_SESSION['loggedInUser']['firstname']);
 
     // Check if customer exists
     $checkAdmin = mysqli_query($conn, "SELECT * FROM admins WHERE firstname='$adminName' LIMIT 1");
