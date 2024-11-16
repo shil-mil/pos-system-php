@@ -328,7 +328,7 @@ if (isset($_POST['updateIngredient'])) {
 
         // Execute the statement
         if (mysqli_stmt_execute($stmt)) {
-            $_SESSION['message'] = "Ingredient updated successfully";
+            $_SESSION['message'] = "Ingredient updated successfully!";
             header('Location: ingredients-view.php');
             exit(0);
         } else {
