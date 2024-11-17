@@ -54,7 +54,9 @@ $result = mysqli_query($conn, $query);
                             </td>
                             <td>
                                 <?php 
-                                    if($row['quantity'] <= $row['reorder_point']) {
+                                    if($row['quantity'] == 0) {
+                                        echo '<span class="badge bg-danger">NO STOCK</span>';
+                                    } else if($row['quantity'] <= $row['reorder_point']) {
                                         echo '<span class="badge bg-danger">Low Stock</span>';
                                     } else {
                                         echo '<span class="badge bg-primary">In Stock</span>';
@@ -62,6 +64,26 @@ $result = mysqli_query($conn, $query);
                                 ?>
                             </td>
                         </tr>
+                            <?php
+                            $ingredientId = $row['id'];
+                            $ingredientsQueryResult = mysqli_query($conn, "SELECT si.*, uom.ratio as unit_ratio FROM stockin_ingredients si JOIN units_of_measure uom ON uom.id = si.unit_id WHERE si.ingredient_id = $ingredientId");
+                            foreach ($ingredientsQueryResult as $ingredientItem) :
+                                if ($ingredientItem['quantity'] > 0) {
+                                    ?>
+                                    <tr style="background-color: <?= $i % 2 == 0 ? '#fff' : '#f9f9f9'; ?>; border: 1px solid #dee2e6;">
+                                        <td></td>
+                                        <td><?php echo htmlspecialchars($ingredientItem['stockin_id']); ?></td>
+                                        <td><?php echo htmlspecialchars($ingredientItem['quantity'] * $ingredientItem['unit_ratio']); ?> <?php echo htmlspecialchars($row['unit_name'] ? $row['unit_name'] : 'N/A'); ?></td>
+                                        <td><?php echo htmlspecialchars($ingredientItem['expiryDate']); ?></td>
+                                        <td>
+                                            <a href="#" class="btn btn-outline-secondary btn-sm" style="margin: 0; padding: 0.25rem 0.5rem;">Stock Out</a>  <!-- lods ekay ikaw na bahala-->                                  
+                                        </td>
+                                        <td></td>
+                                </tr>
+                            <?php
+                                }
+                            endforeach;
+                            ?>
                     <?php endwhile; ?>
                 </tbody>
             </table>
