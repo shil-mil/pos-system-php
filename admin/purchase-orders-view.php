@@ -107,7 +107,6 @@
                        $stockInQuery = "
                        SELECT 
                            i.name as ingredient_name,
-                           uom.ratio as unit_ratio,
                            sii.quantity as stockin_quantity,
                            uom.uom_name as unit_name,
                            sii.expiryDate as stockin_expirydate,
