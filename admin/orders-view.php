@@ -157,10 +157,27 @@
                                                 <?php $totalAmount += $orderItemRow['orderItemPrice'] * $orderItemRow['orderItemQuantity']; ?>
                                             <?php endwhile; ?>
 
+                                            <?php if (isset($_SESSION['totalAmount']) && isset($_SESSION['change_money'])): ?>
                                             <tr>
                                                 <td class="text-end fw-bold">Total Price: </td>
-                                                <td colspan="3" class="text-end fw-bold">Php <?= number_format($totalAmount, 2); ?></td>
+                                                <td colspan="3" class="text-end fw-bold">Php <?= number_format($_SESSION['totalAmount'], 2); ?></td>
                                             </tr>
+                                            <tr>
+                                                <td class="text-end fw-bold">Amount Received: </td>
+                                                <td colspan="3" class="text-end fw-bold">Php <?= number_format($_SESSION['amount_received'], 2); ?></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="text-end fw-bold">Change: </td>
+                                                <td colspan="3" class="text-end fw-bold">Php <?= number_format($_SESSION['change_money'], 2); ?></td>
+                                            </tr>
+                                        <?php else: ?>
+
+                                            <tr>
+                                                <td colspan="5">
+                                                    <h5 class="text-danger text-center">Order details are missing. Please go back and retry.</h5>
+                                                </td>
+                                            </tr>
+                                        <?php endif; ?>
                                         </tbody>
 
                                     </table>

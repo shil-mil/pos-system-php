@@ -1,7 +1,4 @@
-<?php
-include('includes/header.php');
-// unset($_SESSION['productItems']);
-// unset($_SESSION['productItemIds']) ?>
+<?php include('includes/header.php'); ?>
 
 <div class="modal fade" id="addCustomerModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog">
@@ -136,13 +133,43 @@ include('includes/header.php');
                 <div class="col-md-4">
                     <label>Enter Customer Name</label>
                     <input type="text" id="cname" class="form-control" name="cname" value="" />
-                </div>
+                    </div>
                 <div class="col-md-4">
-                    <br/>
-                    <button type="submit" class="btn btn-warning w-100 proceedToPlace" form="orderForm">Proceed to place order</button>
+                <br/>
+                    <button type="button" id="calculateButton" class="btn btn-outline-secondary w-100">Calculate</button>
                 </div>
+                
+
+                
             </div>
         </div>
+
+        <div id="paymentDetails" style="display: none; margin-top: 20px;">
+                    <div class="row">
+                        <!-- Total Amount (Read-only) -->
+                        <div class="col-md-6">
+                            <strong>Total Amount:</strong> 
+                            <input type="text" class="form-control" id="totalAmount" value="0.00" readonly />
+                        </div>
+                        <!-- Amount Received (Input field) -->
+                        <div class="col-md-6">
+                            <strong>Amount Received:</strong> 
+                            <input type="number" id="amount_received" class="form-control" min="0" />
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <!-- Change (Read-only) -->
+                        <div class="col-md-6">
+                            <strong>Change:</strong> 
+                            <input type="text" class="form-control" id="change_money" value="0.00" readonly />
+                        </div>
+                        
+                        <div class="col-md-6">
+                        <br/>
+                            <button type="submit" class="btn btn-warning w-100 proceedToPlace" form="orderForm">Proceed to place order</button>
+                        </div>
+                    </div>
+                </div>
         <?php
               } else {
                  echo '<h5>No items added</h5>';
@@ -152,3 +179,50 @@ include('includes/header.php');
 </div>
 
 <?php include('includes/footer.php'); ?>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Ensure the DOM is loaded before attaching event listeners
+
+        // Calculate the total amount when the "Calculate" button is clicked
+        var calculateButton = document.getElementById('calculateButton');
+        if (calculateButton) {
+            calculateButton.addEventListener('click', function() {
+                // Initialize the total amount
+                let totalAmount = 0;
+
+                // Loop through session products and calculate the total
+                <?php if (isset($_SESSION['productItems']) && !empty($_SESSION['productItems'])): ?>
+                    <?php foreach ($_SESSION['productItems'] as $item): ?>
+                        totalAmount += <?= $item['price']; ?> * <?= $item['quantity']; ?>;
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    totalAmount = 0;
+                <?php endif; ?>
+
+                // Update the total amount field
+                document.getElementById('totalAmount').value = totalAmount.toFixed(2);
+
+                // Show the payment details section
+                document.getElementById('paymentDetails').style.display = 'block';
+            });
+        }
+
+        // Update the change when the amount received is entered
+        var amountReceived = document.getElementById('amount_received');
+        if (amountReceived) {
+            amountReceived.addEventListener('input', function() {
+                let amount_received = parseFloat(this.value);
+                let totalAmount = parseFloat(document.getElementById('totalAmount').value);
+                let change_money = amount_received - totalAmount;
+
+                // Only show change if it's a valid number and >= 0
+                if (isNaN(change_money) || change_money < 0) {
+                    document.getElementById('change_money').value = '0.00';
+                } else {
+                    document.getElementById('change_money').value = change_money.toFixed(2);
+                }
+            });
+        }
+    });
+</script>

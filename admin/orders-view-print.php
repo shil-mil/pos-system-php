@@ -111,10 +111,28 @@
                                             </tr>
                                             <?php endforeach; ?>
 
+                                           <!-- Display Total Amount and Change -->
+                                        <?php if (isset($_SESSION['totalAmount']) && isset($_SESSION['change_money'])): ?>
                                             <tr>
-                                                <td colspan="4" align="end" style="font-weight: bold;">Grand Total: </td> 
-                                                <td colspan="1" style="font-weight: bold;">Php <?= number_format($row['total_amount'], 2); ?></td>
+                                                <td colspan="4" align="end" style="font-weight: bold;">Total Amount:</td>
+                                                <td colspan="1" style="font-weight: bold;">Php <?= number_format($_SESSION['totalAmount'], 2); ?></td>
                                             </tr>
+                                            <tr>
+                                                <td colspan="4" align="end" style="font-weight: bold;">Amount Received:</td>
+                                                <td colspan="1" style="font-weight: bold;">Php <?= number_format($_SESSION['amount_received'], 2); ?></td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="4" align="end" style="font-weight: bold;">Change:</td>
+                                                <td colspan="1" style="font-weight: bold;">Php <?= number_format($_SESSION['change_money'], 2); ?></td>
+                                            </tr>
+                                        <?php else: ?>
+                                            <tr>
+                                                <td colspan="5">
+                                                    <h5 class="text-danger text-center">Order details are missing. Please go back and retry.</h5>
+                                                </td>
+                                            </tr>
+                                        <?php endif; ?>
+
                                             <tr>
                                                 <td colspan="5">
                                                     <p style="font-size: 16px; line-height: 20px; margin: 0px; padding: 0;">Total Quantity: <?= $totalQuantity ?></p>

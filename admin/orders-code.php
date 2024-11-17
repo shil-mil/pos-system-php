@@ -1,8 +1,9 @@
 <?php
 
-ini_set('display_errors', 1);
+
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
+ini_set('display_errors', 1);
 date_default_timezone_set('Asia/Manila');
 
 include('../config/function.php');
@@ -181,29 +182,57 @@ if(isset($_POST['productIncDec'])) {
     }
 }
 
+
+
 if (isset($_POST['proceedToPlaceBtn'])) {
+    // Sanitize and validate inputs
     $name = validate($_POST['cname']);
     $payment_mode = validate($_POST['payment_mode']);
     $order_status = validate($_POST['order_status']);
+    $amount_received = validate($_POST['amount_received']);
+    $totalAmount = validate($_POST['totalAmount']);
+    $change_money = validate($_POST['change_money']);
 
+    // Validate the received amounts
+    if (!is_numeric($amount_received) || $amount_received <= 0) {
+        jsonResponse(400, 'warning', 'Invalid Amount Received');
+        exit;
+    }
+
+    if (!is_numeric($totalAmount) || $totalAmount <= 0) {
+        jsonResponse(400, 'warning', 'Invalid Total Amount');
+        exit;
+    }
+
+    if ($amount_received < $totalAmount) {
+        jsonResponse(400, 'warning', 'Amount received cannot be less than total amount');
+        exit;
+    }
+
+    // Check customer and process the order
     $checkCustomer = mysqli_query($conn, "SELECT * FROM customers WHERE name='$name' LIMIT 1");
 
     if ($checkCustomer) {
         if (mysqli_num_rows($checkCustomer) > 0) {
-            $_SESSION['invoice_no'] = "INV-" .rand(111111, 999999);
+            $_SESSION['invoice_no'] = "INV-" . rand(111111, 999999);
             $_SESSION['cname'] = $name;
             $_SESSION['payment_mode'] = $payment_mode;
             $_SESSION['order_status'] = $order_status;
+            $_SESSION['amount_received'] = $amount_received;
+            $_SESSION['totalAmount'] = $totalAmount;
+            $_SESSION['change_money'] = $change_money;
 
-            jsonResponse(200, 'success', 'Customer found');
+            // Send success response if customer exists
+            jsonResponse(200, 'success', 'Order placed successfully');
         } else {
-            $_SESSION['cname'] = $name;
+            // Send response that customer was not found
             jsonResponse(404, 'warning', 'Customer not found');
         }
     } else {
         jsonResponse(500, 'error', 'Something Went Wrong');
     }
 }
+
 
 if (isset($_POST['proceedToUpdateBtn'])) {
     $order_status = validate($_POST['order_status']);
@@ -220,8 +249,41 @@ if (isset($_POST['proceedToUpdateBtn'])) {
     }
 
     if ($order_status != '') {
+        // Update order status
         $data = ['order_status' => $order_status];
         $updateResult = update('orders', $order_id, $data);
+
+        // If the order status is 'Preparing', update the product and ingredient quantities
+        if ($order_status == 'Preparing') {
+            // Loop through the order items and update the product quantities
+            $orderItemsQuery = mysqli_query($conn, "SELECT * FROM order_items WHERE order_id='$order_id'");
+            while ($orderItem = mysqli_fetch_assoc($orderItemsQuery)) {
+                $productId = $orderItem['product_id'];
+                $quantity = $orderItem['quantity'];
+
+                // Get the current product quantity
+                $productQuery = mysqli_query($conn, "SELECT * FROM products WHERE id='$productId'");
+                $productData = mysqli_fetch_assoc($productQuery);
+
+                // Calculate the new product quantity
+                $newProductQuantity = $productData['quantity'] - $quantity;
+
+                // Update product quantities
+                $productDataUpdate = [
+                    'quantity' => $newProductQuantity
+                ];
+
+                $updateProductResult = update('products', $productId, $productDataUpdate);
+
+                if (!$updateProductResult) {
+                    jsonResponse(500, 'error', 'Failed to update product quantities');
+                    exit();
+                }
+
+                // Update ingredient inventory based on the recipe
+                updateIngredientInventory($conn, $productId, $quantity);
+            }
+        }
 
         if ($updateResult) {
             jsonResponse(200, 'success', 'Order updated successfully');
@@ -232,6 +294,10 @@ if (isset($_POST['proceedToUpdateBtn'])) {
         jsonResponse(400, 'error', 'Invalid order ID or status');
     }
 }
+
+
+
+
 
 if (isset($_POST['proceedToCompleteBtn'])) {
     // Check what POST data is received
@@ -298,12 +364,16 @@ if(isset($_POST['saveCustomerBtn'])){
     }
 }
 
+
 if (isset($_POST['saveOrder'])) {
     $name = validate($_SESSION['cname']);
     $invoice_no = validate($_SESSION['invoice_no']);
     $payment_mode = validate($_SESSION['payment_mode']);
     $order_placed_by_id = validate($_SESSION['loggedInUser']['firstname']);
     $order_status = validate($_SESSION['order_status']);
+    $amount_received = validate($_SESSION['amount_received']);
+    $change_money = validate($_SESSION['change_money']);
+
 
     // Check if customer exists
     $checkCustomer = mysqli_query($conn, "SELECT * FROM customers WHERE name='$name' LIMIT 1");
@@ -345,14 +415,13 @@ if (isset($_POST['saveOrder'])) {
             'order_date' => date('Y-m-d H:i:s'),
             'order_status' => $order_status,
             'payment_mode' => $payment_mode,
+            'amount_received' => $amount_received,
+            'change_money' => $change_money,
             'order_placed_by_id' => $order_placed_by_id
         ];
 
         $result = insert('orders', $data);
         $lastOrderId = mysqli_insert_id($conn);
-
-        // Call the updateIngredientInventory function here
-        // updateIngredientInventory($conn, $productId, $quantity); // Pass the necessary product ID and quantity
 
         foreach ($sessionProducts as $prodItem) {
             $productId = $prodItem['product_id'];
@@ -368,19 +437,8 @@ if (isset($_POST['saveOrder'])) {
 
             $orderItemQuery = insert('order_items', $dataOrderItem);
 
-            // Update product quantities
-            $checkProductQuantityQuery = mysqli_query($conn, "SELECT * FROM products WHERE id='$productId'");
-            $productQtyData = mysqli_fetch_assoc($checkProductQuantityQuery);
-            $totalProductsQuantity = $productQtyData['quantity'] - $quantity;
-
-            $dataUpdate = [
-                'quantity' => $totalProductsQuantity
-            ];
-
-            $updateProductQty = update('products', $productId, $dataUpdate);
-
-            // Update ingredient inventory based on the recipe
-            updateIngredientInventory($conn, $productId, $quantity); // Call the function here
+            // Removed product quantity update logic here
+            // Removed update of ingredient inventory here
         }
 
         unset($_SESSION['productItemIds'], $_SESSION['productItems'], $_SESSION['payment_mode'], $_SESSION['invoice_no']);
@@ -389,5 +447,6 @@ if (isset($_POST['saveOrder'])) {
         jsonResponse(404, 'warning', 'No Customer found');
     }
 }
+
 
 ?>

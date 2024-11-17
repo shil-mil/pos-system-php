@@ -3,113 +3,137 @@ $(document).ready(function(){
     // Set alertify notification position
     alertify.set('notifier', 'position', 'top-right');
 
-    // Increment Product Quantity
-$(document).on('click', '.prod-increment', function(){
-    var $quantityInput = $(this).closest('.qtyBox').find('.qty');
-    var productId  = $(this).closest('.qtyBox').find('.prodId').val();
-    var currentValue = parseInt($quantityInput.val());
-
-    if(!isNaN(currentValue)){
-        var qtyVal = currentValue + 1;
-        $quantityInput.val(qtyVal);
-        quantityIncDec(productId, qtyVal);
-    }
-});
-
-// Decrement Product Quantity
-$(document).on('click', '.prod-decrement', function(){
-    var $quantityInput = $(this).closest('.qtyBox').find('.qty');
-    var productId  = $(this).closest('.qtyBox').find('.prodId').val();
-    var currentValue = parseInt($quantityInput.val());
-
-    if(!isNaN(currentValue) && currentValue > 1){
-        var qtyVal = currentValue - 1;
-        $quantityInput.val(qtyVal);
-        quantityIncDec(productId, qtyVal);
-    }
-});
-
-
-    // Quantity Increment/Decrement with AJAX
-function quantityIncDec(prodId, qty) {
-    $.ajax({
-        type: "POST",
-        url: "orders-code.php",
-        data: {
-            'productIncDec': true,
-            'product_id': prodId,
-            'quantity': qty
-        },
-        success: function(response) {
-            var res = JSON.parse(response);
-
-            if (res.status == 200) {
-                // Load updated product area content
-                $('#productArea').load(' #productContent');
-                alertify.success(res.message);
-
-                // Re-enable increment button since quantity is valid
-                var $quantityInput = $('.qtyBox').find('.prodId[value="' + prodId + '"]').closest('.qtyBox').find('.prod-increment');
-                $quantityInput.prop('disabled', false);
-            } else if (res.status == 500) {
-                alertify.error(res.message);
-                var $quantityInput = $('.qtyBox').find('.prodId[value="' + prodId + '"]').closest('.qtyBox').find('.prod-increment');
-                $quantityInput.prop('disabled', true); // Disable increment button
-            }
+    $(document).on('click', '.prod-increment', function(){
+        var $quantityInput = $(this).closest('.qtyBox').find('.qty');
+        var productId  = $(this).closest('.qtyBox').find('.prodId').val();
+        var currentValue = parseInt($quantityInput.val());
+    
+        if(!isNaN(currentValue)){
+            var qtyVal = currentValue + 1;
+            $quantityInput.val(qtyVal);
+            quantityIncDec(productId, qtyVal);
         }
     });
-}
-
-    // Proceed to Place Order
-    $(document).on('click', '.proceedToPlace', function(){
-        var cname = $('#cname').val();
-        var payment_mode = $('#payment_mode').val();
-        var order_status = $('#order_status').val();
-
-        // Validate Payment Method and Customer Name
-        if (payment_mode === '') {
-            swal("Select Payment Method", "Select your payment method", "warning");
-            return false;
+    
+    // Decrement Product Quantity
+    $(document).on('click', '.prod-decrement', function(){
+        var $quantityInput = $(this).closest('.qtyBox').find('.qty');
+        var productId  = $(this).closest('.qtyBox').find('.prodId').val();
+        var currentValue = parseInt($quantityInput.val());
+    
+        if(!isNaN(currentValue) && currentValue > 1){
+            var qtyVal = currentValue - 1;
+            $quantityInput.val(qtyVal);
+            quantityIncDec(productId, qtyVal);
         }
-        if (cname === '') {
-            swal("Enter customer name", "Enter valid customer name", "warning");
-            return false;
-        }
-
-        // Place Order via AJAX
-        var data = {
-            'proceedToPlaceBtn': true,
-            'cname': cname,
-            'payment_mode': payment_mode,
-            'order_status': order_status
-        };
-
+    });
+    
+    
+        // Quantity Increment/Decrement with AJAX
+    function quantityIncDec(prodId, qty) {
         $.ajax({
             type: "POST",
             url: "orders-code.php",
-            data: data,
-            success: function(response){
+            data: {
+                'productIncDec': true,
+                'product_id': prodId,
+                'quantity': qty
+            },
+            success: function(response) {
                 var res = JSON.parse(response);
+    
                 if (res.status == 200) {
-                    window.location.href = "order-summary.php";
-                } else if (res.status == 404) {
-                    swal(res.message, res.message, res.status_type, {
-                        buttons: {
-                            catch: { text: "Add Customer", value: "catch" },
-                            cancel: "Cancel"
-                        }
-                    }).then((value) => {
-                        if (value === "catch") {
-                            $('#c_name').val(cname);
-                            $('#addCustomerModal').modal('show');
-                        }
-                    });
-                } else {
-                    swal(res.message, res.message, res.status_type);
+                    // Load updated product area content
+                    $('#productArea').load(' #productContent');
+                    alertify.success(res.message);
+    
+                    // Re-enable increment button since quantity is valid
+                    var $quantityInput = $('.qtyBox').find('.prodId[value="' + prodId + '"]').closest('.qtyBox').find('.prod-increment');
+                    $quantityInput.prop('disabled', false);
+                } else if (res.status == 500) {
+                    alertify.error(res.message);
+                    var $quantityInput = $('.qtyBox').find('.prodId[value="' + prodId + '"]').closest('.qtyBox').find('.prod-increment');
+                    $quantityInput.prop('disabled', true); // Disable increment button
+                }
+            }
+        });
+    }
+    
+    
+
+
+    $(document).on('click', '.proceedToPlace', function () {
+        var cname = $('#cname').val().trim();
+        var payment_mode = $('#payment_mode').val();
+        var amount_received = parseFloat($('#amount_received').val());
+        var order_status = $('#order_status').val();
+        var totalAmount = parseFloat($('#totalAmount').val());
+        var change_money = parseFloat($('#change_money').val());
+    
+        // Validate required fields
+        if (!cname) {
+            swal("Enter Customer Name", "Please enter a valid customer name.", "warning");
+            return false;
+        }
+    
+        if (!payment_mode) {
+            swal("Select Payment Method", "Please select your payment method.", "warning");
+            return false;
+        }
+    
+        if (isNaN(amount_received) || amount_received <= 0) {
+            swal("Enter Valid Amount Received", "Amount received must be greater than zero.", "warning");
+            return false;
+        }
+    
+        if (amount_received < totalAmount) {
+            swal("Insufficient Amount", "Amount received cannot be less than the total amount.", "warning");
+            return false;
+        }
+    
+        // Send AJAX request
+        $.ajax({
+            type: "POST",
+            url: "orders-code.php",
+            data: {
+                proceedToPlaceBtn: true,
+                cname: cname,
+                payment_mode: payment_mode,
+                order_status: order_status,
+                totalAmount: totalAmount,
+                change_money: change_money,
+                amount_received: amount_received
+            },
+            success: function (response) {
+                console.log('Response from server:', response);
+                try {
+                    var res = JSON.parse(response);
+                    if (res.status === 200) {
+                        window.location.href = "order-summary.php";
+                    } else if (res.status === 404) {
+                        swal(res.message, res.message, res.status_type, {
+                            buttons: {
+                                catch: { text: "Add Customer", value: "catch" },
+                                cancel: "Cancel"
+                            }
+                        }).then((value) => {
+                            console.log('User selected:', value);
+                            if (value === "catch") {
+                                $('#cname').val(cname);
+                                $('#addCustomerModal').modal('show');
+                            }
+                        });
+                    } else {
+                        swal(res.message, res.message, res.status_type);
+                    }
+                } catch (e) {
+                    console.error('Error parsing response:', e);
+                    swal("Error", "Invalid response from the server.", "error");
                 }
             },
-            error: function() {
-                swal('Error', 'Failed to process the request', 'error');
+            error: function (xhr, status, error) {
+                console.error('AJAX error:', status, error);
+                swal('Error', 'Failed to process the request. Please try again.', 'error');
             }
         });
     });
