@@ -21,9 +21,9 @@ $result = mysqli_query($conn, $query);
                 <thead>
                     <tr style="background-color: #f8f9fa; color: #000;">
                         <th>Name</th>
-                        <th>Unit</th>
-                        <th>Category</th>
+                        <th>Batch</th>
                         <th>Quantity</th>
+                        <th>Best By</th>
                         <th>Actions</th>
                         <th>Remarks</th>
                     </tr>
@@ -35,13 +35,31 @@ $result = mysqli_query($conn, $query);
                     $i++;
                     ?>
                         <tr style="background-color: <?= $i % 2 == 0 ? '#fff' : '#f9f9f9'; ?>; border: 1px solid #dee2e6;">
-                            <td><?php echo htmlspecialchars($row['name']); ?></td>
-                            <td><?php echo htmlspecialchars($row['unit_name'] ? $row['unit_name'] : 'N/A'); ?></td> <!-- Display unit name or 'N/A' -->
-                            <td><?php echo htmlspecialchars($row['category']); ?></td>
-                            <td><?php echo htmlspecialchars($row['quantity']); ?></td>
+                            <td style="font-size: 18px; line-height: 30px;">
+                                <?php echo htmlspecialchars($row['name']); ?>
+                                <div style="font-size: 16px; line-height: 24px; color: #555;">
+                                    <?php echo htmlspecialchars($row['category']); ?>
+                                </div>
+                            </td>
+                            <td></td>
+                            <td>
+                                <div>
+                                    <?php echo htmlspecialchars($row['quantity']); ?> <?php echo htmlspecialchars($row['unit_name'] ? $row['unit_name'] : 'N/A'); ?>
+                                </div>
+                            </td>
+                            <td></td>
                             <td>
                                 <a href="ingredients-edit.php?id=<?php echo $row['id']; ?>" class="btn btn-outline-success btn-sm" style="margin: 0; padding: 0.25rem 0.5rem;">Edit</a>
                                 <a href="ingredients-delete.php?id=<?php echo $row['id']; ?>" class="btn btn-outline-danger btn-sm" style="margin: 0; padding: 0.25rem 0.5rem;">Delete</a>
+                            </td>
+                            <td>
+                                <?php 
+                                    if($row['quantity'] <= $row['reorder_point']) {
+                                        echo '<span class="badge bg-danger">Low Stock</span>';
+                                    } else {
+                                        echo '<span class="badge bg-primary">In Stock</span>';
+                                    }
+                                ?>
                             </td>
                         </tr>
                     <?php endwhile; ?>
