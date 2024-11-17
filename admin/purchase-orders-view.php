@@ -31,7 +31,7 @@
             }
             $trackingNo = validate($_GET['track']);
 
-            $query = "SELECT po.*, a.* FROM purchaseOrders po, admins a WHERE 
+            $query = "SELECT po.*, a.*, po.id as purchaseorders_id FROM purchaseOrders po, admins a WHERE 
                         a.id = po.customer_id AND tracking_no='$trackingNo' 
                         ORDER BY po.id DESC";
 
@@ -44,7 +44,7 @@
                     $supplierName = $orderData['supplierName'];
                     $supplier = mysqli_query($conn, "SELECT * FROM suppliers WHERE id = '$supplierName' LIMIT 1");
                     $supplierData = mysqli_fetch_assoc($supplier);
-                    $orderId = $orderData['id'];
+                    $orderId = $orderData['purchaseorders_id'];
 
                     ?>
                     <div class="card card-body shadow border-1 mb-4 ">
@@ -104,6 +104,84 @@
 
 
                     <?php
+                       $stockInQuery = "
+                       SELECT 
+                           i.name as ingredient_name,
+                           uom.ratio as unit_ratio,
+                           sii.quantity as stockin_quantity,
+                           uom.uom_name as unit_name,
+                           sii.expiryDate as stockin_expirydate,
+                           sii.totalPrice as stockin_totalPrice
+                       FROM stockin si
+                       JOIN stockin_ingredients sii ON si.id = sii.stockin_id
+                       JOIN ingredients i ON sii.ingredient_id = i.id
+                       JOIN units_of_measure uom ON uom.id = sii.unit_id
+                       WHERE si.purchaseorder_id = '$orderId'
+                        ";                   
+    
+
+                        $stockInItemsRes = mysqli_query($conn, $stockInQuery);
+                        $i = 1;
+                        if($stockInItemsRes){
+                            if(mysqli_num_rows($stockInItemsRes) > 0){
+                                $totalAmount = 0;
+                                ?>
+                                    <h4 class="my-3">Stock In Details</h4>
+                                    <table class="table table-bordered table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>Item No. </th>
+                                                <th>Ingredient</th>
+                                                <th>Quantity</th>
+                                                <th>Unit</th>
+                                                <th>Expiry Date</th>
+                                                <th>Total Price</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php while($orderItemRow = mysqli_fetch_assoc($stockInItemsRes)): ?>
+                                                <tr>
+                                                    <td width="5%" class=" text-center">
+                                                        <?= $i++; ?>
+                                                    </td>
+                                                    <td width="15%" class=" text-center">
+                                                        <?= $orderItemRow['ingredient_name'];?>
+                                                    </td>
+                                                    <td width="15%" class="text-center">
+                                                        <?= number_format($orderItemRow['stockin_quantity']); ?>
+                                                    </td>
+                                                    <td width="15%" class=" text-center">
+                                                        <?= $orderItemRow['unit_name'];?>
+                                                    </td>
+                                                    <td width="15%" class="text-center">
+                                                        <?= $orderItemRow['stockin_expirydate']; ?>
+                                                    </td>
+                                                    <td width="15%" class="text-center">
+                                                        Php <?= number_format($orderItemRow['stockin_totalPrice'], 2); ?>
+                                                    </td> 
+                                                </tr>
+                                                <?php $totalAmount += $orderItemRow['stockin_totalPrice']; ?>
+                                            <?php endwhile; ?>
+
+                                            <tr>
+                                                <td colspan="5" class="text-end fw-bold">Total Price: </td>
+                                                <td colspan="1" class="text-end fw-bold">Php <?= number_format($totalAmount, 2); ?></td>
+                                            </tr>
+                                        </tbody>
+
+                                    </table>
+                                <?php
+                            }else{
+                                echo ' <h5>No record Found!</h5>';
+                                return false;
+                            }
+                        }else{
+                            echo ' <h5>No record Found!</h5>';
+                            return false;
+                        }
+                    ?>
+
+                    <?php
                        $orderItemQuery = "
                        SELECT 
                            ii.quantity as orderItemQuantity, 
@@ -130,9 +208,9 @@
                                             <tr>
                                                 <th>Item No. </th>
                                                 <th>Ingredient</th>
-                                                <th>Price</th>
-                                                <th>Unit</th>
                                                 <th>Quantity</th>
+                                                <th>Unit</th>
+                                                <th>Price</th>
                                                 <th>Total</th>
                                             </tr>
                                         </thead>
@@ -146,13 +224,13 @@
                                                         <?= $orderItemRow['ingredientName'];?>
                                                     </td>
                                                     <td width="15%" class="text-center">
-                                                        Php <?= number_format($orderItemRow['orderItemPrice'], 2); ?>
+                                                        <?= $orderItemRow['orderItemQuantity']; ?>
                                                     </td>
                                                     <td width="15%" class=" text-center">
                                                         <?= $orderItemRow['unit_name'];?>
                                                     </td>
                                                     <td width="15%" class="text-center">
-                                                        <?= $orderItemRow['orderItemQuantity']; ?>
+                                                        Php <?= number_format($orderItemRow['orderItemPrice'], 2); ?>
                                                     </td>
                                                     <td width="15%" class="text-center">
                                                         Php <?= number_format($orderItemRow['orderItemPrice'] * $orderItemRow['orderItemQuantity'], 2); ?>

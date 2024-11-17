@@ -136,7 +136,7 @@ unset($_SESSION['siItemIds']);
 
                     <!-- Delivered Purchase Orders -->
                     <div class="tab-pane mt-3 fade" id="deliveredPurchaseOrders" role="tabpanel" aria-labelledby="delivered-purchase-orders-tab">
-                        <h5>Delivered Purchase Orders</h5>
+                        <h5>Delivered Purchase Orders/Stock Ins</h5>
                         <table class="table table-striped table-bordered align-items-center justify-content-center">
                             <thead>
                                 <tr>
