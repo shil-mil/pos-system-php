@@ -31,7 +31,7 @@
             }
             $trackingNo = validate($_GET['track']);
 
-            $query = "SELECT po.*, a.*, po.id as purchaseorders_id FROM purchaseOrders po, admins a WHERE 
+            $query = "SELECT po.*, a.*, po.id as purchaseorders_id, po.order_status as purchaseorder_status FROM purchaseOrders po, admins a WHERE 
                         a.id = po.customer_id AND tracking_no='$trackingNo' 
                         ORDER BY po.id DESC";
 
@@ -103,7 +103,10 @@
                     </div>
 
 
-                    <?php
+                    <?php 
+                        if($orderData['purchaseorder_status'] == 'Delivered') {
+                    ?>
+                        <?php
                        $stockInQuery = "
                        SELECT 
                            i.name as ingredient_name,
@@ -177,6 +180,9 @@
                         }else{
                             echo ' <h5>No record Found!</h5>';
                             return false;
+                        }
+                    ?>                
+                    <?php
                         }
                     ?>
 
