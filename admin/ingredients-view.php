@@ -73,7 +73,14 @@ $result = mysqli_query($conn, $query);
                                     <tr style="background-color: <?= $i % 2 == 0 ? '#fff' : '#f9f9f9'; ?>; border: 1px solid #dee2e6;">
                                         <td></td>
                                         <td><?php echo htmlspecialchars($ingredientItem['stockin_id']); ?></td>
-                                        <td><?php echo htmlspecialchars($ingredientItem['quantity'] * $ingredientItem['unit_ratio']); ?> <?php echo htmlspecialchars($row['unit_name'] ? $row['unit_name'] : 'N/A'); ?></td>
+                                        <td>
+                                            <?php 
+                                                echo number_format($ingredientItem['quantity'] * $ingredientItem['unit_ratio'], 2); 
+                                            ?> 
+                                            <?php 
+                                                echo htmlspecialchars($row['unit_name'] ? $row['unit_name'] : 'N/A'); 
+                                            ?>
+                                        </td>
                                         <td><?php echo htmlspecialchars($ingredientItem['expiryDate']); ?></td>
                                         <td>
                                             <a href="#" class="btn btn-outline-secondary btn-sm" style="margin: 0; padding: 0.25rem 0.5rem;">Stock Out</a>  <!-- lods ekay ikaw na bahala-->                                  
