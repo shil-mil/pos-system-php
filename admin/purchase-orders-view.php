@@ -159,7 +159,7 @@
                                                         <?= $orderItemRow['stockin_expirydate']; ?>
                                                     </td>
                                                     <td width="15%" class="text-center">
-                                                        Php <?= number_format($orderItemRow['stockin_totalPrice'], 2); ?>
+                                                        Php <?= number_format($orderItemRow['stockin_totalPrice'], 2); ?>/<?= $orderItemRow['unit_name'];?>
                                                     </td> 
                                                 </tr>
                                                 <?php $totalAmount += $orderItemRow['stockin_totalPrice']; ?>
@@ -235,7 +235,7 @@
                                                         <?= $orderItemRow['unit_name'];?>
                                                     </td>
                                                     <td width="15%" class="text-center">
-                                                        Php <?= number_format($orderItemRow['orderItemPrice'], 2); ?>
+                                                        Php <?= number_format($orderItemRow['orderItemPrice'], 2); ?>/<?= $orderItemRow['unit_name'];?>
                                                     </td>
                                                     <td width="15%" class="text-center">
                                                         Php <?= number_format($orderItemRow['orderItemPrice'] * $orderItemRow['orderItemQuantity'], 2); ?>
