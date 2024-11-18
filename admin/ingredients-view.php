@@ -21,11 +21,9 @@ $result = mysqli_query($conn, $query);
                 <thead>
                     <tr style="background-color: #f8f9fa; color: #000;">
                         <th>Name</th>
-                        <th>Batch</th>
                         <th>Quantity</th>
-                        <th>Best By</th>
-                        <th>Actions</th>
                         <th>Remarks</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -34,25 +32,19 @@ $result = mysqli_query($conn, $query);
                     while ($row = mysqli_fetch_assoc($result)) : 
                     $i++;
                     ?>
-                        <tr style="background-color: <?= $i % 2 == 0 ? '#fff' : '#f9f9f9'; ?>; border: 1px solid #dee2e6;">
-                            <td style="font-size: 18px; line-height: 30px;">
+                        <tr style="background-color: #f9f9f9; border: 1px solid #dee2e6;">
+                            <td width="25%" style="font-size: 18px; line-height: 30px;">
                                 <?php echo htmlspecialchars($row['name']); ?>
                                 <div style="font-size: 16px; line-height: 24px; color: #555;">
                                     <?php echo htmlspecialchars($row['category']); ?>
                                 </div>
                             </td>
-                            <td></td>
-                            <td>
+                            <td width="25%">
                                 <div>
                                     <?php echo htmlspecialchars($row['quantity']); ?> <?php echo htmlspecialchars($row['unit_name'] ? $row['unit_name'] : 'N/A'); ?>
                                 </div>
                             </td>
-                            <td></td>
-                            <td>
-                                <a href="ingredients-edit.php?id=<?php echo $row['id']; ?>" class="btn btn-outline-success btn-sm" style="margin: 0; padding: 0.25rem 0.5rem;">Edit</a>
-                                <a href="ingredients-delete.php?id=<?php echo $row['id']; ?>" class="btn btn-outline-danger btn-sm" style="margin: 0; padding: 0.25rem 0.5rem;">Delete</a>
-                            </td>
-                            <td>
+                            <td width="20%">
                                 <?php 
                                     if($row['quantity'] == 0) {
                                         echo '<span class="badge bg-danger">NO STOCK</span>';
@@ -63,39 +55,56 @@ $result = mysqli_query($conn, $query);
                                     }
                                 ?>
                             </td>
+                            <td width="30%">
+                                <a href="ingredients-edit.php?id=<?php echo $row['id']; ?>" class="btn btn-outline-success btn-sm" style="margin: 0; padding: 0.25rem 0.5rem;">Edit</a>
+                                <a href="ingredients-delete.php?id=<?php echo $row['id']; ?>" class="btn btn-outline-danger btn-sm" style="margin: 0; padding: 0.25rem 0.5rem;">Delete</a>
+                                <button class="btn btn-outline-secondary btn-sm" data-bs-toggle="collapse" data-bs-target="#collapse-<?php echo $row['id']; ?>" style="margin: 0; padding: 0.25rem 0.5rem;">
+                                    View Stock
+                                </button>
+                            </td>
                         </tr>
-                            <?php
-                            $ingredientId = $row['id'];
-                            $ingredientsQueryResult = mysqli_query($conn, "SELECT si.*, uom.ratio as unit_ratio FROM stockin_ingredients si JOIN units_of_measure uom ON uom.id = si.unit_id WHERE si.ingredient_id = $ingredientId");
-                            foreach ($ingredientsQueryResult as $ingredientItem) :
-                                if ($ingredientItem['quantity'] > 0) {
-                                    ?>
-                                    <tr style="background-color: <?= $i % 2 == 0 ? '#fff' : '#f9f9f9'; ?>; border: 1px solid #dee2e6;">
-                                        <td></td>
-                                        <td><?php echo htmlspecialchars($ingredientItem['stockin_id']); ?></td>
-                                        <td>
-                                            <?php 
-                                                echo number_format($ingredientItem['quantity'] * $ingredientItem['unit_ratio'], 2); 
-                                            ?> 
-                                            <?php 
-                                                echo htmlspecialchars($row['unit_name'] ? $row['unit_name'] : 'N/A'); 
-                                            ?>
-                                        </td>
-                                        <td><?php echo htmlspecialchars($ingredientItem['expiryDate']); ?></td>
-                                        <td>
-                                            <a href="#" class="btn btn-outline-secondary btn-sm" style="margin: 0; padding: 0.25rem 0.5rem;">Stock Out</a>  <!-- lods ekay ikaw na bahala-->                                  
-                                        </td>
-                                        <td></td>
-                                </tr>
-                            <?php
-                                }
-                            endforeach;
-                            ?>
+                        <!-- Collapsible Dropdown Start -->
+                        <tr id="collapse-<?php echo $row['id']; ?>" class="collapse">
+                            <td colspan="5">
+                                <table class="table mb-0" width="100%">
+                                    <thead>
+                                        <tr>
+                                            <th>Batch No.</th>
+                                            <th>Quantity</th>
+                                            <th>Best By</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php
+                                        $ingredientId = $row['id'];
+                                        $ingredientsQueryResult = mysqli_query($conn, "SELECT si.*, uom.ratio as unit_ratio FROM stockin_ingredients si JOIN units_of_measure uom ON uom.id = si.unit_id WHERE si.ingredient_id = $ingredientId AND si.quantity > 0");
+                                        foreach ($ingredientsQueryResult as $ingredientItem) : ?>
+                                            <tr style="background-color: #fff;">
+                                                <td width="25%"><?php echo htmlspecialchars($ingredientItem['stockin_id']); ?></td>
+                                                <td width="25%">
+                                                    <?php 
+                                                        echo number_format($ingredientItem['quantity'] * $ingredientItem['unit_ratio'], 2); 
+                                                    ?> 
+                                                    <?php 
+                                                        echo htmlspecialchars($row['unit_name'] ? $row['unit_name'] : 'N/A'); 
+                                                    ?>
+                                                </td>
+                                                <td width="20%"><?php echo htmlspecialchars($ingredientItem['expiryDate']); ?></td>
+                                                <td width="30%">
+                                                    <a href="#" class="btn btn-outline-secondary btn-sm">Stock Out</a>
+                                                </td>
+                                            </tr>
+                                        <?php endforeach; ?>
+                                    </tbody>
+                                </table>
+                            </td>
+                        </tr>
+                        <!-- Collapsible Dropdown End -->
                     <?php endwhile; ?>
                 </tbody>
             </table>
         </div>
     </div>
 </div>
-
 <?php include('includes/footer.php'); ?>
