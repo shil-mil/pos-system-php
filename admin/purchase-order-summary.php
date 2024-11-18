@@ -103,9 +103,9 @@ $supplier_id = isset($_SESSION['supplier_id']) ? $_SESSION['supplier_id'] : null
                                         <tr>
                                             <th align="start" style="border-bottom: 1px solid #ccc;" width="10%">Item No.</th> 
                                             <th align="start" style="border-bottom: 1px solid #ccc;">Ingredient Name</th>
-                                            <th align="start" style="border-bottom: 1px solid #ccc;" width="10%">Price</th>
-                                            <th align="start" style="border-bottom: 1px solid #ccc;" width="10%">Unit</th>
                                             <th align="start" style="border-bottom: 1px solid #ccc;" width="10%">Quantity</th>
+                                            <th align="start" style="border-bottom: 1px solid #ccc;" width="10%">Unit</th>
+                                            <th align="start" style="border-bottom: 1px solid #ccc;" width="10%">Price</th>
                                             <th align="start" style="border-bottom: 1px solid #ccc;" width="15%">Total Price</th>
                                         </tr>
                                     </thead>
@@ -123,9 +123,9 @@ $supplier_id = isset($_SESSION['supplier_id']) ? $_SESSION['supplier_id'] : null
                                         <tr>
                                             <td style="border-bottom: 1px solid #ccc;"><?= $i++; ?></td>
                                             <td style="border-bottom: 1px solid #ccc;"><?= $row['name']; ?></td>
-                                            <td style="border-bottom: 1px solid #ccc;">Php <?= number_format($row['price'], 2); ?></td>
-                                            <td style="border-bottom: 1px solid #ccc;"><?= $row['unit_name']; ?></td>
                                             <td style="border-bottom: 1px solid #ccc;"><?= $row['quantity']; ?></td>
+                                            <td style="border-bottom: 1px solid #ccc;"><?= $row['unit_name']; ?></td>
+                                            <td style="border-bottom: 1px solid #ccc;">Php <?= number_format($row['price'], 2); ?></td>
                                             <td style="border-bottom: 1px solid #ccc;" class="fw-bold">
                                                 Php <?= number_format($row['price'] * $row['quantity'], 2); ?>
                                             </td>
