@@ -150,7 +150,7 @@
                                                         <?= $orderItemRow['ingredient_name'];?>
                                                     </td>
                                                     <td width="15%" class="text-center">
-                                                        <?= number_format($orderItemRow['stockin_quantity']); ?>
+                                                        <?= number_format($orderItemRow['stockin_quantity'], 2); ?>
                                                     </td>
                                                     <td width="15%" class=" text-center">
                                                         <?= $orderItemRow['unit_name'];?>
@@ -159,7 +159,7 @@
                                                         <?= $orderItemRow['stockin_expirydate']; ?>
                                                     </td>
                                                     <td width="15%" class="text-center">
-                                                        Php <?= number_format($orderItemRow['stockin_totalPrice'], 2); ?>/<?= $orderItemRow['unit_name'];?>
+                                                        Php <?= number_format($orderItemRow['stockin_totalPrice'], 2); ?>
                                                     </td> 
                                                 </tr>
                                                 <?php $totalAmount += $orderItemRow['stockin_totalPrice']; ?>
