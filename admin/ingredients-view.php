@@ -84,7 +84,7 @@ $result = mysqli_query($conn, $query);
                                                 <td width="25%"><?php echo htmlspecialchars($ingredientItem['stockin_id']); ?></td>
                                                 <td width="25%">
                                                     <?php 
-                                                        echo number_format($ingredientItem['quantity'] * $ingredientItem['unit_ratio'], 2); 
+                                                        echo number_format($ingredientItem['totalQuantity'], 2); 
                                                     ?> 
                                                     <?php 
                                                         echo htmlspecialchars($row['unit_name'] ? $row['unit_name'] : 'N/A'); 
