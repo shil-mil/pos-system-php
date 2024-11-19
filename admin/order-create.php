@@ -181,48 +181,55 @@
 <?php include('includes/footer.php'); ?>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Ensure the DOM is loaded before attaching event listeners
+document.addEventListener('DOMContentLoaded', function () {
+    // Ensure the DOM is loaded before attaching event listeners
 
-        // Calculate the total amount when the "Calculate" button is clicked
-        var calculateButton = document.getElementById('calculateButton');
-        if (calculateButton) {
-            calculateButton.addEventListener('click', function() {
-                // Initialize the total amount
-                let totalAmount = 0;
+    // Calculate the total amount when the "Calculate" button is clicked
+    const calculateButton = document.getElementById('calculateButton');
+    if (calculateButton) {
+        calculateButton.addEventListener('click', function () {
+            let totalAmount = 0;
 
-                // Loop through session products and calculate the total
-                <?php if (isset($_SESSION['productItems']) && !empty($_SESSION['productItems'])): ?>
-                    <?php foreach ($_SESSION['productItems'] as $item): ?>
-                        totalAmount += <?= $item['price']; ?> * <?= $item['quantity']; ?>;
-                    <?php endforeach; ?>
-                <?php else: ?>
-                    totalAmount = 0;
-                <?php endif; ?>
+            // Loop through all rows in the product table
+            const productRows = document.querySelectorAll('#productContent tbody tr');
+            productRows.forEach(row => {
+                const priceElement = row.querySelector('td:nth-child(2)');
+                const quantityInput = row.querySelector('.quantityInput');
 
-                // Update the total amount field
-                document.getElementById('totalAmount').value = totalAmount.toFixed(2);
+                if (priceElement && quantityInput) {
+                    const price = parseFloat(priceElement.textContent.replace('Php ', '').trim());
+                    const quantity = parseInt(quantityInput.value);
 
-                // Show the payment details section
-                document.getElementById('paymentDetails').style.display = 'block';
-            });
-        }
-
-        // Update the change when the amount received is entered
-        var amountReceived = document.getElementById('amount_received');
-        if (amountReceived) {
-            amountReceived.addEventListener('input', function() {
-                let amount_received = parseFloat(this.value);
-                let totalAmount = parseFloat(document.getElementById('totalAmount').value);
-                let change_money = amount_received - totalAmount;
-
-                // Only show change if it's a valid number and >= 0
-                if (isNaN(change_money) || change_money < 0) {
-                    document.getElementById('change_money').value = '0.00';
-                } else {
-                    document.getElementById('change_money').value = change_money.toFixed(2);
+                    if (!isNaN(price) && !isNaN(quantity)) {
+                        totalAmount += price * quantity;
+                    }
                 }
             });
-        }
-    });
+
+            // Update the total amount field
+            document.getElementById('totalAmount').value = totalAmount.toFixed(2);
+
+            // Show the payment details section
+            document.getElementById('paymentDetails').style.display = 'block';
+        });
+    }
+
+    // Update the change when the amount received is entered
+    const amountReceived = document.getElementById('amount_received');
+    if (amountReceived) {
+        amountReceived.addEventListener('input', function () {
+            const amount_received = parseFloat(this.value);
+            const totalAmount = parseFloat(document.getElementById('totalAmount').value);
+            const change_money = amount_received - totalAmount;
+
+            // Only show change if it's a valid number and >= 0
+            if (isNaN(change_money) || change_money < 0) {
+                document.getElementById('change_money').value = '0.00';
+            } else {
+                document.getElementById('change_money').value = change_money.toFixed(2);
+            }
+        });
+    }
+});
+
 </script>
