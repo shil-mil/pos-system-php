@@ -140,20 +140,20 @@
                                                     <td width="5%" class=" text-center">
                                                         <?= $i++; ?>
                                                     </td>
-                                                    <td width="15%" class="fw-bold text-center">
+                                                    <td width="15%" class="text-center">
                                                     <?= $orderItemRow['ingredientName'];?>
                                                     </td>
                                                     
-                                                    <td width="15%" class="fw-bold text-center">
+                                                    <td width="15%" class="text-center">
                                                         Php <?= number_format($orderItemRow['orderItemPrice'], 2); ?>
                                                     </td>
                                                     <td width="15%" class=" text-center">
                                                         <?= $orderItemRow['unit_name'];?>
                                                     </td>
-                                                    <td width="15%" class="fw-bold text-center">
+                                                    <td width="15%" class="text-center">
                                                         <?= $orderItemRow['orderItemQuantity']; ?>
                                                     </td>
-                                                    <td width="15%" class="fw-bold text-center">
+                                                    <td width="15%" class="text-center">
                                                         Php <?= number_format($orderItemRow['orderItemPrice'] * $orderItemRow['orderItemQuantity'], 2); ?>
                                                     </td> 
                                                 </tr>
