@@ -50,9 +50,9 @@ if (isset($_GET['id'])) {
     <div class="card mt-4 shadow-sm">
         <div class="card-header">
             <h4 class="mb-0">Recipe for <?= htmlspecialchars($product['productname']); ?>
-                <a href="products.php" class="btn btn-secondary float-end me-2">Back</a>
+                <a href="products.php" class="btn btn-outline-secondary float-end me-2">Back</a>
                 <?php if (isset($recipeId)): ?>
-                    <a href="recipe-edit.php?id=<?= urlencode($recipeId); ?>" class="btn btn-primary float-end me-2">Update Recipe</a>
+                    <a href="recipe-edit.php?id=<?= urlencode($recipeId); ?>" class="btn btn-outline-primary float-end me-2">Update Recipe</a>
                 <?php endif; ?>
             </h4>
         </div>
