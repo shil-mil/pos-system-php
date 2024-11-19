@@ -255,6 +255,7 @@ if(isset($_POST['stockInBtn'])) {
                                 'stockin_id' => $lastOrderId,
                                 'ingredient_id' => $ingredientId,
                                 'quantity' => $quantity,
+                                'totalQuantity' => $totalIngQuantity,
                                 'unit_id' => $unit_id,
                                 'totalPrice' => $price * $quantity,
                                 'expiryDate' => $expiryDate,
