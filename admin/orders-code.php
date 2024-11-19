@@ -74,6 +74,51 @@ function updateIngredientInventory($conn, $productId, $orderQuantity) {
                     $currentQuantity = $currentQuantityResult['quantity'];
 
                     if ($currentQuantity >= $quantityRequiredInBase) {
+                        // Stock in ingredients code start
+                        $siiQuery = "SELECT * FROM stockin_ingredients WHERE ingredient_id = $ingredientId AND totalQuantity != 0";
+                        $siiResult = mysqli_query($conn, $siiQuery);
+                    
+                        $tempQuantity = $quantityRequiredInBase;
+                    
+                        if ($siiResult) {
+                            if (mysqli_num_rows($siiResult) > 0) {
+                                while ($row = mysqli_fetch_assoc($siiResult)) {
+                                    if ($tempQuantity <= 0) break; // Exit loop if no quantity is left to deduct
+                                    
+                                    $stockinId = $row['id']; // Unique identifier for the stockin_ingredients row
+                                    $currentStock = $row['totalQuantity'];
+                    
+                                    if ($currentStock >= $tempQuantity) {
+                                        // Deduct tempQuantity from the current stock and update the database
+                                        $updatedStock = $currentStock - $tempQuantity;
+                                        $updateSiiQuery = "UPDATE stockin_ingredients SET totalQuantity = $updatedStock WHERE id = $stockinId";
+                                        mysqli_query($conn, $updateSiiQuery);
+                    
+                                        // All required quantity has been fulfilled
+                                        $tempQuantity = 0;
+                                        break; // Exit the while loop
+                                    } else {
+                                        // Deduct all of the current stock and reduce tempQuantity
+                                        $tempQuantity -= $currentStock;
+                    
+                                        // Set current stock to 0 and update the database
+                                        $updateSiiQuery = "UPDATE stockin_ingredients SET totalQuantity = 0 WHERE id = $stockinId";
+                                        mysqli_query($conn, $updateSiiQuery);
+                    
+                                        // Continue to the next row in the result
+                                    }
+                                }
+                            } else {
+                                $_SESSION['error'] = "No stock available in stockin_ingredients for ingredient ID: $ingredientId";
+                            }
+                        } else {
+                            $_SESSION['error'] = "Failed to fetch stockin_ingredients for ingredient ID: $ingredientId. Error: " . mysqli_error($conn);
+                        }
+                    
+                        // Check if tempQuantity > 0 after the loop
+                        if ($tempQuantity > 0) {
+                            $_SESSION['error'] = "Insufficient stock in stockin_ingredients for ingredient ID: $ingredientId";
+                        }
                         // Update the inventory
                         $updateInventoryQuery = "UPDATE ingredients SET quantity = quantity - ? WHERE id = ?";
                         $updateStmt = $conn->prepare($updateInventoryQuery);
