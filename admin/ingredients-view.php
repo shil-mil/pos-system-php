@@ -78,24 +78,36 @@ $result = mysqli_query($conn, $query);
                                     <tbody>
                                         <?php
                                         $ingredientId = $row['id'];
-                                        $ingredientsQueryResult = mysqli_query($conn, "SELECT si.*, uom.ratio as unit_ratio FROM stockin_ingredients si JOIN units_of_measure uom ON uom.id = si.unit_id WHERE si.ingredient_id = $ingredientId AND si.quantity > 0");
-                                        foreach ($ingredientsQueryResult as $ingredientItem) : ?>
-                                            <tr style="background-color: #fff;">
-                                                <td width="25%"><?php echo htmlspecialchars($ingredientItem['stockin_id']); ?></td>
-                                                <td width="25%">
-                                                    <?php 
-                                                        echo number_format($ingredientItem['totalQuantity'], 2); 
-                                                    ?> 
-                                                    <?php 
-                                                        echo htmlspecialchars($row['unit_name'] ? $row['unit_name'] : 'N/A'); 
-                                                    ?>
-                                                </td>
-                                                <td width="20%"><?php echo htmlspecialchars($ingredientItem['expiryDate']); ?></td>
-                                                <td width="30%">
-                                                    <a href="#" class="btn btn-outline-secondary btn-sm">Stock Out</a>
-                                                </td>
+                                        $ingredientsQueryResult = mysqli_query($conn, "SELECT si.*, uom.ratio as unit_ratio 
+                                                                                    FROM stockin_ingredients si 
+                                                                                    JOIN units_of_measure uom 
+                                                                                    ON uom.id = si.unit_id 
+                                                                                    WHERE si.ingredient_id = $ingredientId 
+                                                                                    AND si.totalQuantity > 0");
+
+                                        if (mysqli_num_rows($ingredientsQueryResult) > 0) {
+                                            foreach ($ingredientsQueryResult as $ingredientItem) : ?>
+                                                <tr style="background-color: #fff;">
+                                                    <td width="25%"><?php echo htmlspecialchars($ingredientItem['stockin_id']); ?></td>
+                                                    <td width="25%">
+                                                        <?php 
+                                                            echo number_format($ingredientItem['totalQuantity'], 2); 
+                                                        ?> 
+                                                        <?php 
+                                                            echo htmlspecialchars($row['unit_name'] ? $row['unit_name'] : 'N/A'); 
+                                                        ?>
+                                                    </td>
+                                                    <td width="20%"><?php echo htmlspecialchars($ingredientItem['expiryDate']); ?></td>
+                                                    <td width="30%">
+                                                        <a href="#" class="btn btn-outline-secondary btn-sm">Stock Out</a>
+                                                    </td>
+                                                </tr>
+                                            <?php endforeach;
+                                        } else { ?>
+                                            <tr>
+                                                <td colspan="4" style="text-align: center; background-color: #fff; color: red;">NO STOCKS FOUND</td>
                                             </tr>
-                                        <?php endforeach; ?>
+                                        <?php } ?>
                                     </tbody>
                                 </table>
                             </td>
