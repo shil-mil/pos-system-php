@@ -109,7 +109,7 @@
                                         <button class="input-group-text prod-increment">+</button>
                                      </div>
                                 </td>
-                                <td>Php <?= number_format($item['price'] * $item['quantity'], 2); ?></td>
+                                <td>Php <?= number_format((float) $item['price'] * (float) $item['quantity'], 2); ?></td>
                                 <td>
                                 <a href="order-item-delete.php?index=<?= $key; ?>" class="btn btn-danger">Remove</a>
                                 </td>
