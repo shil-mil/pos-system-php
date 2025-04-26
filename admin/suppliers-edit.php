@@ -43,6 +43,13 @@
                         <label for="">Address *</label>
                         <input type="text" name="address" required value="<?= $supplierData['data']['address']; ?>" class="form-control">
                     </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="status">Status</label>
+                        <select name="status" class="form-control" required>
+                            <option value="active" <?= $supplierData['data']['status'] === 'active' ? 'selected' : ''; ?>>Active</option>
+                            <option value="inactive" <?= $supplierData['data']['status'] === 'inactive' ? 'selected' : ''; ?>>Inactive</option>
+                        </select>
+                    </div>
                     <div class="col-md-12 mb-3 text-end">
                         <button type="submit" name="updateSupplier" class="btn btn-outline-primary">Update</button>
                     </div>
