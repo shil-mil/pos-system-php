@@ -142,44 +142,27 @@ if (isset($_POST['saveSupplier'])) {
 
 // Update Supplier
 if (isset($_POST['updateSupplier'])) {
-    $supplierId = validate($_POST['supplierId']);
+    $supplierId = $_POST['supplierId'];
+    $firstname = $_POST['firstname'];
+    $lastname = $_POST['lastname'];
+    $phonenumber = $_POST['phonenumber'];
+    $address = $_POST['address'];
+    $status = $_POST['status'];
 
-    $supplierData = getById('suppliers', $supplierId);
+    $query = "UPDATE suppliers SET firstname = ?, lastname = ?, phonenumber = ?, address = ?, status = ? WHERE id = ?";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("sssssi", $firstname, $lastname, $phonenumber, $address, $status, $supplierId);
 
-    if ($supplierData['status'] != 200) {
-        $_SESSION['message'] = 'Invalid Supplier ID.';
-        header('Location: suppliers.php');
-        exit();
-    }
-
-    $firstname = validate($_POST['firstname']);
-    $lastname = validate($_POST['lastname']);
-    $phonenumber = validate($_POST['phonenumber']);
-    $address = validate($_POST['address']);
-
-    if ($firstname != '' && $lastname != '' && $phonenumber != '' && $address != '') {
-        $data = [
-            'firstname' => $firstname,
-            'lastname' => $lastname,
-            'phonenumber' => $phonenumber,
-            'address' => $address
-        ];
-
-        $result = update('suppliers', $supplierId, $data);
-        if ($result) {
-            $_SESSION['message'] = 'Supplier updated successfully.';
-            header('Location: suppliers.php');
-            exit();
-        } else {
-            $_SESSION['message'] = 'Something went wrong.';
-            header('Location: suppliers.php');
-            exit();
-        }
+    if ($stmt->execute()) {
+        $_SESSION['message'] = "Supplier updated successfully";
+        $_SESSION['message_type'] = "success";
     } else {
-        $_SESSION['message'] = 'Please fill required fields.';
-        header('Location: suppliers-edit.php?id=' . $supplierId);
-        exit();
+        $_SESSION['message'] = "Failed to update supplier";
+        $_SESSION['message_type'] = "danger";
     }
+
+    header("Location: suppliers.php");
+    exit();
 }
 
 
@@ -303,20 +286,16 @@ if (isset($_POST['updateIngredient'])) {
     $ingredientId = trim($_POST['ingredientId']);
     $name = trim($_POST['name']);
     $category = trim($_POST['category']);
-    // Set price to 0.00 if it's not provided
-    $price = isset($_POST['price']) && trim($_POST['price']) !== '' ? trim($_POST['price']) : 0.00;
-    $quantity = isset($_POST['quantity']) && trim($_POST['quantity']) !== '' ? trim($_POST['quantity']) : 0;
-
-    // Allow unit_id to be nullable
+    // Set price to 0.00 if it's not provided    // Allow unit_id to be nullable
     $unit_id = isset($_POST['unit_id']) && !empty($_POST['unit_id']) ? trim($_POST['unit_id']) : null;
 
     // Prepare the SQL query with placeholders
-    $query = "UPDATE ingredients SET name=?, unit_id=?, category=?, price=?, quantity=? WHERE id=?";
+    $query = "UPDATE ingredients SET name=?, unit_id=?, category=? WHERE id=?";
 
     // Initialize the prepared statement
     if ($stmt = mysqli_prepare($conn, $query)) {
         // Bind parameters to the placeholders
-        mysqli_stmt_bind_param($stmt, "sissdi", $name, $unit_id, $category, $price, $quantity, $ingredientId);
+        mysqli_stmt_bind_param($stmt, "sisi", $name, $unit_id, $category, $ingredientId);
 
         // Execute the statement
         if (mysqli_stmt_execute($stmt)) {
@@ -974,4 +953,474 @@ if(isset($_POST['addIngredient'])){
     }
 }
 
+
+// Initialize variables and query the database to get necessary results
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['save_products_report'])) {
+    // Get the report date and time from the form
+    $reportDate = $_POST['report_date'];
+    $reportTime = date('H:i:s');  // Current time
+    $startDate = $_GET['start_date'] ?? $reportDate;
+    $endDate = $_GET['end_date'] ?? $startDate;
+
+    // Fetch data for the report
+    $remainingProductsResult = fetchRemainingProducts();
+    $completedOrdersResult = fetchOrders('Completed', $startDate, $endDate); // Fetch completed orders
+    $cancelledOrdersResult = fetchCancelledOrders($startDate, $endDate); // Fetch cancelled orders
+
+    // Prepare the report data
+    $reportData = [
+        'remaining_products' => [],
+        'completed_orders' => [],
+        'cancelled_orders' => [],
+    ];
+
+    // Add remaining products to the report data
+    while ($product = mysqli_fetch_assoc($remainingProductsResult)) {
+        $reportData['remaining_products'][] = $product;
+    }
+
+    // Add completed orders to the report data
+    while ($order = mysqli_fetch_assoc($completedOrdersResult)) {
+        $reportData['completed_orders'][] = $order;
+    }
+
+    // Add cancelled orders to the report data
+    while ($order = mysqli_fetch_assoc($cancelledOrdersResult)) {
+        $reportData['cancelled_orders'][] = $order;
+    }
+
+    // Save the report data into the database
+    $jsonReportData = json_encode($reportData);
+
+    // Prepare the SQL query
+    $query = "
+        INSERT INTO saved_products_reports (report_date, report_time, start_date, end_date, report_data)
+        VALUES ('$reportDate', '$reportTime', '$startDate', '$endDate', '$jsonReportData')
+    ";
+
+    // Execute the query and handle success/failure
+    if (mysqli_query($conn, $query)) {
+        $message = "Report saved successfully!";
+        echo "<div class='alert alert-success'>$message</div>";
+    } else {
+        echo "<div class='alert alert-danger'>Error saving the report: " . mysqli_error($conn) . "</div>";
+    }
+}
+
+
+
+
+if (isset($_POST['saved_ingredients_report'])) {
+    // Fetch dates from POST request
+    $start_date = $_POST['start_date'] ?? null;
+    $end_date = $_POST['end_date'] ?? null;
+
+    // Validate inputs
+    if (!$start_date) {
+        die("Start date is required.");
+    }
+
+    // Insert the report into ingredients_reports table
+    $insertReportQuery = "INSERT INTO ingredients_reports (start_date, end_date, created_at) VALUES (?, ?, NOW())";
+    $reportStmt = $conn->prepare($insertReportQuery);
+    $reportStmt->bind_param("ss", $start_date, $end_date);
+
+    if ($reportStmt->execute()) {
+        // Get the report ID
+        $report_id = $conn->insert_id;
+    } else {
+        die("Error inserting ingredients report: " . $conn->error);
+    }
+
+    // Initialize the report data array
+    $reportData = [];
+
+    // --- Fetch Used Ingredients ---
+    $usedIngredientsQuery = "
+        SELECT 
+            i.name AS ingredient_name,
+            uom.uom_name AS unit_name,
+            SUM(CAST(ri.quantity AS DECIMAL) * CAST(oi.quantity AS DECIMAL)) AS total_used
+        FROM orders o
+        JOIN order_items oi ON o.id = oi.order_id
+        JOIN products p ON oi.product_id = p.id
+        JOIN recipes r ON p.id = r.product_id
+        JOIN recipe_ingredients ri ON r.id = ri.recipe_id
+        JOIN ingredients i ON ri.ingredient_id = i.id
+        LEFT JOIN units_of_measure uom ON i.unit_id = uom.id
+        WHERE o.order_status = 'Completed'
+    ";
+
+    if ($start_date && $end_date) {
+        $usedIngredientsQuery .= " AND o.order_date BETWEEN '$start_date 00:00:00' AND '$end_date 23:59:59'";
+    } elseif ($start_date) {
+        $usedIngredientsQuery .= " AND o.order_date >= '$start_date 00:00:00'";
+    } elseif ($end_date) {
+        $usedIngredientsQuery .= " AND o.order_date <= '$end_date 23:59:59'";
+    }
+
+    $usedIngredientsQuery .= " GROUP BY i.id";
+    $usedIngredientsResult = $conn->query($usedIngredientsQuery);
+
+    if ($usedIngredientsResult && $usedIngredientsResult->num_rows > 0) {
+        while ($row = $usedIngredientsResult->fetch_assoc()) {
+            $ingredient_name = $row['ingredient_name'];
+            $unit_name = $row['unit_name'] ?? 'N/A';
+            $quantity_used = $row['total_used'] ?? 0;
+            $type = 'Used';
+
+            $detailQuery = "INSERT INTO ingredients_report_details (report_id, ingredient_name, quantity_used, unit_name, type, created_at) 
+                            VALUES (?, ?, ?, ?, ?, NOW())";
+            $detailStmt = $conn->prepare($detailQuery);
+            $detailStmt->bind_param("issss", $report_id, $ingredient_name, $quantity_used, $unit_name, $type);
+            $detailStmt->execute();
+
+            $reportData[] = [
+                'ingredient_name' => $ingredient_name,
+                'quantity_used' => $quantity_used,
+                'unit_name' => $unit_name,
+                'type' => $type,
+            ];
+        }
+    }
+
+
+    // }
+    // --- Fetch Stock In ---
+    $stockInQuery = "
+        SELECT 
+            i.name AS ingredient_name,
+            si_ingredient.Quantity AS stockin_quantity,
+            si_ingredient.totalQuantity AS total_quantity,
+            si_ingredient.expiryDate AS expiry_date,
+            uom.uom_name AS unit_name
+        FROM stockin si
+        JOIN stockin_ingredients si_ingredient ON si.id = si_ingredient.stockin_id
+        JOIN ingredients i ON si_ingredient.ingredient_id = i.id
+        LEFT JOIN units_of_measure uom ON si_ingredient.unit_id = uom.id
+        WHERE si.stockin_date >= '$start_date 00:00:00'
+        ";
+        if ($end_date) {
+        $stockInQuery .= " AND si.stockin_date <= '$end_date 23:59:59'";
+        }
+        $stockInResult = $conn->query($stockInQuery);
+
+        if ($stockInResult && $stockInResult->num_rows > 0) {
+        while ($row = $stockInResult->fetch_assoc()) {
+            $ingredient_name = $row['ingredient_name'];
+            $unit_name = $row['unit_name'] ?? 'N/A';
+            $stockin_quantity = $row['stockin_quantity'];
+            $total_quantity = $row['total_quantity'];
+            $expiry_date = $row['expiry_date'];
+            $type = 'Stock In';
+
+            // Insert the stock-in data with total quantity and expiry date
+            $detailQuery = "INSERT INTO ingredients_report_details (report_id, ingredient_name, quantity_used, unit_name, total_quantity, expiry_date, type, created_at) 
+                            VALUES (?, ?, ?, ?, ?, ?, ?, NOW())";
+            $detailStmt = $conn->prepare($detailQuery);
+            $detailStmt->bind_param("issdsss", $report_id, $ingredient_name, $stockin_quantity, $unit_name, $total_quantity, $expiry_date, $type);
+            $detailStmt->execute();
+
+            $reportData[] = [
+                'ingredient_name' => $ingredient_name,
+                'quantity_used' => $stockin_quantity,
+                'unit_name' => $unit_name,
+                'total_quantity' => $total_quantity,
+                'expiry_date' => $expiry_date,
+                'type' => $type,
+            ];
+        }
+    }
+
+
+
+    // --- Fetch Stock Out ---
+        $stockOutQuery = "
+            SELECT 
+                si.stockin_id AS batch_number,  -- Adding batch number (stockin_id)
+                i.name AS ingredient_name,
+                so.quantity AS stockout_quantity,
+                uom.uom_name AS unit_name,
+                so.reason AS reason
+            FROM stock_out so
+            JOIN ingredients i ON so.ingredient_id = i.id
+            LEFT JOIN units_of_measure uom ON i.unit_id = uom.id
+            JOIN stockin_ingredients si ON si.id = so.stockin_id  -- Join stockin_ingredients to get the batch number
+            WHERE so.created_at >= '$start_date 00:00:00'
+            ";
+
+        if ($end_date) {
+            $stockOutQuery .= " AND so.created_at <= '$end_date 23:59:59'";
+        }
+
+        $stockOutResult = $conn->query($stockOutQuery);
+
+    if ($stockOutResult && $stockOutResult->num_rows > 0) {
+        while ($row = $stockOutResult->fetch_assoc()) {
+            $batch_number = $row['batch_number'];
+            $ingredient_name = $row['ingredient_name'];
+            $unit_name = $row['unit_name'] ?? 'N/A';
+            $stockout_quantity = $row['stockout_quantity'];
+            $reason = $row['reason'] ?? 'No reason provided'; // Default if reason is missing
+            $type = 'Stock Out';
+
+            // Insert stock-out data with batch number (stockin_id)
+            $detailQuery = "INSERT INTO ingredients_report_details 
+                            (report_id, ingredient_name, quantity_used, unit_name, type, created_at, total_quantity, expiry_date, batch_number) 
+                            VALUES (?, ?, ?, ?, ?, NOW(), ?, ?, ?)";
+            $detailStmt = $conn->prepare($detailQuery);
+            $detailStmt->bind_param("issssdsd", $report_id, $ingredient_name, $stockout_quantity, $unit_name, $type, $total_quantity, $expiry_date, $batch_number);
+            $detailStmt->execute();
+
+            // Store batch number and other data for displaying in the report
+            $reportData[] = [
+                'batch_number' => $batch_number,  // Store batch number in report data
+                'ingredient_name' => $ingredient_name,
+                'quantity_used' => $stockout_quantity,
+                'unit_name' => $unit_name,
+                'type' => $type,
+                'reason' => $reason, // Add reason to the report data
+            ];
+        }
+    }
+
+
+    // --- Fetch Remaining Ingredients ---
+        $remainingIngredientsQuery = "
+        SELECT 
+            i.name AS ingredient_name,
+            uom.uom_name AS unit_name,
+            i.quantity AS remaining_quantity  -- Directly fetch the current quantity from the ingredients table
+        FROM ingredients i
+        LEFT JOIN units_of_measure uom ON i.unit_id = uom.id
+        GROUP BY i.id
+        ";
+
+        $remainingIngredientsResult = $conn->query($remainingIngredientsQuery);
+
+        if ($remainingIngredientsResult && $remainingIngredientsResult->num_rows > 0) {
+        while ($row = $remainingIngredientsResult->fetch_assoc()) {
+            $ingredient_name = $row['ingredient_name'];
+            $unit_name = $row['unit_name'] ?? 'N/A';
+            $remaining_quantity = $row['remaining_quantity'] ?? 0;
+            $type = 'Remaining';
+
+            $detailQuery = "INSERT INTO ingredients_report_details (report_id, ingredient_name, quantity_used, unit_name, type, created_at) 
+                            VALUES (?, ?, ?, ?, ?, NOW())";
+            $detailStmt = $conn->prepare($detailQuery);
+            $detailStmt->bind_param("issss", $report_id, $ingredient_name, $remaining_quantity, $unit_name, $type);
+            $detailStmt->execute();
+
+            $reportData[] = [
+                'ingredient_name' => $ingredient_name,
+                'quantity_used' => $remaining_quantity,  // This now reflects the actual remaining quantity
+                'unit_name' => $unit_name,
+                'type' => $type,
+            ];
+        }
+    }
+
+
+    // --- Save the report ---
+    $reportJson = json_encode($reportData);
+    $reportDate = date('Y-m-d');
+    $reportTime = date('H:i:s');
+    $reportType = 'ingredients';
+
+    $savedReportQuery = "INSERT INTO saved_ingredients_reports (report_date, report_time, report_type, report_data, start_date, end_date, created_at) 
+                         VALUES (?, ?, ?, ?, ?, ?, NOW())";
+    $savedReportStmt = $conn->prepare($savedReportQuery);
+    $savedReportStmt->bind_param("ssssss", $reportDate, $reportTime, $reportType, $reportJson, $start_date, $end_date);
+
+    if ($savedReportStmt->execute()) {
+        $_SESSION['status'] = 'success';
+        header("Location: inventory-management-report-ingredients.php");
+        exit();
+    } else {
+        die("Error saving report: " . $conn->error);
+    }
+}
+
+
+
+
+// if (isset($_POST['saved_ingredients_report'])) { // Corrected key
+//     // Collect metadata for the report
+//     $report_date = date('Y-m-d'); // Current date
+//     $report_time = date('H:i:s'); // Current time
+//     $start_date = $_POST['start_date'] ?? '0000-00-00'; // Default to empty range
+//     $end_date = $_POST['end_date'] ?? '0000-00-00';
+
+//     // Insert into `saved_ingredients_reports`
+//     $query = "INSERT INTO saved_ingredients_reports (report_date, report_time, start_date, end_date) 
+//               VALUES (?, ?, ?, ?)";
+//     $stmt = $conn->prepare($query);
+//     $stmt->bind_param('ssss', $report_date, $report_time, $start_date, $end_date);
+
+//     if ($stmt->execute()) {
+//         $report_id = $stmt->insert_id; // Get the generated report ID
+
+//         // Process Remaining Ingredients
+//         if (!empty($_POST['remaining_ingredients'])) {
+//             foreach ($_POST['remaining_ingredients'] as $ingredient) {
+//                 $name = $ingredient['name'];
+//                 $quantity = $ingredient['quantity'];
+
+//                 $query = "INSERT INTO ingredients_report_details 
+//                           (report_id, ingredient_type, name, quantity) 
+//                           VALUES (?, 'remaining', ?, ?)";
+//                 $detail_stmt = $conn->prepare($query);
+//                 $detail_stmt->bind_param('isd', $report_id, $name, $quantity);
+//                 $detail_stmt->execute();
+//             }
+//         }
+
+//         // Process Used Ingredients
+//         if (!empty($_POST['used_ingredients'])) {
+//             foreach ($_POST['used_ingredients'] as $ingredient) {
+//                 $name = $ingredient['name'];
+//                 $quantity_used = $ingredient['quantity_used'];
+
+//                 $query = "INSERT INTO ingredients_report_details 
+//                           (report_id, ingredient_type, name, quantity) 
+//                           VALUES (?, 'used', ?, ?)";
+//                 $detail_stmt = $conn->prepare($query);
+//                 $detail_stmt->bind_param('isd', $report_id, $name, $quantity_used);
+//                 $detail_stmt->execute();
+//             }
+//         }
+
+//         // Process Stock-In Ingredients
+//         if (!empty($_POST['stockin_ingredients'])) {
+//             foreach ($_POST['stockin_ingredients'] as $ingredient) {
+//                 $name = $ingredient['name'];
+//                 $stockin_quantity = $ingredient['stockin_quantity'];
+//                 $total_quantity = $ingredient['total_quantity'];
+//                 $expiry_date = $ingredient['expiry_date'];
+
+//                 $query = "INSERT INTO ingredients_report_details 
+//                           (report_id, ingredient_type, name, quantity, additional_info) 
+//                           VALUES (?, 'stockin', ?, ?, ?)";
+//                 $detail_stmt = $conn->prepare($query);
+//                 $additional_info = json_encode(['total_quantity' => $total_quantity, 'expiry_date' => $expiry_date]);
+//                 $detail_stmt->bind_param('isds', $report_id, $name, $stockin_quantity, $additional_info);
+//                 $detail_stmt->execute();
+//             }
+//         }
+
+//         // Process Stock-Out Ingredients
+//         // Process Stock-Out Ingredients
+//         if (!empty($_POST['stockout_ingredients'])) {
+//             foreach ($_POST['stockout_ingredients'] as $ingredient) {
+//                 $ingredient_id = $ingredient['ingredient_id'];
+//                 $stockout_quantity = $ingredient['stockout_quantity'];
+//                 $unit_name = $ingredient['unit_name']; // Assuming unit name is passed
+//                 $reason = $ingredient['reason'];
+
+//                 // Combine quantity and unit into a single string, e.g., "100.00 g"
+//                 $quantity_with_unit = number_format($stockout_quantity, 2) . ' ' . $unit_name;
+
+//                 // Insert stock-out data into the stockout table
+//                 $query = "INSERT INTO stockout (ingredient_id, quantity, reason) 
+//                         VALUES (?, ?, ?)";
+//                 $stmt = $conn->prepare($query);
+//                 $stmt->bind_param('iss', $ingredient_id, $quantity_with_unit, $reason);
+//                 $stmt->execute();
+//             }
+//         }
+
+//         $_SESSION['message'] = "Report saved successfully.";
+//         header("Location: inventory-management-report-ingredients.php");
+//         exit;
+//     } else {
+//         $_SESSION['message'] = "Failed to save the report. Error: " . $stmt->error;
+//         header("Location: inventory-management-report-ingredients.php");
+//         exit;
+//     }
+// }
+
+
+
+
+
+//     $stockOutQuery = "
+//     SELECT 
+//         i.name AS ingredient_name,
+//         so.quantity AS stockout_quantity,
+//         uom.uom_name AS unit_name,
+//         so.reason AS reason
+//     FROM stock_out so
+//     JOIN ingredients i ON so.ingredient_id = i.id
+//     LEFT JOIN units_of_measure uom ON i.unit_id = uom.id
+//     WHERE so.created_at >= '$start_date 00:00:00'
+// ";
+// if ($end_date) {
+//     $stockOutQuery .= " AND so.created_at <= '$end_date 23:59:59'";
+// }
+// $stockOutResult = $conn->query($stockOutQuery);
+
+// if ($stockOutResult && $stockOutResult->num_rows > 0) {
+//     while ($row = $stockOutResult->fetch_assoc()) {
+//         $ingredient_name = $row['ingredient_name'];
+//         $unit_name = $row['unit_name'] ?? 'N/A';
+//         $stockout_quantity = $row['stockout_quantity'];
+//         $reason = $row['reason'] ?? 'No reason provided'; // Default if reason is missing
+//         $type = 'Stock Out';
+
+//         // Insert the stock-out data without 'additional_info'
+//         $detailQuery = "INSERT INTO ingredients_report_details 
+//                         (report_id, ingredient_name, quantity_used, unit_name, type, created_at) 
+//                         VALUES (?, ?, ?, ?, ?, NOW())";
+//         $detailStmt = $conn->prepare($detailQuery);
+//         $detailStmt->bind_param("issss", $report_id, $ingredient_name, $stockout_quantity, $unit_name, $type);
+//         $detailStmt->execute();
+
+//         $reportData[] = [
+//             'ingredient_name' => $ingredient_name,
+//             'quantity_used' => $stockout_quantity,
+//             'unit_name' => $unit_name,
+//             'type' => $type,
+//             'reason' => $reason, // Add reason to the report data
+//         ];
+//     }
+// }
+
+
+// // --- Fetch Stock Out ---
+    // $stockOutQuery = "
+    //     SELECT 
+    //         i.name AS ingredient_name,
+    //         so.quantity AS stockout_quantity,
+    //         uom.uom_name AS unit_name
+    //     FROM stock_out so
+    //     JOIN ingredients i ON so.ingredient_id = i.id
+    //     LEFT JOIN units_of_measure uom ON i.unit_id = uom.id
+    //     WHERE so.created_at >= '$start_date 00:00:00'
+    // ";
+    // if ($end_date) {
+    //     $stockOutQuery .= " AND so.created_at <= '$end_date 23:59:59'";
+    // }
+    // $stockOutResult = $conn->query($stockOutQuery);
+
+    // if ($stockOutResult && $stockOutResult->num_rows > 0) {
+    //     while ($row = $stockOutResult->fetch_assoc()) {
+    //         $ingredient_name = $row['ingredient_name'];
+    //         $unit_name = $row['unit_name'] ?? 'N/A';
+    //         $stockout_quantity = $row['stockout_quantity'];
+    //         $type = 'Stock Out';
+
+    //         $detailQuery = "INSERT INTO ingredients_report_details (report_id, ingredient_name, quantity_used, unit_name, type, created_at) 
+    //                         VALUES (?, ?, ?, ?, ?, NOW())";
+    //         $detailStmt = $conn->prepare($detailQuery);
+    //         $detailStmt->bind_param("issss", $report_id, $ingredient_name, $stockout_quantity, $unit_name, $type);
+    //         $detailStmt->execute();
+
+    //         $reportData[] = [
+    //             'ingredient_name' => $ingredient_name,
+    //             'quantity_used' => $stockout_quantity,
+    //             'unit_name' => $unit_name,
+    //             'type' => $type,
+    //         ];
+    //     }
+    // }
 ?>
