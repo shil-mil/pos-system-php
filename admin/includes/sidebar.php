@@ -96,6 +96,11 @@
                     Sales Management
                 </a>
 
+                <a class="nav-link" href="inventory-management-view.php">
+                    <div class="sb-nav-link-icon"><i class="fas fa-list"></i></div>
+                    Inventory Management
+                </a>
+
                 <!-- Units of Measurement -->
                 <li class="nav-item">
                     <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseUnits" aria-expanded="false" aria-controls="collapseUnits">
